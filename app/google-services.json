@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1021117971571",
+    "project_id": "darsitec-eoffice",
+    "storage_bucket": "darsitec-eoffice.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1021117971571:android:8f4085ffb0c53833ff3e06",
+        "android_client_info": {
+          "package_name": "gg.darsitec.eoffice"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVL_uS1nypgZoN1EEf2gy2vHb5BWgwjlM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

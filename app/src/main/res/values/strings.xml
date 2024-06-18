@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">DOffice</string>
+    <string name="app_name_full">Darsitec Office</string>
+    <string name="text_app_short_name">Darsitec</string>
+    <string name="text_app_full_name">DOffice 1.0 - Phần mềm văn phòng số</string>
+    <string name="text_copy_right">Công ty CP Thông tin tín hiệu Đường sắt Đà Nẵng</string>
+
+    <string name="text_copy_build_version">B1.0</string>
+
+    <string name="text_expandable">Xem thêm</string>
+    <string name="text_un_expand">Thu gọn</string>
+    <string name="text_collapse">Ẩn bớt</string>
+
+    <string name="text_internet_error">Mất kết nối internet, vui lòng thử lại</string>
+
+    <string name="text_login">tài khoản đăng nhập</string>
+    <string name="text_hint_username">Nhập tên đăng nhập</string>
+    <string name="text_password">mật khẩu</string>
+    <string name="text_hint_password">Nhập mật khẩu</string>
+    <string name="text_login_button">đăng nhập</string>
+    <string name="text_login_with_face_id">đăng nhập bằng face id</string>
+    <string name="text_phone_call">Gọi điện</string>
+    <string name="text_message">Nhắn tin</string>
+    <string name="text_send_sms">Gửi SMS</string>
+    <string name="text_personal_inform">Thông tin cá nhân</string>
+    <string name="text_watch_personal_inform">Xem thông tin cá nhân</string>
+
+    <string name="text_auth_wrong">Tài khoản đăng nhập hoặc mật khẩu không đúng</string>
+
+</resources>

@@ -1,0 +1,74 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="Theme.App" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
+        <item name="colorOnPrimary">@color/colorWhite</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/colorPrimary</item>
+        <item name="colorSecondaryVariant">@color/colorPrimaryDark</item>
+        <item name="colorOnSecondary">@color/colorWhite</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">#00000000</item>
+        <!-- Customize your theme here. -->
+
+        <item name="android:windowBackground">@drawable/bg_app_gradient</item>
+        <item name="toolbarStyle">@style/Widget.Toolbar</item>
+    </style>
+
+    <style name="LoadingScreen" parent="android:Theme.Translucent">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@color/colorBlack40</item>
+    </style>
+
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <!-- Set the splash screen background, animated icon, and animation
+        duration. -->
+        <item name="windowSplashScreenBackground">@color/colorPrimaryDark</item>
+
+        <!-- Use windowSplashScreenAnimatedIcon to add a drawable or an animated
+             drawable. One of these is required. -->
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_app_launcher_round</item>
+        <!-- Required for animated icons. -->
+        <item name="windowSplashScreenAnimationDuration">200</item>
+
+        <!-- Set the theme of the Activity that directly follows your splash
+        screen. This is required. -->
+        <item name="postSplashScreenTheme">@style/Theme.App</item>
+    </style>
+
+    <style name="Widget.Toolbar" parent="@style/Widget.AppCompat.Toolbar">
+        <item name="contentInsetStart">0dp</item>
+        <item name="android:background">@drawable/bg_app_gradient</item>
+    </style>
+
+    <style name="AppToolbar" parent="Widget.Toolbar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+    </style>
+
+    <style name="AppTextViewDefault" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">@dimen/dp_13</item>
+        <item name="android:textColor">@color/colorBlack</item>
+        <item name="android:textColorHint">?android:textColorHint</item>
+        <item name="android:textColorHighlight">?android:textColorHighlight</item>
+        <item name="android:textColorLink">?android:textColorLink</item>
+    </style>
+
+    <style name="StyleBold" parent="AppTextViewDefault">
+        <item name="customTypeface">@font/roboto_bold</item>
+    </style>
+
+    <style name="StyleRegular" parent="AppTextViewDefault">
+        <item name="customTypeface">@font/roboto_regular</item>
+    </style>
+
+    <style name="StyleItalic" parent="Theme.AppCompat">
+        <item name="customTypeface">@font/roboto_italic</item>
+    </style>
+
+    <style name="StyleMedium" parent="AppTextViewDefault">
+        <item name="customTypeface">@font/roboto_medium</item>
+    </style>
+</resources>

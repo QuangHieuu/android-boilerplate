@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="TextViewFont">
+        <attr name="customTypeface" format="reference" />
+        <attr name="require_title" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="TextViewExpand" parent="TextViewFont">
+        <attr name="customTypeface" />
+        <attr name="require_title" />
+        <attr name="max_line" format="integer" />
+        <attr name="show_text_collapse" format="boolean" />
+        <attr name="enable_collapse" format="boolean" />
+        <attr name="android:textSize" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="EditTextFont">
+        <attr name="customEditTypeface" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="PulseLayout">
+        <attr name="pulse_period" format="integer" />
+        <attr name="pulse_is_random" format="boolean" />
+        <attr name="pulse_low_random" format="integer" />
+        <attr name="pulse_high_random" format="integer" />
+        <attr name="pulse_size" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="AppToolbar">
+        <attr name="title" />
+        <attr name="subtitle" />
+        <attr name="titleTextColor" format="color" />
+        <attr name="subTitleTextColor" format="color" />
+        <attr name="titleTextAppearance" format="reference" />
+        <attr name="subTitleTextAppearance" format="reference" />
+        <attr name="menu" format="reference" />
+        <attr name="backIcon" format="reference" />
+    </declare-styleable>
+</resources>

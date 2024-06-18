@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?><!-- main_split_config.xml -->
+<resources xmlns:window="http://schemas.android.com/apk/res-auto">
+    <SplitPlaceholderRule
+        window:placeholderActivityName="gg.it.ui.empty.EmptyActivity"
+        window:stickyPlaceholder="false">
+        <ActivityFilter window:activityName="gg.it.ui.main.MainActivity" />
+    </SplitPlaceholderRule>
+
+    <SplitPairRule
+        window:clearTop="true"
+        window:splitMinWidthDp="640"
+        window:splitRatio="0.5">
+        <SplitPairFilter
+            window:primaryActivityName="gg.it.ui.main.MainActivity"
+            window:secondaryActivityName="gg.it.ui.empty.EmptyActivity" />
+        <SplitPairFilter
+            window:primaryActivityName="gg.it.ui.main.MainActivity"
+            window:secondaryActivityName="gg.it.ui.chat.ChatActivity" />
+        <SplitPairFilter
+            window:primaryActivityName="gg.it.ui.main.MainActivity"
+            window:secondaryActivityName="gg.it.ui.workManager.WorkManagerActivity" />
+    </SplitPairRule>
+
+    <ActivityRule window:alwaysExpand="true">
+        <ActivityFilter window:activityName="gg.it.ui.splash.StartActivity" />
+    </ActivityRule>
+</resources>

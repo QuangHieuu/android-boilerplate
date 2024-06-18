@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/frame_auto_login"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:visibility="gone">
+
+    <include
+        android:id="@+id/view_loading"
+        layout="@layout/view_loading" />
+
+    <gg.it.widget.customText.TextViewFont
+        android:id="@+id/tv_cancel"
+        style="@style/StyleMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
+        android:layout_marginBottom="@dimen/dp_30"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="@dimen/dp_12"
+        android:text="Bỏ qua"
+        android:textColor="@color/color_4a4a4a" />
+</FrameLayout>
