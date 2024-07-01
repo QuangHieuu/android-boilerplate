@@ -2,27 +2,37 @@ package boilerplate.base
 
 import android.app.Dialog
 import android.graphics.Rect
+import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
+import android.view.Window
+import android.view.WindowManager
 import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
 import boilerplate.R
 import boilerplate.utils.extension.hideKeyboard
 import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.showSnackBarFail
+import boilerplate.utils.extension.statusBarHeight
 import boilerplate.widget.customText.EditTextFont
 import boilerplate.widget.loading.LoadingScreen
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import it.cpc.vn.permission.PermissionUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.lang.reflect.ParameterizedType
 
 abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatActivity() {
-
-    protected val binding: AC by lazy { bindingFactory() }
     protected abstract val mViewModel: VM
+    private var _binding: AC? = null
+    protected val binding: AC get() = _binding!!
 
     private val compositeDisposable = CompositeDisposable()
 
@@ -42,7 +52,29 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(binding.root)
+        setContentView(
+            @Suppress("UNCHECKED_CAST")
+            javaClass.genericSuperclass.let { it as ParameterizedType }.actualTypeArguments[0]
+                .let { it as Class<*> }.getMethod("inflate", LayoutInflater::class.java)
+                .invoke(null, layoutInflater)
+                .let { it as AC }
+                .apply { _binding = this }.root
+        )
+
+        lifecycleScope.launch(Dispatchers.Main) {
+            val window: Window = window
+            val background =
+                ContextCompat.getDrawable(this@BaseActivity, R.drawable.bg_app)?.apply {
+                    val layerDrawable = mutate() as LayerDrawable
+                    layerDrawable.findDrawableByLayerId(R.id.bg_app_background).mutate()
+                    val height = window.statusBarHeight()
+                    layerDrawable.setLayerInsetTop(1, height)
+                }
+
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            window.setBackgroundDrawable(background)
+        }
+
         PermissionUtils.initPermissionCheck()
         onBackPressedDispatcher.addCallback(this@BaseActivity, backPress)
 
@@ -60,8 +92,6 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 
         PermissionUtils.disposable()
     }
-
-    protected abstract fun bindingFactory(): AC
 
     protected abstract fun initialize()
 
@@ -118,7 +148,7 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
             }
             inValidaLogin.observe(this@BaseActivity) {
                 if (it) {
-                    showSnackBarFail(getString(R.string.text_auth_wrong), binding.root)
+                    binding.root.showSnackBarFail(getString(R.string.error_auth_wrong))
                 }
             }
         }

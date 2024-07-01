@@ -2,7 +2,7 @@
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.jetbrains.kotlin.android) apply false
-    alias(libs.plugins.jetbrains.kotlin.kapt) apply false
+    alias(libs.plugins.android.ksp) apply false
 }
 buildscript {
     extra.apply {

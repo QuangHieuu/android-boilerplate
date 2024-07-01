@@ -7,10 +7,7 @@ import boilerplate.ui.main.MainVM
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class EmptyActivity : BaseActivity<ActivityEmptyBinding, MainVM>() {
-override val mViewModel: MainVM by viewModel()
-
-    override fun bindingFactory(): ActivityEmptyBinding =
-        ActivityEmptyBinding.inflate(layoutInflater)
+    override val mViewModel: MainVM by viewModel()
 
     override fun initialize() {
     }

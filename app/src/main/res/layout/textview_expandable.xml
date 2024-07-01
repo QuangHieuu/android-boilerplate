@@ -19,7 +19,7 @@
         style="@style/StyleRegular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/text_expandable"
+        android:text="@string/show_more"
         android:textColor="@color/colorPrimary"
         android:textSize="@dimen/dp_14"
         android:visibility="gone" />

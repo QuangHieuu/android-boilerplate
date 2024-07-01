@@ -1,5 +1,6 @@
 package boilerplate.data.remote.api.middleware
 
+import boilerplate.constant.Constants.KEY_AUTH
 import boilerplate.data.local.repository.user.TokenRepository
 import boilerplate.utils.extension.notNull
 import okhttp3.Interceptor
@@ -13,8 +14,6 @@ import java.util.*
 class InterceptorImpl(private var token: TokenRepository) : Interceptor {
 
     companion object {
-        private const val KEY_TOKEN = "Authorization"
-
         const val CODE_REFRESH_TOKEN: Int = 401
     }
 
@@ -42,7 +41,7 @@ class InterceptorImpl(private var token: TokenRepository) : Interceptor {
 
         token.getToken().notNull { accessToken ->
             if (accessToken.isNotEmpty()) {
-                builder.addHeader(KEY_TOKEN, accessToken)
+                builder.addHeader(KEY_AUTH, accessToken)
             }
         }
         return builder

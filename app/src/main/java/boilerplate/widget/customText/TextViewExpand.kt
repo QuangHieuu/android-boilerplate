@@ -232,7 +232,7 @@ open class TextViewExpand @JvmOverloads constructor(
         }
         isCollapse = !isCollapse
         val animation: ExpandCollapseAnimation = if (isCollapse) {
-            tvLabel.setText(R.string.text_expandable)
+            tvLabel.setText(R.string.show_more)
             ExpandCollapseAnimation(
                 this,
                 tvContent,
@@ -241,7 +241,7 @@ open class TextViewExpand @JvmOverloads constructor(
                 otherHeight
             )
         } else {
-            tvLabel.setText(R.string.text_un_expand)
+            tvLabel.setText(R.string.collapse)
             ExpandCollapseAnimation(
                 this,
                 tvContent,

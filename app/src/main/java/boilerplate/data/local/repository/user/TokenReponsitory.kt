@@ -41,5 +41,7 @@ class TokenRepositoryImpl(
     override fun wipeToken() {
         share.clearKey(ACCESS_TOKEN)
         share.clearKey(ACCESS_ONLY_TOKEN)
+
+        _token.postValue("")
     }
 }

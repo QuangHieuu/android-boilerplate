@@ -14,9 +14,6 @@ class EmptyFragment : BaseFragment<ActivityEmptyBinding, MainVM>() {
 
     override val mViewModel: MainVM by activityViewModel()
 
-    override fun bindingFactory(): ActivityEmptyBinding =
-        ActivityEmptyBinding.inflate(layoutInflater)
-
     override fun initialize() {
     }
 

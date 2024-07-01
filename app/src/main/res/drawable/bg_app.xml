@@ -2,7 +2,7 @@
     <item>
         <inset android:drawable="@drawable/bg_gradient_toolbar" />
     </item>
-    <item android:top="60dp">
+    <item android:id="@+id/bg_app_background">
         <shape>
             <solid android:color="@color/colorWhite" />
         </shape>

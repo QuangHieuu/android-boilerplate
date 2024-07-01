@@ -58,7 +58,7 @@
             android:exported="true" />
         <activity android:name=".ui.chat.ChatActivity" />
         <activity android:name=".ui.empty.EmptyActivity" />
-        <activity android:name=".ui.workManager.WorkManagerActivity" />
+        <activity android:name=".ui.work.WorkManagerActivity" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"
@@ -70,5 +70,9 @@
                 android:name="boilerplate.utils.split.SplitInitializer"
                 android:value="androidx.startup" />
         </provider>
+
+        <meta-data
+            android:name="boilerplate.widget.glide.GlideAppModule"
+            android:value="AppGlideModule" />
     </application>
 </manifest>

@@ -72,7 +72,7 @@ abstract class BaseViewModel() : ViewModel() {
         compositeDisposable.add(job())
     }
 
-    protected fun setLoading(boolean: Boolean) {
+    fun setLoading(boolean: Boolean) {
         _loading.postValue(boolean)
     }
 

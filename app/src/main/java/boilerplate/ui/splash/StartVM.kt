@@ -10,6 +10,7 @@ import boilerplate.data.remote.api.ApiObservable
 import boilerplate.data.remote.repository.auth.LoginRepository
 import boilerplate.model.user.User
 import boilerplate.utils.extension.BaseSchedulerProvider
+import boilerplate.utils.extension.loading
 import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.withScheduler
 
@@ -51,10 +52,13 @@ class StartVM(
         setLoading(true)
         launchDisposable {
             loginServer.postUserLogin(userName, password)
+                .loading(_loading)
                 .withScheduler(schedulerProvider)
                 .subscribeWith(ApiObservable.apiCallback(success = {
                     userImpl.saveUseLogin(userName, password)
                     tokenImpl.saveToken(it.tokenType!!, it.accessToken!!)
+
+                    _state.postValue(STATE_AUTO_LOGIN)
                 }, fail = {
                     setLoading(false)
                 }))
@@ -80,10 +84,12 @@ class StartVM(
     }
 
     fun cancelAutoLogin() {
+        onCleared()
         userImpl.wipeUserData()
         tokenImpl.wipeToken()
 
         _state.postValue(STATE_LOGIN)
+        _user.postValue(null)
     }
 
     fun getServer() = serverImpl.getServer()

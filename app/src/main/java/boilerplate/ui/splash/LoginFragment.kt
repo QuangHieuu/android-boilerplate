@@ -4,12 +4,10 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
-import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.RadioButton
 import android.widget.RadioGroup
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.activityViewModels
 import boilerplate.BuildConfig
 import boilerplate.R
@@ -17,12 +15,11 @@ import boilerplate.base.BaseFragment
 import boilerplate.data.remote.api.ApiServer
 import boilerplate.databinding.FragmentLoginBinding
 import boilerplate.utils.ClickUtil
+import boilerplate.utils.extension.showDialog
 import boilerplate.widget.customText.TextViewFont
 
 class LoginFragment : BaseFragment<FragmentLoginBinding, StartVM>() {
     override val mViewModel: StartVM by activityViewModels()
-    override fun bindingFactory(): FragmentLoginBinding =
-        FragmentLoginBinding.inflate(layoutInflater)
 
     companion object {
         fun newInstance(): LoginFragment {
@@ -75,12 +72,6 @@ class LoginFragment : BaseFragment<FragmentLoginBinding, StartVM>() {
                         imgClearPass.setVisibility(View.GONE)
                         imgShowPass.setVisibility(View.GONE)
                     }
-                }
-            }
-
-            token.observe(this@LoginFragment) {
-                if (it.isNotEmpty()) {
-                    mViewModel.getMe(true)
                 }
             }
         }
@@ -175,38 +166,29 @@ class LoginFragment : BaseFragment<FragmentLoginBinding, StartVM>() {
     }
 
     private fun showServerConfig() {
-        with(requireContext()) {
-            val view: View = LayoutInflater.from(this).inflate(R.layout.dialog_radio_group, null)
+        context?.showDialog(R.layout.dialog_radio_group) {
+            with(it) {
+                val tvConfirm: TextViewFont = findViewById(R.id.tv_confirm)
+                val radioHostGroup = findViewById<RadioGroup>(R.id.radio_group)
 
-            val alertDialogBuilder = AlertDialog.Builder(this)
-            alertDialogBuilder.setView(view)
-            alertDialogBuilder.setCancelable(false)
+                val host: String = mViewModel.getServer()
 
-            val dialog = alertDialogBuilder.create()
-
-            val tvConfirm: TextViewFont = view.findViewById(R.id.tv_confirm)
-            val radioHostGroup = view.findViewById<RadioGroup>(R.id.radio_group)
-
-            val host: String = mViewModel.getServer()
-
-            for (server in ApiServer.listServer()) {
-                val index: Int = ApiServer.listServer().indexOf(server)
-                radioHostGroup.addView(RadioButton(context).apply {
-                    isChecked = server.serverName == host
-                    text = server.displayName
-                    id = index
-                    tag = server.serverName
-                })
+                for (server in ApiServer.listServer()) {
+                    val index: Int = ApiServer.listServer().indexOf(server)
+                    radioHostGroup.addView(RadioButton(context).apply {
+                        isChecked = server.serverName == host
+                        text = server.displayName
+                        id = index
+                        tag = server.serverName
+                    })
+                }
+                tvConfirm.setOnClickListener { v ->
+                    val selectedId = radioHostGroup.checkedRadioButtonId
+                    val radioButton = findViewById<RadioButton>(selectedId)
+                    val server = radioButton.tag.toString()
+                    mViewModel.setServer(server)
+                }
             }
-            tvConfirm.setOnClickListener { v ->
-                val selectedId = radioHostGroup.checkedRadioButtonId
-                val radioButton =
-                    view.findViewById<RadioButton>(selectedId)
-                val server = radioButton.tag.toString()
-                mViewModel.setServer(server)
-                dialog.dismiss()
-            }
-            dialog.show()
         }
     }
 }

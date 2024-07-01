@@ -16,7 +16,7 @@ object ApiUrl {
 
     const val WEBSITE: String = "https://darsitec.dn.greenglobal.vn"
 
-    var HOST_E_OFFICE: String = ""
+    var HOST_MAIN: String = ""
     var HOST_CHAT: String = ""
     var HOST_FILE: String = ""
     var HOST_NOTIFICATION: String = ""
@@ -30,7 +30,7 @@ object ApiUrl {
         when (ApiServer.fromType(host)) {
             TEST1 -> {
                 HOST_SIGN_IN = "https://sso-darsitec.dn.greenglobal.vn/"
-                HOST_E_OFFICE = "https://api-darsitec.dn.greenglobal.vn/"
+                HOST_MAIN = "https://api-darsitec.dn.greenglobal.vn/"
                 HOST_CHAT = "https://api-chat-darsitec.dn.greenglobal.vn/"
                 HOST_FILE = "https://api-file-darsitec.dn.greenglobal.vn/"
                 HOST_NOTIFICATION = "https://api-push-darsitec.dn.greenglobal.vn/"
@@ -41,7 +41,7 @@ object ApiUrl {
 
             LIVE -> {
                 HOST_SIGN_IN = "https://sso.thongtintinhieudsdn.vn/"
-                HOST_E_OFFICE = "https://api-cv.thongtintinhieudsdn.vn/"
+                HOST_MAIN = "https://api-cv.thongtintinhieudsdn.vn/"
                 HOST_CHAT = "https://api-chat.thongtintinhieudsdn.vn/"
                 HOST_FILE = "https://api-file.thongtintinhieudsdn.vn/"
                 HOST_NOTIFICATION = "https://api-push.thongtintinhieudsdn.vn/"

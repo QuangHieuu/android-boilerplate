@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.jetbrains.kotlin.kapt)
+    alias(libs.plugins.android.ksp)
 }
 
 android {
@@ -45,6 +45,8 @@ android {
 }
 
 dependencies {
+    implementation(platform(libs.kotlin.bom))
+
     implementation(fileTree("dir" to "libs", "include" to listOf("*.jar", "*.aar")))
 
     implementation(files("libs/jsoup-1.16.1.jar"))
@@ -53,6 +55,7 @@ dependencies {
     implementation(project(":permission"))
     implementation(project(":excel-to-pdf"))
 
+    implementation(libs.androidx.annotation)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.multidex)
@@ -79,7 +82,8 @@ dependencies {
     implementation(libs.rxjava)
     implementation(libs.rxjava.android)
     implementation(libs.glide)
-
+    implementation(libs.glide.integration)
+    ksp(libs.glide.compiler)
 }
 
 apply {

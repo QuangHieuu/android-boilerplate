@@ -29,5 +29,5 @@ class InternetManager {
 
 class InternetException : RetrofitException(
     Type.NETWORK,
-    Exception(sInstance.getString(R.string.text_internet_error))
+    Exception(sInstance.getString(R.string.error_internet_connect))
 )

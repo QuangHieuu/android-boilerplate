@@ -11,7 +11,6 @@ import boilerplate.ui.main.tab.HomeTabIndex
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
-    override fun bindingFactory(): ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
     override val mViewModel: MainVM by viewModel()
 
     private lateinit var windowInfoTracker: WindowInfoTracker

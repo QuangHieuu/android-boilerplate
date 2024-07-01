@@ -15,20 +15,32 @@ import androidx.viewbinding.ViewBinding
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.coroutines.launch
+import java.lang.reflect.ParameterizedType
 
 abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
     private val mDisposable: CompositeDisposable by lazy { CompositeDisposable() }
-
-    protected val binding: AC by lazy { bindingFactory() }
+    private var _binding: AC? = null
+    protected val binding: AC
+        get() = checkNotNull(_binding) { "View not create" }
 
     protected abstract val mViewModel: VM
 
+    @Suppress("UNCHECKED_CAST")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return binding.root
+        return javaClass.genericSuperclass.let { it as ParameterizedType }.actualTypeArguments[0]
+            .let { it as Class<*> }.getMethod(
+                "inflate",
+                LayoutInflater::class.java,
+                ViewGroup::class.java,
+                Boolean::class.java
+            )
+            .invoke(null, layoutInflater, container, false)
+            .let { it as AC }
+            .apply { _binding = this }.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -43,11 +55,12 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
     }
 
     override fun onDestroyView() {
+        _binding = null
         super.onDestroyView()
         clearAdjustSoftInput()
+        mDisposable.dispose()
+        mDisposable.clear()
     }
-
-    protected abstract fun bindingFactory(): AC
 
     protected abstract fun initialize()
 
@@ -82,36 +95,9 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
         requireActivity().supportFragmentManager.popBackStack()
     }
 
-    protected fun setLoading(visibility: Int) {
-//        if (mLayoutLoading != null && mPulseLayout != null) {
-//            mLayoutLoading.setVisibility(visibility)
-//            if (visibility == View.VISIBLE) {
-//                mPulseLayout.start()
-//            } else {
-//                mPulseLayout.stop()
-//            }
-//        }
-    }
-
     protected fun launchDisposable(vararg job: Disposable) {
         mDisposable.addAll(*job)
     }
-
-//    protected fun openFragment(fragment: BaseFragment) {
-//        if (!this.isAdded) {
-//            return
-//        }
-//        val transaction = requireActivity().supportFragmentManager.beginTransaction()
-//        transaction.setCustomAnimations(
-//            R.anim.enter_from_right,
-//            R.anim.stay,
-//            R.anim.stay,
-//            R.anim.exit_to_right
-//        )
-//        transaction.add(R.id.frame_main, fragment)
-//        transaction.addToBackStack(fragment.tag())
-//        transaction.commit()
-//    }
 
     protected fun adjustSoftInput() {
         lifecycleScope.launch {
@@ -127,13 +113,13 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
                 requireActivity().window
                     .setSoftInputMode(
                         WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE
-                                or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+                            or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
                     )
             }
         }
     }
 
-    protected fun clearAdjustSoftInput() {
+    private fun clearAdjustSoftInput() {
         lifecycleScope.launch {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 requireActivity().window?.let {

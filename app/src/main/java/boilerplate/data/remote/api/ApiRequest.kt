@@ -18,7 +18,7 @@ class ApiRequest(
 
     val login get() = createRequest(ApiUrl.HOST_SIGN_IN)
 
-    val eOffice get() = createRequest(ApiUrl.HOST_E_OFFICE + ApiUrl.API)
+    val eOffice get() = createRequest(ApiUrl.HOST_MAIN + ApiUrl.API)
 
     val chat get() = createRequest(ApiUrl.HOST_CHAT + ApiUrl.API)
 

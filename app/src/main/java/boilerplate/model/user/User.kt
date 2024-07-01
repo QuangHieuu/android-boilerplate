@@ -206,7 +206,7 @@ class User : ExpandModel() {
         }
 
     fun getAvatar(): String {
-        val avatar = avatarId!!.let {
+        val avatar = checkNotNull(avatarId).let {
             if (it.startsWith("/")) {
                 it.replaceFirst("/".toRegex(), "")
             } else {

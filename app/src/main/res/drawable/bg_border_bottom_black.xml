@@ -8,7 +8,6 @@
             <stroke
                 android:width="@dimen/dp_1"
                 android:color="@color/colorBlack" />
-            <padding android:bottom="@dimen/dp_7" />
         </shape>
     </item>
 </layer-list>

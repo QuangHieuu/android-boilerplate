@@ -13,11 +13,14 @@
         <item name="android:statusBarColor">#00000000</item>
         <!-- Customize your theme here. -->
 
-        <item name="android:windowBackground">@drawable/bg_app</item>
         <item name="toolbarStyle">@style/Widget.Toolbar</item>
+
+        <item name="materialButtonStyle">@style/CustomMaterialButton</item>
     </style>
 
-    <style name="LoadingScreen" parent="android:Theme.Translucent">
+    <style name="CustomMaterialButton" parent="Theme.MaterialComponents" />
+
+    <style name="LoadingScreen" parent="Theme.App">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@color/colorBlack40</item>
     </style>
@@ -71,4 +74,13 @@
     <style name="StyleMedium" parent="AppTextViewDefault">
         <item name="customTypeface">@font/roboto_medium</item>
     </style>
+
+    <declare-styleable name="RoundedImageView">
+        <attr name="radius" format="dimension" />
+        <attr name="topLeftRadius" format="dimension" />
+        <attr name="topRightRadius" format="dimension" />
+        <attr name="bottomLeftRadius" format="dimension" />
+        <attr name="bottomRightRadius" format="dimension" />
+        <attr name="android:adjustViewBounds" format="boolean" />
+    </declare-styleable>
 </resources>

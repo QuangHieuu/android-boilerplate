@@ -21,6 +21,6 @@ class LoginRepositoryImpl(
     override fun postUserLogin(userName: String, password: String) =
         apiRequest.login.postLogin(userName, password).checkInternet()
 
-    override fun getMe() = apiRequest.login.getMe().checkInternet()
+    override fun getMe() = apiRequest.eOffice.getMe().checkInternet()
 
 }

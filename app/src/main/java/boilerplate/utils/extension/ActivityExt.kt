@@ -59,14 +59,6 @@ fun AppCompatActivity.currentFragment(containerId: Int): Fragment? {
     return supportFragmentManager.findFragmentById(containerId)
 }
 
-fun AppCompatActivity.goBackFragment(): Boolean {
-    val isShowPreviousPage = supportFragmentManager.backStackEntryCount > 0
-    if (isShowPreviousPage) {
-        supportFragmentManager.popBackStackImmediate()
-    }
-    return isShowPreviousPage
-}
-
 fun AppCompatActivity.startActivity(
     intent: Intent,
     flags: Int? = null
@@ -122,3 +114,8 @@ fun AppCompatActivity.startActivityAtRoot(
     context.startActivity(intent)
 }
 
+fun AppCompatActivity.popFragment() {
+    supportFragmentManager.apply {
+        if (backStackEntryCount <= 0) popBackStack()
+    }
+}

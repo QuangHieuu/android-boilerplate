@@ -1,0 +1,4 @@
+<resources>
+    <string name="warning_input_group_name">Vui lòng nhập tên nhóm</string>
+    <string name="warning_no_member_group">Chưa có liên lạc nào trong nhóm</string>
+</resources>
