@@ -9,7 +9,7 @@
         android:id="@+id/view_loading"
         layout="@layout/view_loading" />
 
-    <gg.it.widget.customText.TextViewFont
+    <boilerplate.widget.customText.TextViewFont
         android:id="@+id/tv_cancel"
         style="@style/StyleMedium"
         android:layout_width="wrap_content"

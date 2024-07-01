@@ -5,13 +5,13 @@ plugins {
 }
 
 android {
-    namespace = "gg.it"
+    namespace = "boilerplate"
     compileSdk = 34
     applicationVariants.all {
         resValue("string", "versionName", versionName)
     }
     defaultConfig {
-        applicationId = "gg.darsitec.eoffice"
+        applicationId = "android.boilerplate"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -45,12 +45,12 @@ android {
 }
 
 dependencies {
-    implementation(fileTree("dir" to "libs", "include" to listOf("*.jar")))
+    implementation(fileTree("dir" to "libs", "include" to listOf("*.jar", "*.aar")))
 
     implementation(files("libs/jsoup-1.16.1.jar"))
+    implementation(files("libs/signalr-client.aar"))
 
     implementation(project(":permission"))
-    implementation(project(":signalr-client-sdk"))
     implementation(project(":excel-to-pdf"))
 
     implementation(libs.androidx.core.ktx)

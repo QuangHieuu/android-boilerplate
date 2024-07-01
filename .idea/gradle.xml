@@ -12,7 +12,6 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/excel-to-pdf" />
             <option value="$PROJECT_DIR$/permission" />
-            <option value="$PROJECT_DIR$/signalr-client-sdk" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

@@ -1,0 +1,34 @@
+package boilerplate.di
+
+import android.app.Application
+import android.content.res.Resources
+import boilerplate.data.local.sharedPrefs.SharedPrefsApi
+import boilerplate.data.local.sharedPrefs.SharedPrefsImpl
+import boilerplate.data.local.sharedPrefs.SharedPrefsKey
+import boilerplate.data.remote.service.ApiUrl
+import okhttp3.Cache
+import org.koin.android.ext.koin.androidApplication
+import org.koin.dsl.module
+
+val contextRequireModule = module {
+    single { provideResources(androidApplication()) }
+    single { provideSharedPrefsApi(get()) }
+    single { provideOkHttpCache(androidApplication()) }
+}
+
+fun provideSharedPrefsApi(app: Application): SharedPrefsApi {
+    return SharedPrefsImpl(app).also { server ->
+        server.get(SharedPrefsKey.SERVER, String::class.java)
+            .ifEmpty { ApiUrl.DEFAULT }
+            .also { ApiUrl.setHost(it) }
+    }
+}
+
+fun provideOkHttpCache(app: Application): Cache {
+    val cacheSize: Long = 10 * 1024 * 1024 // 10 MiB
+    return Cache(app.cacheDir, cacheSize)
+}
+
+fun provideResources(app: Application): Resources {
+    return app.resources
+}

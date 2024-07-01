@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="gg.darsitec.eoffice" />
-                  <option name="mobileSdkAppId" value="1:1021117971571:android:8f4085ffb0c53833ff3e06" />
-                  <option name="projectId" value="darsitec-eoffice" />
-                  <option name="projectNumber" value="1021117971571" />
+                  <option name="appId" value="PLACEHOLDER" />
+                  <option name="mobileSdkAppId" value="" />
+                  <option name="projectId" value="" />
+                  <option name="projectNumber" value="" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

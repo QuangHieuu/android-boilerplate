@@ -13,7 +13,7 @@
         <item name="android:statusBarColor">#00000000</item>
         <!-- Customize your theme here. -->
 
-        <item name="android:windowBackground">@drawable/bg_app_gradient</item>
+        <item name="android:windowBackground">@drawable/bg_app</item>
         <item name="toolbarStyle">@style/Widget.Toolbar</item>
     </style>
 
@@ -25,13 +25,13 @@
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
         <!-- Set the splash screen background, animated icon, and animation
         duration. -->
-        <item name="windowSplashScreenBackground">@color/colorPrimaryDark</item>
+        <item name="windowSplashScreenBackground">@color/colorWhite</item>
 
         <!-- Use windowSplashScreenAnimatedIcon to add a drawable or an animated
              drawable. One of these is required. -->
         <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_app_launcher_round</item>
         <!-- Required for animated icons. -->
-        <item name="windowSplashScreenAnimationDuration">200</item>
+        <item name="windowSplashScreenAnimationDuration">500</item>
 
         <!-- Set the theme of the Activity that directly follows your splash
         screen. This is required. -->
@@ -40,7 +40,7 @@
 
     <style name="Widget.Toolbar" parent="@style/Widget.AppCompat.Toolbar">
         <item name="contentInsetStart">0dp</item>
-        <item name="android:background">@drawable/bg_app_gradient</item>
+        <item name="android:background">@drawable/bg_app</item>
     </style>
 
     <style name="AppToolbar" parent="Widget.Toolbar">
@@ -51,9 +51,9 @@
     <style name="AppTextViewDefault" parent="TextAppearance.AppCompat">
         <item name="android:textSize">@dimen/dp_13</item>
         <item name="android:textColor">@color/colorBlack</item>
-        <item name="android:textColorHint">?android:textColorHint</item>
         <item name="android:textColorHighlight">?android:textColorHighlight</item>
         <item name="android:textColorLink">?android:textColorLink</item>
+        <item name="android:textColorHint">@color/colorHint</item>
     </style>
 
     <style name="StyleBold" parent="AppTextViewDefault">

@@ -1,25 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#DE3023</color>
-    <color name="colorPrimaryDark">#DF8E0A</color>
-    <color name="colorPrimaryAlpha">#1ADE3023</color>
-    <color name="colorWhite">#FFFFFF</color>
-    <color name="colorBlack">#202020</color>
-    <color name="colorHint">#59081C36</color>
-    <color name="colorPulse">#33DE3023</color>
+    <color name="colorPrimary">#005CDD</color>
+    <color name="colorPrimaryDark">#1943a5</color>
+    <color name="colorPrimaryAlpha">#1A005CDD</color>
+
+    <color name="colorPrimaryLight">#0496FF</color>
+
+    <color name="colorPrimaryAlpha50">#80005CDD</color>
+    <color name="colorWhiteAlpha80">#CCFFFFFF</color>
 
     <color name="transparent">#00000000</color>
+
+    <color name="colorBlack20">#20202020</color>
+    <color name="colorBlack40">#40202020</color>
+    <color name="colorBlack">#202020</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorHint">#59081C36</color>
+    <color name="colorStroke">#E4E4E4</color>
+    <color name="colorAppBackground">#F3F6FC</color>
+    <color name="colorHighlight">#D8D8D8</color>
 
     <color name="color_toast">#979797</color>
     <color name="color_toast_success">#03B56B</color>
     <color name="color_toast_warning">#d19330</color>
     <color name="color_toast_fail">#DC374D</color>
-
-    <color name="colorBlack20">#20202020</color>
-    <color name="colorBlack40">#40202020</color>
-    <color name="colorAppBackground">#F3F6FC</color>
-
-    <color name="colorHighlight">#D8D8D8</color>
 
     <color name="color_4a4a4a">#4a4a4a</color>
     <color name="color_e6e6e6">#e6e6e6</color>

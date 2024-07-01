@@ -17,10 +17,10 @@
         </shape>
     </item>
     <item
-        android:bottom="-1dp"
+        android:bottom="@dimen/minus_dp_1"
         android:left="@dimen/dp_12"
         android:right="-10dp"
-        android:top="-1dp">
+        android:top="@dimen/minus_dp_1">
         <shape android:shape="rectangle">
             <solid android:color="@color/color_D4E6FF" />
         </shape>
