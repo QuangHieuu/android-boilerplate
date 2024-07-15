@@ -1,11 +1,11 @@
 package boilerplate.model.user
 
-import com.google.gson.annotations.SerializedName
 import boilerplate.data.remote.service.ApiUrl
 import boilerplate.model.ExpandModel
 import boilerplate.model.file.AttachedFile
 import boilerplate.utils.ImageUtil.IMAGE_MAX_SIZE
 import boilerplate.utils.ImageUtil.IMAGE_THUMB_SIZE
+import com.google.gson.annotations.SerializedName
 import java.util.Locale
 
 class User : ExpandModel() {
@@ -18,7 +18,8 @@ class User : ExpandModel() {
         get() = if (field == null) "".also { field = it } else field
 
     @SerializedName("anh_dai_dien")
-    private var avatar: String? = null
+    var avatarId: String? = null
+        get() = if (field == null) "".also { field = it } else field
 
     @SerializedName("so_dien_thoai")
     var phoneNumber: String? = null
@@ -32,9 +33,8 @@ class User : ExpandModel() {
     var titleId: String? = null
         get() = if (field == null) "".also { field = it } else field
 
-
     @SerializedName("ds_chuc_danh")
-    private var titles: ArrayList<Title>? = null
+    var titles: ArrayList<Title>? = null
         get() = if (field == null) ArrayList<Title>().also { field = it } else field
 
     @SerializedName("da_duyet")
@@ -78,7 +78,7 @@ class User : ExpandModel() {
         get() = if (field == null) Department().also { field = it } else field
 
     @SerializedName("truc_tuyen")
-    private var isOnline = 0
+    var isOnline = 0
 
     @SerializedName("vai_tro")
     var vaiTro = 0
@@ -157,9 +157,6 @@ class User : ExpandModel() {
     var level = 0
     val listReacted = ArrayList<String>()
 
-    var avatarId: String? = null
-        get() = if (field == null) "".also { field = it } else field
-
     var isRegularMember = false
 
     fun isOnline() = isOnline == 1
@@ -217,14 +214,14 @@ class User : ExpandModel() {
         return String.format(
             Locale.getDefault(),
             "%s%s?w=%d",
-            ApiUrl.HOST_IMAGE,
+            ApiUrl.HOST_FILE,
             avatar,
             IMAGE_MAX_SIZE
         )
     }
 
     fun getAvatar(isThumb: Boolean): String {
-        val avatar = avatarId!!.let {
+        val avatar = checkNotNull(avatarId).let {
             if (it.startsWith("/")) {
                 it.replaceFirst("/".toRegex(), "")
             } else {
@@ -234,14 +231,10 @@ class User : ExpandModel() {
         return String.format(
             Locale.getDefault(),
             "%s%s?w=%d",
-            ApiUrl.HOST_IMAGE,
+            ApiUrl.HOST_FILE,
             avatar,
             if (isThumb) IMAGE_THUMB_SIZE else IMAGE_MAX_SIZE
         )
-    }
-
-    fun setAvatar(avatar: String?) {
-        this.avatar = avatar
     }
 
     val mainRole: String?
@@ -256,31 +249,30 @@ class User : ExpandModel() {
             return ""
         }
 
-    class UpdateBody(
+    data class UpdateBody(
         @SerializedName("so_dien_thoai") val phone: String,
         @SerializedName("so_dien_thoai_khac") val otherPhone: String,
         @SerializedName("tam_trang") val status: String
-    ) {
-        @SerializedName("ngay_sinh")
-        val dayOfBirth: String? = null
-    }
+    )
 
-    class Result {
-        val items: ArrayList<User>? = null
+    inner class Result {
+        var items: ArrayList<User>? = null
             get() = field ?: ArrayList()
-        val total = 0
+        var total = 0
     }
 
-    class State {
+    inner class State {
         @SerializedName("user_id")
-        val userId: String? = null
-        val state = 0
+        var userId: String? = null
+            get() = if (field == null) "".also { field = it } else field
+
+        var state = 0
     }
 
-    class ChangePass(
+    data class ChangePass(
         @SerializedName("current_password")
-        private val currentPass: String,
+        val currentPass: String,
         @SerializedName("new_password")
-        private val newPass: String
+        val newPass: String
     )
 }

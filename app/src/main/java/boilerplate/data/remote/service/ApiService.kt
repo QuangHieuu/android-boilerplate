@@ -1,14 +1,19 @@
 package boilerplate.data.remote.service
 
 import boilerplate.data.remote.api.response.BaseResponse
+import boilerplate.model.conversation.Conversation
+import boilerplate.model.device.Device
 import boilerplate.model.login.LoginRes
 import boilerplate.model.user.User
 import io.reactivex.rxjava3.core.Flowable
+import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface LoginService {
     @Headers(
@@ -22,6 +27,12 @@ interface LoginService {
         @Field("password") password: String,
         @Field("grant_type") grant_type: String = "password"
     ): Flowable<LoginRes>
+
+    @POST("device")
+    fun postDevice(@Body device: Device): Flowable<BaseResponse<Device>>
+
+    @DELETE("device")
+    fun deleteDevice(@Query("deviceId") deviceId: String): Flowable<BaseResponse<Boolean>>
 }
 
 interface UserService {
@@ -29,6 +40,19 @@ interface UserService {
     fun getMe(): Flowable<BaseResponse<User>>
 }
 
-interface ApiService : LoginService, UserService {
+interface ConversationService {
+
+    @GET("hoithoai")
+    fun getConversations(
+        @Query("hoithoaiId") id: String?,
+        @Query("limit") limit: Int,
+        @Query("unread") isUnread: Boolean?,
+        @Query("isQuanTrong") isImportant: Boolean?,
+        @Query("name") search: String?
+    ): Flowable<BaseResponse<Conversation.Result>>
+
+}
+
+interface ApiService : LoginService, UserService, ConversationService {
 
 }

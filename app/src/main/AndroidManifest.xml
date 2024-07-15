@@ -55,24 +55,20 @@
         </activity>
         <activity
             android:name=".ui.main.MainActivity"
-            android:exported="true" />
-        <activity android:name=".ui.chat.ChatActivity" />
-        <activity android:name=".ui.empty.EmptyActivity" />
-        <activity android:name=".ui.work.WorkManagerActivity" />
+            android:exported="true"
+            android:theme="@style/Theme.App" />
 
-        <provider
-            android:name="androidx.startup.InitializationProvider"
-            android:authorities="${applicationId}.androidx-startup"
-            android:exported="false"
-            tools:node="merge">
-            <!-- Make SplitInitializer discoverable by InitializationProvider. -->
-            <meta-data
-                android:name="boilerplate.utils.split.SplitInitializer"
-                android:value="androidx.startup" />
-        </provider>
+        <service
+            android:name=".service.signalr.SignalRService"
+            android:exported="false" />
 
         <meta-data
             android:name="boilerplate.widget.glide.GlideAppModule"
             android:value="AppGlideModule" />
+
+        <service
+            android:name=".service.network.NetworkSchedulerService"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>
 </manifest>

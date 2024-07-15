@@ -15,7 +15,7 @@ enum class SettingMenu(val index: Int, val title: String, val icon: Int) {
     LOG_OUT(8, "Đăng xuất", R.drawable.ic_setting_logout),
     SUPPORT(9, "Hỗ trợ CNTT", R.drawable.ic_setting_support_cntt),
     SETTING_DETAIL(10, "Cài đặt", -1),
-    SETTING_OFFICE(11, "eOffice", R.drawable.ic_app_round),
+    SETTING_OFFICE(11, "eOffice", R.mipmap.ic_app_launcher_round),
     SETTING_BIRTHDAY(12, "Thông báo sinh nhật", R.drawable.ic_setting_birthday),
     SETTING_TOKEN(13, "Gửi Token", R.drawable.ic_setting_send_token),
     SETTING_SOUND(14, "Âm thanh", -1),
@@ -57,8 +57,8 @@ enum class SettingMenu(val index: Int, val title: String, val icon: Int) {
         @JvmStatic
         fun isMargin(index: Int): Boolean {
             return index == SETTING.index ||
-                index == MY_CLOUD.index ||
-                index == LOG_OUT.index
+                    index == MY_CLOUD.index ||
+                    index == LOG_OUT.index
         }
 
         @JvmStatic

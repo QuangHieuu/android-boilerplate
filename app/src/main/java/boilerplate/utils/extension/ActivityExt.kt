@@ -1,7 +1,6 @@
 package boilerplate.utils.extension
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
@@ -103,15 +102,14 @@ fun AppCompatActivity.showDialogFragment(
 }
 
 fun AppCompatActivity.startActivityAtRoot(
-    context: Context,
     clazz: Class<out Activity>, args: Bundle? = null
 ) {
-    val intent = Intent(context, clazz)
+    val intent = Intent(this, clazz)
     args.notNull {
         intent.putExtras(it)
     }
     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-    context.startActivity(intent)
+    startActivity(intent)
 }
 
 fun AppCompatActivity.popFragment() {

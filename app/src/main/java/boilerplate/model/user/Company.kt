@@ -1,17 +1,20 @@
 package boilerplate.model.user
 
-import com.google.gson.annotations.SerializedName
 import boilerplate.model.ExpandModel
+import com.google.gson.annotations.SerializedName
 
 class Company : ExpandModel {
     @SerializedName("don_vi_id")
-    private var id: String? = null
+    var id: String? = null
+        get() = if (field == null) "".also { field = it } else field
 
     @SerializedName("ten_don_vi")
-    private var name: String? = null
+    var name: String? = null
+        get() = if (field == null) "".also { field = it } else field
 
     @SerializedName("ten_viet_tat")
-    private var shortName: String? = null
+    var shortName: String? = null
+        get() = if (field == null) "".also { field = it } else field
 
     @SerializedName("ds_phong_ban")
     var departments: ArrayList<Department>? = null
@@ -20,7 +23,7 @@ class Company : ExpandModel {
     @SerializedName("ds_don_vi_con")
     var childCompanies: ArrayList<Company>? = null
         get() = if (field == null) ArrayList<Company>().also { field = it } else field
-        private set
+        set
 
     @SerializedName("phong_ban")
     val department: Department? = null
@@ -44,36 +47,25 @@ class Company : ExpandModel {
     @SerializedName("don_vi_cha")
     var parentCompany: String? = null
         get() = if (field == null) "".also { field = it } else field
-        private set
+        set
 
     @SerializedName("nguoi_ky")
-    val signer: User? = null
+    var signer: User? = null
 
     @SerializedName("trang_thai")
-    val status = 0
+    var status = 0
 
     @SerializedName("thoi_gian_duyet")
     var approveTime: String? = null
         get() = if (field == null) "".also { field = it } else field
-        private set
+        set
 
     constructor()
+
     constructor(ten: String?) {
         name = ten
         shortName = ten
         id = ""
-    }
-
-    fun getId(): String {
-        return id ?: "".also { id = it }
-    }
-
-    fun getName(): String {
-        return name ?: "".also { name = it }
-    }
-
-    fun getShortName(): String {
-        return shortName ?: "".also { shortName = it }
     }
 
     class Result {

@@ -1,12 +1,12 @@
 package boilerplate.model.file
 
 import android.net.Uri
-import com.google.gson.annotations.SerializedName
 import boilerplate.data.remote.service.ApiUrl
 import boilerplate.model.ExpandModel
 import boilerplate.utils.ImageUtil.IMAGE_MAX_SIZE
 import boilerplate.utils.ImageUtil.IMAGE_THUMB_SIZE
 import boilerplate.utils.SystemUtil.SYSTEM_DELETE
+import com.google.gson.annotations.SerializedName
 import java.util.Locale
 
 open class AttachedFile : ExpandModel() {
@@ -119,13 +119,13 @@ open class AttachedFile : ExpandModel() {
         var title: String? = null
             get() = if (field == null) "".also { field = it } else field
 
-        val isPhieuDiemTam: Boolean
+        val isSurveyBreakfast: Boolean
             get() = if (title!!.length > 5) {
                 title!!.startsWith("[PĐT]")
             } else false
 
         val displayTitle: String
-            get() = if (isPhieuDiemTam) {
+            get() = if (isSurveyBreakfast) {
                 title!!.substring(5)
             } else {
                 title!!

@@ -12,6 +12,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.fragment.app.activityViewModels
 import boilerplate.R
 import boilerplate.base.BaseFragment
+import boilerplate.databinding.DialogBaseBinding
 import boilerplate.databinding.FragmentSettingBinding
 import boilerplate.ui.main.MainVM
 import boilerplate.ui.setting.SettingMenu.HOTLINE
@@ -21,9 +22,9 @@ import boilerplate.utils.ClickUtil
 import boilerplate.utils.StringUtil
 import boilerplate.utils.extension.loadImage
 import boilerplate.utils.extension.notNull
+import boilerplate.utils.extension.showDialog
 import boilerplate.utils.extension.showSnackBarSuccess
 import boilerplate.widget.customText.TextViewFont
-import boilerplate.widget.dialog.WarningDialog
 import boilerplate.widget.image.RoundedImageView
 import kotlin.properties.Delegates
 
@@ -90,7 +91,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding, MainVM>() {
     override fun onSubscribeObserver() {
     }
 
-    override fun registerOnClick() {
+    override fun registerEvent() {
     }
 
     override fun callApi() {
@@ -147,13 +148,22 @@ class SettingFragment : BaseFragment<FragmentSettingBinding, MainVM>() {
             }
 
             LOG_OUT -> {
-                WarningDialog.newInstance().show(
-                    childFragmentManager,
-                    R.string.logout,
-                    R.string.logout_description,
-                    R.string.logout,
-                    ClickUtil.onClick { }
-                )
+                showDialog(DialogBaseBinding.inflate(layoutInflater)) { b, dialog ->
+                    with(b) {
+                        tvTitle.setText(R.string.logout)
+                        btnConfirm.setText(R.string.logout)
+                        tvDescription.setText(R.string.logout_description)
+
+                        btnCancel.setOnClickListener(ClickUtil.onClick {
+                            dialog.dismiss()
+                        })
+
+                        btnConfirm.setOnClickListener(ClickUtil.onClick {
+                            dialog.dismiss()
+                            mViewModel.logout()
+                        })
+                    }
+                }
             }
 
             else -> {}

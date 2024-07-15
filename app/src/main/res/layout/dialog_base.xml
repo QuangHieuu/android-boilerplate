@@ -18,7 +18,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Giải tán nhóm" />
+        android:text="Giải tán nhóm" />
 
     <boilerplate.widget.customText.TextViewFont
         android:id="@+id/tv_description"
@@ -47,15 +47,15 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_cancel"
-        android:layout_width="@dimen/dp_135"
-        android:layout_height="0dp"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/dp_36"
+        android:layout_marginEnd="@dimen/dp_10"
         android:background="@drawable/bg_button_white"
         android:gravity="center"
         android:text="@string/no"
         android:textSize="@dimen/dp_14"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="3.2"
         app:layout_constraintEnd_toStartOf="@id/btn_confirm"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
@@ -63,15 +63,15 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_confirm"
-        android:layout_width="@dimen/dp_135"
-        android:layout_height="0dp"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/dp_36"
+        android:layout_marginStart="@dimen/dp_10"
         android:background="@drawable/bg_button_red"
         android:gravity="center"
         android:textColor="@color/colorWhite"
         android:textSize="@dimen/dp_14"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/btn_cancel"
-        app:layout_constraintDimensionRatio="3.2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/btn_cancel"
         app:layout_constraintTop_toTopOf="@id/btn_cancel"

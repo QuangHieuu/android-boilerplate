@@ -10,17 +10,20 @@ import boilerplate.data.local.sharedPrefs.SharedPrefsApi
 import boilerplate.data.remote.api.ApiRequest
 import boilerplate.data.remote.repository.auth.LoginRepository
 import boilerplate.data.remote.repository.auth.LoginRepositoryImpl
+import boilerplate.data.remote.repository.conversation.ConversationRepository
+import boilerplate.data.remote.repository.conversation.ConversationRepositoryImpl
 import org.koin.dsl.module
 
 val repositoryModule = module {
-    single { provideUserRepository(get()) }
+    single { provideUserRepository(get(), get()) }
     single { provideTokenRepository(get()) }
     single { provideServerRepository(get()) }
     single { providerLoginRepository(get()) }
+    single { providerConversationRepository(get()) }
 }
 
-fun provideUserRepository(share: SharedPrefsApi): UserRepository {
-    return UserRepositoryImpl(share)
+fun provideUserRepository(share: SharedPrefsApi, apiRequest: ApiRequest): UserRepository {
+    return UserRepositoryImpl(share, apiRequest)
 }
 
 fun provideTokenRepository(share: SharedPrefsApi): TokenRepository {
@@ -33,4 +36,8 @@ fun provideServerRepository(share: SharedPrefsApi): ServerRepository {
 
 fun providerLoginRepository(apiRequest: ApiRequest): LoginRepository {
     return LoginRepositoryImpl(apiRequest)
+}
+
+fun providerConversationRepository(apiRequest: ApiRequest): ConversationRepository {
+    return ConversationRepositoryImpl(apiRequest)
 }

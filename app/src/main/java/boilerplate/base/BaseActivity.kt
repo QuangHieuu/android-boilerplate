@@ -1,27 +1,24 @@
 package boilerplate.base
 
-import android.app.Dialog
 import android.graphics.Rect
 import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.Window
 import android.view.WindowManager
 import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.withCreated
 import androidx.viewbinding.ViewBinding
 import boilerplate.R
 import boilerplate.utils.extension.hideKeyboard
-import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.showSnackBarFail
 import boilerplate.utils.extension.statusBarHeight
 import boilerplate.widget.customText.EditTextFont
-import boilerplate.widget.loading.LoadingScreen
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import it.cpc.vn.permission.PermissionUtils
@@ -36,7 +33,6 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 
     private val compositeDisposable = CompositeDisposable()
 
-    private val loadingScreen: Dialog by lazy { LoadingScreen(this) }
     private val backPress by lazy {
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -62,17 +58,18 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
         )
 
         lifecycleScope.launch(Dispatchers.Main) {
-            val window: Window = window
-            val background =
-                ContextCompat.getDrawable(this@BaseActivity, R.drawable.bg_app)?.apply {
-                    val layerDrawable = mutate() as LayerDrawable
-                    layerDrawable.findDrawableByLayerId(R.id.bg_app_background).mutate()
-                    val height = window.statusBarHeight()
-                    layerDrawable.setLayerInsetTop(1, height)
-                }
+            lifecycle.withCreated {
+                val background =
+                    ContextCompat.getDrawable(this@BaseActivity, R.drawable.bg_app)?.apply {
+                        val layerDrawable = mutate() as LayerDrawable
+                        layerDrawable.findDrawableByLayerId(R.id.bg_app_background).mutate()
+                        val height = statusBarHeight()
+                        layerDrawable.setLayerInsetTop(1, height)
+                    }
 
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-            window.setBackgroundDrawable(background)
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+                window.setBackgroundDrawable(background)
+            }
         }
 
         PermissionUtils.initPermissionCheck()
@@ -87,9 +84,6 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 
     override fun onDestroy() {
         super.onDestroy()
-
-        loadingScreen.notNull { it.dismiss() }
-
         PermissionUtils.disposable()
     }
 
@@ -137,19 +131,13 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 
     private fun baseObserver() {
         with(mViewModel) {
-            loading.observe(this@BaseActivity) {
-                loadingScreen.notNull { dialog ->
-                    if (it) {
-                        dialog.show()
-                    } else {
-                        dialog.dismiss()
-                    }
-                }
-            }
             inValidaLogin.observe(this@BaseActivity) {
                 if (it) {
                     binding.root.showSnackBarFail(getString(R.string.error_auth_wrong))
                 }
+            }
+            error.observe(this@BaseActivity) {
+                binding.root.showSnackBarFail(it)
             }
         }
     }

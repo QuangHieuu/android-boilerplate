@@ -8,11 +8,12 @@ import boilerplate.data.local.repository.user.TokenRepository
 import boilerplate.data.local.repository.user.UserRepository
 import boilerplate.data.remote.api.ApiObservable
 import boilerplate.data.remote.repository.auth.LoginRepository
+import boilerplate.model.device.Device
 import boilerplate.model.user.User
 import boilerplate.utils.extension.BaseSchedulerProvider
-import boilerplate.utils.extension.loading
 import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.withScheduler
+import com.google.firebase.messaging.FirebaseMessaging
 
 class StartVM(
     private val schedulerProvider: BaseSchedulerProvider,
@@ -24,7 +25,8 @@ class StartVM(
 
     companion object {
         const val STATE_LOGIN = 0
-        const val STATE_AUTO_LOGIN = 1
+        const val STATE_CHECK_LOGIN = 1
+        const val STATE_AUTO_LOGIN = 2
     }
 
     private val _state by lazy { MutableLiveData(STATE_AUTO_LOGIN) }
@@ -52,23 +54,18 @@ class StartVM(
         setLoading(true)
         launchDisposable {
             loginServer.postUserLogin(userName, password)
-                .loading(_loading)
                 .withScheduler(schedulerProvider)
                 .subscribeWith(ApiObservable.apiCallback(success = {
                     userImpl.saveUseLogin(userName, password)
                     tokenImpl.saveToken(it.tokenType!!, it.accessToken!!)
-
-                    _state.postValue(STATE_AUTO_LOGIN)
+                    _state.postValue(STATE_CHECK_LOGIN)
                 }, fail = {
                     setLoading(false)
                 }))
         }
     }
 
-    fun getMe(showLoading: Boolean) {
-        if (showLoading) {
-            setLoading(true)
-        }
+    fun getMe() {
         launchDisposable {
             loginServer.getMe()
                 .withScheduler(schedulerProvider)
@@ -76,6 +73,7 @@ class StartVM(
                     res.result.notNull {
                         userImpl.saveUser(it)
                         _user.postValue(it)
+                        registerDeviceId(it)
                     }
                 }, fail = {
                     setLoading(false)
@@ -96,5 +94,30 @@ class StartVM(
 
     fun setServer(server: String) {
         serverImpl.saveServer(server)
+    }
+
+    private fun registerDeviceId(user: User) {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isComplete) {
+                task.result.notNull { currentToken ->
+                    val device: Device = Device().apply {
+                        id = user.id
+                        deviceToken = currentToken
+                        deviceType = 0
+                    }
+                    launchDisposable {
+                        loginServer.postRegisterDevice(device)
+                            .withScheduler(schedulerProvider)
+                            .subscribeWith(ApiObservable.apiCallback(success = {
+                                it.result.notNull { device ->
+                                    if (!device.deviceId.isNullOrEmpty()) {
+                                        tokenImpl.saveDeviceId(device.id!!)
+                                    }
+                                }
+                            }))
+                    }
+                }
+            }
+        }
     }
 }

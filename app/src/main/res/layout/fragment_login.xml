@@ -6,12 +6,6 @@
     android:layout_height="match_parent"
     tools:ignore="SpUsage">
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="fitXY"
-        app:srcCompat="@drawable/bg_init_screen" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/ctl_container"
         android:layout_width="match_parent"
@@ -19,18 +13,18 @@
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/img_app_icon"
-            android:layout_width="@dimen/dp_200"
+            android:layout_width="@dimen/dp_80"
             android:layout_height="0dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             app:layout_constraintBottom_toTopOf="@id/tv_version"
-            app:layout_constraintDimensionRatio="3:1"
+            app:layout_constraintDimensionRatio="1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1"
             app:layout_constraintVertical_chainStyle="packed"
-            app:srcCompat="@drawable/ic_app_logo" />
+            app:srcCompat="@mipmap/ic_app_launcher" />
 
         <boilerplate.widget.customText.TextViewFont
             android:id="@+id/tv_version"

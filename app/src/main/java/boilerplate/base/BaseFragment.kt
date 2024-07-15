@@ -1,5 +1,6 @@
 package boilerplate.base
 
+import android.app.Dialog
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -12,16 +13,20 @@ import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
+import boilerplate.utils.extension.notNull
+import boilerplate.widget.loading.LoadingScreen
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.coroutines.launch
 import java.lang.reflect.ParameterizedType
 
 abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
-    private val mDisposable: CompositeDisposable by lazy { CompositeDisposable() }
     private var _binding: AC? = null
     protected val binding: AC
         get() = checkNotNull(_binding) { "View not create" }
+
+    private val loadingScreen: Dialog by lazy { LoadingScreen(requireContext()) }
+    private val mDisposable: CompositeDisposable by lazy { CompositeDisposable() }
 
     protected abstract val mViewModel: VM
 
@@ -50,12 +55,27 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
 
         initialize()
         onSubscribeObserver()
-        registerOnClick()
+        registerEvent()
         callApi()
+
+        with(mViewModel) {
+            loading.observe(viewLifecycleOwner) {
+                loadingScreen.notNull { dialog ->
+                    if (it) {
+                        dialog.show()
+                    } else {
+                        dialog.dismiss()
+                    }
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {
         _binding = null
+
+        loadingScreen.notNull { it.dismiss() }
+
         super.onDestroyView()
         clearAdjustSoftInput()
         mDisposable.dispose()
@@ -66,7 +86,7 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
 
     protected abstract fun onSubscribeObserver()
 
-    protected abstract fun registerOnClick()
+    protected abstract fun registerEvent()
 
     protected abstract fun callApi()
 
@@ -113,7 +133,7 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
                 requireActivity().window
                     .setSoftInputMode(
                         WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE
-                            or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+                                or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
                     )
             }
         }

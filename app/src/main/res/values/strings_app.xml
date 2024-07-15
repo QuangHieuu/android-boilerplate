@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name">boilerplate</string>
+    <string name="app_name">EOffice</string>
     <string name="app_name_full">GreenGlobal Office</string>
     <string name="app_short_name">GreenGlobal</string>
-    <string name="app_full_name">DOffice 1.0 - Phần mềm văn phòng số</string>
+    <string name="app_full_name">EOffice 1.0 - Phần mềm văn phòng số</string>
     <string name="app_description">NỀN TẢNG VĂN PHÒNG SỐ</string>
-    <string name="copy_right"></string>
+    <string name="copy_right">Copyright © 2024 Green Global. All Rights Reserved.</string>
     <string name="copy_build_version">B1.0</string>
 </resources>

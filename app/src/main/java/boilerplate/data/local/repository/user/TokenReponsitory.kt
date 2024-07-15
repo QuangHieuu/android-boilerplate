@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import boilerplate.data.local.sharedPrefs.SharedPrefsApi
 import boilerplate.data.local.sharedPrefs.SharedPrefsKey.ACCESS_ONLY_TOKEN
 import boilerplate.data.local.sharedPrefs.SharedPrefsKey.ACCESS_TOKEN
+import boilerplate.data.local.sharedPrefs.SharedPrefsKey.DEVICE_ID
+import boilerplate.data.local.sharedPrefs.SharedPrefsKey.DEVICE_TOKEN
 
 interface TokenRepository {
     fun saveToken(type: String, token: String)
@@ -16,6 +18,14 @@ interface TokenRepository {
     fun getTokenLiveData(): LiveData<String>
 
     fun wipeToken()
+
+    fun saveConnectedId(id: String)
+
+    fun getConnectedId(): String
+
+    fun saveDeviceId(id: String);
+
+    fun getDeviceId(): String
 }
 
 class TokenRepositoryImpl(
@@ -23,6 +33,7 @@ class TokenRepositoryImpl(
 ) : TokenRepository {
 
     private val _token by lazy { MutableLiveData(getToken()) }
+    private var _connectionId = ""
 
     override fun saveToken(type: String, token: String) {
         val fullToken = String.format("%s %s", type, token)
@@ -41,7 +52,22 @@ class TokenRepositoryImpl(
     override fun wipeToken() {
         share.clearKey(ACCESS_TOKEN)
         share.clearKey(ACCESS_ONLY_TOKEN)
+        share.clearKey(DEVICE_TOKEN)
 
         _token.postValue("")
+    }
+
+    override fun saveConnectedId(id: String) {
+        _connectionId = id
+    }
+
+    override fun getConnectedId(): String = _connectionId
+
+    override fun saveDeviceId(id: String) {
+        share.put(DEVICE_ID, id)
+    }
+
+    override fun getDeviceId(): String {
+        return share.get(DEVICE_ID, String::class.java)
     }
 }

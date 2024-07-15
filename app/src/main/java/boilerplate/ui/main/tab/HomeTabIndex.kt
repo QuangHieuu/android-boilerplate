@@ -3,6 +3,7 @@ package boilerplate.ui.main.tab
 import android.util.Pair
 import androidx.fragment.app.Fragment
 import boilerplate.R
+import boilerplate.ui.conversation.ConversationFragment
 import boilerplate.ui.empty.EmptyFragment
 import boilerplate.ui.setting.SettingFragment
 
@@ -90,7 +91,7 @@ object HomeTabIndex {
         fragments.add(Pair(ID_HOME_DASHBOARD, EmptyFragment.newInstance()))
         fragments.add(Pair(ID_CALENDAR_TAB, EmptyFragment.newInstance()))
         fragments.add(Pair(ID_CONTACT_TAB, EmptyFragment.newInstance()))
-        fragments.add(Pair(ID_MESSAGE_TAB, EmptyFragment.newInstance()))
+        fragments.add(Pair(ID_MESSAGE_TAB, ConversationFragment.newInstance()))
         fragments.add(Pair(ID_SETTING_TAB, SettingFragment.newInstance()))
         return fragments
     }

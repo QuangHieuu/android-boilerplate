@@ -6,6 +6,7 @@ import boilerplate.data.local.sharedPrefs.SharedPrefsApi
 import boilerplate.data.local.sharedPrefs.SharedPrefsImpl
 import boilerplate.data.local.sharedPrefs.SharedPrefsKey
 import boilerplate.data.remote.service.ApiUrl
+import boilerplate.service.signalr.SignalRReceiver
 import okhttp3.Cache
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
@@ -14,6 +15,7 @@ val contextRequireModule = module {
     single { provideResources(androidApplication()) }
     single { provideSharedPrefsApi(get()) }
     single { provideOkHttpCache(androidApplication()) }
+    single { provideSignalRReceiver(androidApplication()) }
 }
 
 fun provideSharedPrefsApi(app: Application): SharedPrefsApi {
@@ -31,4 +33,8 @@ fun provideOkHttpCache(app: Application): Cache {
 
 fun provideResources(app: Application): Resources {
     return app.resources
+}
+
+fun provideSignalRReceiver(app: Application): SignalRReceiver {
+    return SignalRReceiver(app)
 }

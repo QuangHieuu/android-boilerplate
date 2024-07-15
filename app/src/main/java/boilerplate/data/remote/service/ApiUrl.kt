@@ -23,8 +23,9 @@ object ApiUrl {
     var HOST_SIGN_IN: String = ""
     var HOST_MEETING_CALENDAR: String = ""
     var HOST_SURVEY: String = ""
+
+    @JvmField
     var HOST_FILE_PREVIEW: String = ""
-    var HOST_IMAGE: String = ""
 
     fun setHost(host: String) {
         when (ApiServer.fromType(host)) {
@@ -36,18 +37,16 @@ object ApiUrl {
                 HOST_NOTIFICATION = "https://api-push-darsitec.dn.greenglobal.vn/"
                 HOST_MEETING_CALENDAR = "https://api-meeting-darsitec.dn.greenglobal.vn/"
                 HOST_SURVEY = "https://api-darsitec.dn.greenglobal.vn/"
-                HOST_IMAGE = "https://api-file-darsitec.dn.greenglobal.vn/"
             }
 
             LIVE -> {
-                HOST_SIGN_IN = "https://sso.thongtintinhieudsdn.vn/"
-                HOST_MAIN = "https://api-cv.thongtintinhieudsdn.vn/"
-                HOST_CHAT = "https://api-chat.thongtintinhieudsdn.vn/"
-                HOST_FILE = "https://api-file.thongtintinhieudsdn.vn/"
-                HOST_NOTIFICATION = "https://api-push.thongtintinhieudsdn.vn/"
-                HOST_MEETING_CALENDAR = "https://api-meeting.thongtintinhieudsdn.vn/"
-                HOST_SURVEY = "https://api-survey.thongtintinhieudsdn.vn/"
-                HOST_IMAGE = "https://api-file.thongtintinhieudsdn.vn/"
+                HOST_SIGN_IN = "https://api-sso.greenglobal.vn/"
+                HOST_MAIN = "https://api-eoffice.greenglobal.vn/"
+                HOST_CHAT = "https://api-chat.greenglobal.vn/"
+                HOST_FILE = "https://api-file.greenglobal.vn/"
+                HOST_NOTIFICATION = "https://api-push.greenglobal.vn/"
+                HOST_MEETING_CALENDAR = "https://api-meeting.greenglobal.vn/"
+                HOST_SURVEY = "https://api-survey.greenglobal.vn/"
             }
 
             STAGING -> {

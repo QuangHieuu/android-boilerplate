@@ -20,7 +20,7 @@ class EmptyFragment : BaseFragment<ActivityEmptyBinding, MainVM>() {
     override fun onSubscribeObserver() {
     }
 
-    override fun registerOnClick() {
+    override fun registerEvent() {
         with(binding) {
         }
     }

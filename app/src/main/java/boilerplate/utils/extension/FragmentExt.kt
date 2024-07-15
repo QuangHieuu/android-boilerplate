@@ -1,6 +1,7 @@
 package boilerplate.utils.extension
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
@@ -8,6 +9,7 @@ import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import androidx.viewbinding.ViewBinding
 import boilerplate.R
 import kotlin.reflect.KClass
 
@@ -125,4 +127,16 @@ fun <T : Activity> Fragment.goTo(
     if (bundle != null) intent.putExtra(boilerplate.constant.Constants.EXTRA_ARGS, bundle)
     if (parcel != null) intent.putExtra(boilerplate.constant.Constants.EXTRA_ARGS, parcel)
     startActivity(intent)
+}
+
+fun <VB : ViewBinding> Fragment.showDialog(
+    binding: VB,
+    viewInit: (v: VB, dialog: AlertDialog) -> Unit
+) {
+    val dialogBuilder = AlertDialog.Builder(context)
+        .apply { setCancelable(false) }
+        .also { it.setView(binding.root) }
+    val dialog = dialogBuilder.create()
+    viewInit(binding, dialog)
+    dialog.show()
 }

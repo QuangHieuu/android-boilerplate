@@ -6,9 +6,9 @@ class AutoFactory extends DefaultTask {
 class DimensionFactory extends DefaultTask {
 
     @Input
-    int[] dimens = [0, 320, 360, 384, 390, 400, 411, 420, 433, 450, 480, 533, 540, 561, 600, 640, 673, 681, 720, 768, 800, 840, 886, 960, 1024, 1080, 1280, 1366, 1440, 1600, 1920, 2560, 3840];
+    int[] dimens = [0, 320, 360, 384, 390, 400, 411, 420, 433, 450, 480, 533, 540, 561, 600, 640, 673, 681, 720, 768, 800, 840, 886, 960, 1024, 1080, 1280, 1366, 1440, 1600, 1920, 2560, 3840]
     @Input
-    int fromDimension = 360;
+    int fromDimension = 360
     @Input
     double positiveMaxDP = 600
     @Input
@@ -16,57 +16,64 @@ class DimensionFactory extends DefaultTask {
     @Input
     double positiveMaxSP = 60
 
+    @Input
+    int forTablet = 480
+    @Input
+    int fromTablet = 640
+
     @OutputDirectory
     String resFolder = project.getProjectDir().getPath() + "/src/main/res/"
 
     @TaskAction
     def create() {
-        autoCreateDimen();
+        autoCreateDimen()
     }
 
     def autoCreateDimen() {
         for (int dimen : dimens) {
-            String folderName = "";
-            String dimenFileName = "";
+            String folderName = ""
+            String dimenFileName = ""
             if (dimen == 0) {
                 dimen = fromDimension
                 folderName = "values"
             } else {
-                folderName = "values-sw" + (int) dimen + "dp";
+                folderName = "values-sw" + (int) dimen + "dp"
             }
             String folder = resFolder + folderName
-            String fileName = folder + "/dimens.xml";
-            new File(folder).mkdir();
-            new File(fileName).createNewFile();
-            PrintWriter printWriter = new PrintWriter(fileName);
-            printWriter.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-            printWriter.println("<resources>");
-            printWriter.println(dimenFileName);
+            String fileName = folder + "/dimens.xml"
+            new File(folder).mkdir()
+            new File(fileName).createNewFile()
+            PrintWriter printWriter = new PrintWriter(fileName)
+            printWriter.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>")
+            printWriter.println("<resources>")
+            printWriter.println(dimenFileName)
 
-            double ratio = dimen / fromDimension;
-            double haftDp = ratio * 0.5;
+            double div = fromDimension
+            if (dimen > forTablet) div = fromTablet
+            double ratio = dimen / div
+            double haftDp = ratio * 0.5
 
-            printWriter.printf("\t<dimen name=\"dp_0_5\">%.2fdp</dimen>\r\n", haftDp);
+            printWriter.printf("\t<dimen name=\"dp_0_5\">%.2fdp</dimen>\r\n", haftDp)
             for (int i = 1; i <= positiveMaxDP; i++) {
-                double dp = ratio * i;
-                printWriter.printf("\t<dimen name=\"dp_%d\">%.2fdp</dimen>\r\n", i, dp);
-                printWriter.printf("\t<dimen name=\"dp_%d_5\">%.2fdp</dimen>\r\n", i, dp + haftDp);
+                double dp = ratio * i
+                printWriter.printf("\t<dimen name=\"dp_%d\">%.2fdp</dimen>\r\n", i, dp)
+                printWriter.printf("\t<dimen name=\"dp_%d_5\">%.2fdp</dimen>\r\n", i, dp + haftDp)
             }
 
-            printWriter.printf("\t<dimen name=\"minus_dp_0_5\">%.2fdp</dimen>\r\n", -haftDp);
+            printWriter.printf("\t<dimen name=\"minus_dp_0_5\">%.2fdp</dimen>\r\n", -haftDp)
             for (int i = 1; i <= negativeMaxDP; i++) {
-                double dp = ratio * i;
-                printWriter.printf("\t<dimen name=\"minus_dp_%d\">%.2fdp</dimen>\r\n", i, -dp);
-                printWriter.printf("\t<dimen name=\"minus_dp_%d_5\">%.2fdp</dimen>\r\n", i, -dp - haftDp);
+                double dp = ratio * i
+                printWriter.printf("\t<dimen name=\"minus_dp_%d\">%.2fdp</dimen>\r\n", i, -dp)
+                printWriter.printf("\t<dimen name=\"minus_dp_%d_5\">%.2fdp</dimen>\r\n", i, -dp - haftDp)
             }
 
             for (int i = 1; i <= positiveMaxSP; i++) {
-                double sp = ratio * i;
-                printWriter.printf("\t<dimen name=\"sp_%d\">%.2fsp</dimen>\r\n", i, sp);
+                double sp = ratio * i
+                printWriter.printf("\t<dimen name=\"sp_%d\">%.2fsp</dimen>\r\n", i, sp)
             }
 
-            printWriter.println("</resources>");
-            printWriter.close();
+            printWriter.println("</resources>")
+            printWriter.close()
         }
     }
 }
@@ -74,8 +81,10 @@ class DimensionFactory extends DefaultTask {
 task createDimension(type: DimensionFactory) {}
 
 createDimension {
-    dimens = [0, 320, 360, 384, 390, 400, 411, 420, 433, 450, 480, 533, 540, 561, 600, 640, 673, 681, 720, 768, 800, 840, 886, 960, 1024, 1080, 1280, 1366, 1440, 1600, 1920, 2560, 3840];
-    fromDimension = 360
+    dimens = [0, 120, 160, 320, 480, 640, 720]
+    forTablet = 480
+    fromTablet = 640
+    fromDimension = 320
     positiveMaxDP = 600
     negativeMaxDP = 600
     positiveMaxSP = 60

@@ -7,16 +7,15 @@ import android.text.method.PasswordTransformationMethod
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.RadioButton
-import android.widget.RadioGroup
 import androidx.fragment.app.activityViewModels
 import boilerplate.BuildConfig
 import boilerplate.R
 import boilerplate.base.BaseFragment
 import boilerplate.data.remote.api.ApiServer
+import boilerplate.databinding.DialogChosenServerBinding
 import boilerplate.databinding.FragmentLoginBinding
 import boilerplate.utils.ClickUtil
 import boilerplate.utils.extension.showDialog
-import boilerplate.widget.customText.TextViewFont
 
 class LoginFragment : BaseFragment<FragmentLoginBinding, StartVM>() {
     override val mViewModel: StartVM by activityViewModels()
@@ -77,7 +76,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding, StartVM>() {
         }
     }
 
-    override fun registerOnClick() {
+    override fun registerEvent() {
         with(binding) {
 
             btnLogin.setOnClickListener(ClickUtil.onClick {
@@ -166,16 +165,12 @@ class LoginFragment : BaseFragment<FragmentLoginBinding, StartVM>() {
     }
 
     private fun showServerConfig() {
-        context?.showDialog(R.layout.dialog_radio_group) {
-            with(it) {
-                val tvConfirm: TextViewFont = findViewById(R.id.tv_confirm)
-                val radioHostGroup = findViewById<RadioGroup>(R.id.radio_group)
-
+        showDialog(DialogChosenServerBinding.inflate(layoutInflater)) { b, dialog ->
+            with(b) {
                 val host: String = mViewModel.getServer()
-
                 for (server in ApiServer.listServer()) {
                     val index: Int = ApiServer.listServer().indexOf(server)
-                    radioHostGroup.addView(RadioButton(context).apply {
+                    radioGroup.addView(RadioButton(context).apply {
                         isChecked = server.serverName == host
                         text = server.displayName
                         id = index
@@ -183,10 +178,11 @@ class LoginFragment : BaseFragment<FragmentLoginBinding, StartVM>() {
                     })
                 }
                 tvConfirm.setOnClickListener { v ->
-                    val selectedId = radioHostGroup.checkedRadioButtonId
-                    val radioButton = findViewById<RadioButton>(selectedId)
+                    val selectedId = radioGroup.checkedRadioButtonId
+                    val radioButton = radioGroup.findViewById<RadioButton>(selectedId)
                     val server = radioButton.tag.toString()
                     mViewModel.setServer(server)
+                    dialog.dismiss()
                 }
             }
         }

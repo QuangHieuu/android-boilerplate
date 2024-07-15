@@ -41,6 +41,10 @@ class StartActivity : BaseActivity<ActivityStartBinding, StartVM>() {
         with(mViewModel) {
             state.observe(this@StartActivity) {
                 when (it) {
+                    StartVM.STATE_CHECK_LOGIN -> {
+                        mViewModel.getMe()
+                    }
+
                     StartVM.STATE_LOGIN -> {
                         with(binding.viewAutoLogin) {
                             frameAutoLogin.visibility = View.GONE
@@ -60,7 +64,7 @@ class StartActivity : BaseActivity<ActivityStartBinding, StartVM>() {
                                     frameAutoLogin.visibility = View.VISIBLE
                                     viewLoading.pulseView.start()
                                 }
-                                mViewModel.getMe(false)
+                                mViewModel.getMe()
                             }
                             delay(200)
                             splashScreen.setKeepOnScreenCondition { false }
@@ -73,7 +77,7 @@ class StartActivity : BaseActivity<ActivityStartBinding, StartVM>() {
                 lifecycleScope.launch(Dispatchers.Main) {
                     delay(1000)
                     it.notNull {
-                        if (state.value == StartVM.STATE_AUTO_LOGIN) {
+                        if (state.value != StartVM.STATE_LOGIN) {
                             goTo(MainActivity::class).also { finish() }
                         }
                     }
@@ -99,7 +103,7 @@ class StartActivity : BaseActivity<ActivityStartBinding, StartVM>() {
             R.id.frame_init_contain,
             fragment,
             animateType = AnimateType.FADE,
-            addToBackStack = true
+            addToBackStack = false
         )
     }
 }

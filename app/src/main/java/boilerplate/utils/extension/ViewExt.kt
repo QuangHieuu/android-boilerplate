@@ -1,12 +1,14 @@
 package boilerplate.utils.extension
 
-import android.app.AlertDialog
+import android.annotation.SuppressLint
+import android.app.ActivityManager
+import android.app.ActivityManager.RunningAppProcessInfo
 import android.content.Context
-import android.graphics.Rect
+import android.content.res.Configuration
 import android.graphics.drawable.Drawable
-import android.view.LayoutInflater
+import android.os.Build
 import android.view.View
-import android.view.Window
+import android.view.WindowInsets
 import android.view.inputmethod.InputMethodManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -15,10 +17,11 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.annotation.ColorRes
-import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import boilerplate.R
+import boilerplate.constant.AccountManager
 import boilerplate.constant.Constants.KEY_AUTH
 import boilerplate.utils.InternetManager
 import com.bumptech.glide.Glide
@@ -34,8 +37,9 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.ObservableOnSubscribe
 import java.util.concurrent.TimeUnit
 
-fun View.show(isShow: Boolean = true) {
-    visibility = if (isShow) View.VISIBLE else View.INVISIBLE
+
+fun View.show() {
+    visibility = View.VISIBLE
 }
 
 fun View.hide() {
@@ -147,7 +151,7 @@ fun EditText.showKeyboard() {
     }
 }
 
-fun ImageView.loadImage(url: String?, accessToken: String? = null) {
+fun ImageView.loadImage(url: String?, accessToken: String? = AccountManager.getToken()) {
     val context = context
     val glideUrl = GlideUrl(url, accessToken?.let {
         LazyHeaders.Builder()
@@ -173,16 +177,48 @@ fun ImageView.loadImage(url: String?, accessToken: String? = null) {
         })
 }
 
-fun Context.showDialog(@LayoutRes viewRes: Int, viewInit: (v: View) -> Unit) {
-    val view = LayoutInflater.from(this).inflate(viewRes, null).also { viewInit(it) }
-    val dialogBuilder = AlertDialog.Builder(this).apply {
-        setView(view)
-        setCancelable(false)
+@SuppressLint("InternalInsetResource", "DiscouragedApi")
+fun AppCompatActivity.statusBarHeight(): Int {
+    val resourceId: Int = getResources().getIdentifier("status_bar_height", "dimen", "android")
+    if (resourceId > 0) {
+        val statusBarHeight: Int = getResources().getDimensionPixelSize(resourceId)
+        return statusBarHeight
     }
-    val dialog = dialogBuilder.create()
-    dialog.show()
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        val windowInsets: WindowInsets = window.decorView.getRootWindowInsets()
+        return windowInsets.getInsets(WindowInsets.Type.statusBars()).top
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        val windowInsets: WindowInsets = window.decorView.getRootWindowInsets()
+        val displayCutout = windowInsets.displayCutout
+        if (displayCutout != null) {
+            return displayCutout.safeInsetTop
+        }
+        return 0
+    } else {
+        val decorView: View = window.decorView
+        val insets = decorView.rootWindowInsets
+        if (insets != null) {
+            return insets.systemWindowInsetTop
+        }
+    }
+    return 0
 }
 
-fun Window.statusBarHeight(): Int {
-    return Rect().apply { decorView.getWindowVisibleDisplayFrame(this) }.top
+fun Context.isAppInBackground(): Boolean {
+    var isInBackground = true
+    val runningProcesses =
+        (getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).runningAppProcesses
+    for (processInfo in runningProcesses) {
+        if (processInfo.importance == RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+            for (activeProcess in processInfo.pkgList) {
+                if (activeProcess == packageName) {
+                    isInBackground = false
+                }
+            }
+        }
+    }
+    return isInBackground
 }
+
+fun Context.isTablet(): Boolean = Configuration.SCREENLAYOUT_SIZE_LARGE <=
+        (resources.configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK)

@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "1021117971571",
-    "project_id": "darsitec-eoffice",
-    "storage_bucket": "darsitec-eoffice.appspot.com"
+    "project_number": "118940776531",
+    "project_id": "greenglobal-eoffice",
+    "storage_bucket": "greenglobal-eoffice.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1021117971571:android:8f4085ffb0c53833ff3e06",
+        "mobilesdk_app_id": "1:118940776531:android:1ef23be5b6461ea79f6ea6",
         "android_client_info": {
-          "package_name": "darsitec.eoffice"
+          "package_name": "com.greenglobal.eoffice"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAVL_uS1nypgZoN1EEf2gy2vHb5BWgwjlM"
+          "current_key": "AIzaSyBQCX329gii5LJlQkxsprBsqFRf31jGxws"
         }
       ],
       "services": {

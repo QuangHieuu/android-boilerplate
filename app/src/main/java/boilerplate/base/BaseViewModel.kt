@@ -1,11 +1,14 @@
 package boilerplate.base
 
+import android.content.res.Resources
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.gson.Gson
+import boilerplate.R
 import boilerplate.data.remote.api.ApiObservable
 import boilerplate.data.remote.api.OnApiCallBack
+import boilerplate.utils.InternetManager
+import com.google.gson.Gson
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.coroutines.CoroutineScope
@@ -26,6 +29,8 @@ abstract class BaseViewModel() : ViewModel() {
     val inValidaLogin: LiveData<Boolean> = _inValidLogin
     protected val _inValidToken by lazy { MutableLiveData<Boolean>() }
     val inValidaToken: LiveData<Boolean> = _inValidToken
+    protected val _error by lazy { MutableLiveData<String>() }
+    val error = _error
 
     /**
      * This is the job for all coroutines started by this ViewModel.
@@ -57,13 +62,13 @@ abstract class BaseViewModel() : ViewModel() {
             }
 
             override fun onServerError(errorCode: Int, api: String, showError: Boolean) {
-//                if (errorCode >= 500) {
+                if (errorCode >= 500) {
 //                    Firebase.reportServerError(this, api, AccountManager.getUsername(this))
-//                    return
-//                }
-//                if (showError && NetworkUtil.isNetworkConnected(this)) {
-//                    ViewUtil.showToastFail(this, getString(R.string.generalError))
-//                }
+                    return
+                }
+                if (showError && InternetManager.isConnected()) {
+                    _error.postValue(Resources.getSystem().getString(R.string.error_general))
+                }
             }
         }, gson)
     }
