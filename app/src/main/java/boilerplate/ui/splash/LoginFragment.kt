@@ -18,7 +18,7 @@ import boilerplate.utils.ClickUtil
 import boilerplate.utils.extension.showDialog
 
 class LoginFragment : BaseFragment<FragmentLoginBinding, StartVM>() {
-    override val mViewModel: StartVM by activityViewModels()
+    override val _viewModel: StartVM by activityViewModels()
 
     companion object {
         fun newInstance(): LoginFragment {
@@ -35,7 +35,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding, StartVM>() {
     }
 
     override fun onSubscribeObserver() {
-        with(mViewModel) {
+        with(_viewModel) {
             val name: String? = userName.value
             val pass: String? = password.value
 
@@ -82,7 +82,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding, StartVM>() {
             btnLogin.setOnClickListener(ClickUtil.onClick {
                 val username: String = edtUsername.editableText.toString()
                 val password: String = edtPassword.editableText.toString()
-                mViewModel.postLogin(username, password)
+                _viewModel.postLogin(username, password)
             })
 
             imgClearUsername.setOnClickListener(ClickUtil.onClick {
@@ -109,7 +109,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding, StartVM>() {
                 }
 
                 override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                    mViewModel.inputUserName(charSequence.toString())
+                    _viewModel.inputUserName(charSequence.toString())
                 }
 
                 override fun afterTextChanged(editable: Editable) {
@@ -121,7 +121,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding, StartVM>() {
                 }
 
                 override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {
-                    mViewModel.inputPassword(s.toString())
+                    _viewModel.inputPassword(s.toString())
                 }
 
                 override fun afterTextChanged(editable: Editable) {
@@ -167,7 +167,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding, StartVM>() {
     private fun showServerConfig() {
         showDialog(DialogChosenServerBinding.inflate(layoutInflater)) { b, dialog ->
             with(b) {
-                val host: String = mViewModel.getServer()
+                val host: String = _viewModel.getServer()
                 for (server in ApiServer.listServer()) {
                     val index: Int = ApiServer.listServer().indexOf(server)
                     radioGroup.addView(RadioButton(context).apply {
@@ -181,7 +181,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding, StartVM>() {
                     val selectedId = radioGroup.checkedRadioButtonId
                     val radioButton = radioGroup.findViewById<RadioButton>(selectedId)
                     val server = radioButton.tag.toString()
-                    mViewModel.setServer(server)
+                    _viewModel.setServer(server)
                     dialog.dismiss()
                 }
             }

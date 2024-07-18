@@ -49,10 +49,14 @@ abstract class BaseViewModel() : ViewModel() {
         CoroutineScope(Dispatchers.Main + viewModelJob as Job)
     }
 
-    private val compositeDisposable = CompositeDisposable()
+    private val _disposable = CompositeDisposable()
 
     private fun setApiCallback(gson: Gson) {
         ApiObservable.setServerResponseListener(object : OnApiCallBack {
+            override fun notInternet() {
+                _error.postValue(Resources.getSystem().getString(R.string.error_no_connection))
+            }
+
             override fun invalidLogin() {
                 _inValidLogin.postValue(true)
             }
@@ -74,7 +78,11 @@ abstract class BaseViewModel() : ViewModel() {
     }
 
     protected fun launchDisposable(job: () -> Disposable) {
-        compositeDisposable.add(job())
+        _disposable.add(job())
+    }
+
+    protected fun launchDisposable(vararg job: Disposable) {
+        _disposable.addAll(*job)
     }
 
     fun setLoading(boolean: Boolean) {
@@ -83,7 +91,7 @@ abstract class BaseViewModel() : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        compositeDisposable.clear()
+        _disposable.clear()
         if (viewModelScope != null) {
             viewModelJob?.cancel()
         }

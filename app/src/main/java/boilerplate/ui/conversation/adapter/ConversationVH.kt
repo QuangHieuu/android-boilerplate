@@ -29,11 +29,11 @@ import com.daimajia.swipe.SwipeLayout
 import com.daimajia.swipe.implments.SwipeItemRecyclerMangerImpl
 
 class ConversationVH(
-    private val binding: ItemConversationBinding,
+    private val _binding: ItemConversationBinding,
     private val _sm: SwipeItemRecyclerMangerImpl?,
     private val mListListener: ConversationAdapter.SimpleEvent,
-    private val _context: Context = binding.root.context
-) : RecyclerView.ViewHolder(binding.root) {
+    private val _context: Context = _binding.root.context
+) : RecyclerView.ViewHolder(_binding.root) {
 
     private val _imgSize: Int
     private val _imgSizeSingle: Int
@@ -47,7 +47,7 @@ class ConversationVH(
 
     init {
         _sm.notNull {
-            binding.swipeLayout.addSwipeListener(object : SimpleSwipeListener() {
+            _binding.swipeLayout.addSwipeListener(object : SimpleSwipeListener() {
                 override fun onStartOpen(layout: SwipeLayout) {
                     it.closeAllExcept(layout)
                 }
@@ -62,7 +62,7 @@ class ConversationVH(
         _readBackground = ContextCompat.getColor(_context, R.color.colorWhite)
         _unReadBackground = ContextCompat.getColor(_context, R.color.color_conversation_unread)
 
-        with(binding) {
+        with(_binding) {
             rlConversationItem.setOnClickListener(ClickUtil.onClick {
                 _conversation?.let { con -> mListListener.onItemClick(con) }
             })
@@ -94,11 +94,11 @@ class ConversationVH(
         val isOneUser = size == 1
         var unRead = 0
 
-        binding.swipeLayout.isSwipeEnabled = !con.isMyCloud
+        _binding.swipeLayout.isSwipeEnabled = !con.isMyCloud
 
         val lastActive: String = DateTimeUtil.convertToTextTimePast(con.lastActive)
 
-        binding.tvLastActive.apply {
+        _binding.tvLastActive.apply {
             show()
             text = lastActive
         }
@@ -106,7 +106,7 @@ class ConversationVH(
         if (con.isMyCloud) {
             myCloud()
         } else {
-            binding.frameUserOnline.apply { if (isGroup) gone() else show() }
+            _binding.frameUserOnline.apply { if (isGroup) gone() else show() }
             val builder = StringBuilder(if (isGroup) con.conversationName else "")
 
             var needCreateName = builder.toString().isEmpty()
@@ -166,22 +166,22 @@ class ConversationVH(
                         onlyContainMe = false
                         builder.append(user.user.name)
                         addSingleAvatar().loadImage(user.user.getAvatar(true))
-                        binding.frameUserOnline.isEnabled = user.user.isOnline()
+                        _binding.frameUserOnline.isEnabled = user.user.isOnline()
                     }
                 }
             }
             if (onlyContainMe) {
                 addSingleAvatar().loadImage(AccountManager.getCurrentNhanVien().getAvatar())
                 builder.append(AccountManager.getCurrentNhanVien().name)
-                binding.frameUserOnline.gone()
+                _binding.frameUserOnline.gone()
             }
-            binding.tvConversationName.text = builder
+            _binding.tvConversationName.text = builder
         }
 
         val message: Message? = con.lastMessage
         handleContent(message, isGroup, con.isMyCloud)
 
-        with(binding) {
+        with(_binding) {
             if (unRead <= 0) {
                 tvConversationName.setFontRegular()
                 tvContent.setTextColor(_readColor)
@@ -206,7 +206,7 @@ class ConversationVH(
 
     private fun handleContent(message: Message?, isGroup: Boolean, isMyCloud: Boolean) {
         StringUtil.handleMessageContent(_context, message, isGroup, isMyCloud).let {
-            binding.tvContent.apply {
+            _binding.tvContent.apply {
                 if (it.isNotEmpty()) show() else gone()
                 text = it
             }
@@ -216,7 +216,7 @@ class ConversationVH(
     private fun checkImportantMessage(user: ConversationUser) {
         _isUserNotify = user.isOffNotify
 
-        with(binding) {
+        with(_binding) {
             imgNoNotify.apply {
                 if (user.isOffNotify) show() else gone()
             }
@@ -301,7 +301,7 @@ class ConversationVH(
                 }
             }
             it.translationZ = index.toFloat()
-            binding.rlAvatarGroup.addView(it, params)
+            _binding.rlAvatarGroup.addView(it, params)
         }
     }
 
@@ -318,7 +318,7 @@ class ConversationVH(
             RelativeLayout.LayoutParams(_imgSizeSingle, _imgSizeSingle)
                 .apply { addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE) }
                 .let {
-                    binding.rlAvatarGroup.addView(image, it)
+                    _binding.rlAvatarGroup.addView(image, it)
                 }
             image
         }
@@ -327,7 +327,7 @@ class ConversationVH(
     private fun setFontSize() {
         val size = getFontSizeChat(_context)
 
-        with(binding) {
+        with(_binding) {
             tvConversationName.textSize = size
             tvContent.textSize = size
             tvLastActive.textSize = size
@@ -335,9 +335,9 @@ class ConversationVH(
     }
 
     private fun myCloud() {
-        with(binding) {
+        with(_binding) {
             tvConversationName.show()
-            binding.frameUserOnline.gone()
+            _binding.frameUserOnline.gone()
 
             addSingleAvatar().let {
                 it.setImageResource(R.drawable.ic_my_cloud)
@@ -347,12 +347,12 @@ class ConversationVH(
     }
 
     fun clear() {
-        for (i in 0 until binding.rlAvatarGroup.childCount) {
-            binding.rlAvatarGroup.getChildAt(i).let {
+        for (i in 0 until _binding.rlAvatarGroup.childCount) {
+            _binding.rlAvatarGroup.getChildAt(i).let {
                 Glide.with(itemView.context).clear(it)
             }
         }
-        binding.rlAvatarGroup.removeAllViews()
+        _binding.rlAvatarGroup.removeAllViews()
     }
 
     companion object {

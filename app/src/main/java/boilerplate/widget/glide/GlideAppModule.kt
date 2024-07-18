@@ -30,8 +30,8 @@ class GlideAppModule : AppGlideModule() {
             setDefaultRequestOptions(
                 RequestOptions()
                     .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                    .error(R.drawable.ic_avatar)
-                    .placeholder(R.drawable.ic_avatar)
+                    .error(R.drawable.bg_error)
+                    .placeholder(R.drawable.bg_corner_white)
                     .encodeFormat(Bitmap.CompressFormat.PNG)
             )
         }

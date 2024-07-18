@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ln_background"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/dp_10"
+    android:paddingBottom="@dimen/dp_10"
+    tools:background="@color/colorWhite"
+    tools:ignore="SpUsage,HardcodedText">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:weightSum="4">
+
+        <boilerplate.widget.customText.TextViewFont
+            android:id="@+id/tv_type"
+            style="@style/StyleRegular"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.4"
+            android:textSize="@dimen/dp_14"
+            tools:background="@drawable/bg_feedback_status_yellow"
+            tools:text="Công văn" />
+
+        <View
+            android:layout_width="@dimen/dp_3"
+            android:layout_height="match_parent"
+            android:background="#D9D9D9" />
+
+        <boilerplate.widget.customText.TextViewFont
+            style="@style/StyleRegular"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dp_3"
+            android:layout_weight="1.1"
+            android:text="Số/Ký hiệu:"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/colorHint"
+            android:textSize="@dimen/dp_14" />
+
+        <boilerplate.widget.customText.TextViewFont
+            android:id="@+id/tv_number"
+            style="@style/StyleRegular"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dp_3"
+            android:layout_weight="1.5"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Số/Ký hiệu:"
+            android:textSize="@dimen/dp_14" />
+    </LinearLayout>
+
+    <boilerplate.widget.customText.TextViewFont
+        android:id="@+id/tv_content"
+        style="@style/StyleRegular"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_8"
+        android:textSize="@dimen/dp_14"
+        tools:text="Kết quả kiểm tra của Hội đồng nghiệm thu cho thấy, dù tuyến đường chưa hoạt động nhưng một số vị trí đang có hiện tượng thép bị gỉ sét." />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_8">
+
+        <boilerplate.widget.customText.TextViewFont
+            android:id="@+id/tv_title_deadline"
+            style="@style/StyleRegular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dp_3"
+            android:textColor="@color/colorHint"
+            android:textSize="@dimen/dp_14"
+            tools:text="Thời hạn:" />
+
+        <boilerplate.widget.customText.TextViewFont
+            android:id="@+id/tv_deadline"
+            style="@style/StyleRegular"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dp_3"
+            android:layout_weight="1.75"
+            android:text="Số/Ký hiệu:"
+            android:textSize="@dimen/dp_14" />
+    </LinearLayout>
+</LinearLayout>

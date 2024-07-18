@@ -1,6 +1,7 @@
 [versions]
 agp = "8.1.4"
 annotation = "1.8.0"
+autoimageslider = "1.4.0"
 firebaseBom = "29.3.0"
 kotlinBom = "1.8.22"
 ksp = "1.9.20-1.0.14"
@@ -69,6 +70,8 @@ rxjava-android = { group = "io.reactivex.rxjava3", name = "rxandroid", version.r
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 glide-integration = { group = "com.github.bumptech.glide", name = "okhttp3-integration", version.ref = "glide" }
 glide-compiler = { module = "com.github.bumptech.glide:ksp", version.ref = "glide" }
+
+autoimageslider = { module = "com.github.smarteist:autoimageslider", version.ref = "autoimageslider" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -14,7 +14,7 @@ interface ConversationRepository {
         isUnread: Boolean?,
         isImportant: Boolean?,
         name: String?
-    ): Flowable<BaseResponse<Conversation.Result>>;
+    ): Flowable<BaseResponse<Conversation.Result>>
 }
 
 class ConversationRepositoryImpl(private val apiRequest: ApiRequest) : ConversationRepository {

@@ -78,7 +78,7 @@
                 android:layout_height="@dimen/dp_30"
                 android:background="@color/color_toast_fail"
                 android:gravity="center"
-                android:text="@string/no_connection"
+                android:text="@string/error_no_connection"
                 android:textColor="@color/colorWhite"
                 android:textSize="@dimen/dp_14"
                 android:visibility="gone" />

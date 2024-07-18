@@ -14,6 +14,7 @@ import boilerplate.R
 import boilerplate.base.BaseFragment
 import boilerplate.databinding.DialogBaseBinding
 import boilerplate.databinding.FragmentSettingBinding
+import boilerplate.databinding.ItemSettingProfileBinding
 import boilerplate.ui.main.MainVM
 import boilerplate.ui.setting.SettingMenu.HOTLINE
 import boilerplate.ui.setting.SettingMenu.LOG_OUT
@@ -35,7 +36,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding, MainVM>() {
         }
     }
 
-    override val mViewModel: MainVM by activityViewModels()
+    override val _viewModel: MainVM by activityViewModels()
 
     private var _margin by Delegates.notNull<Int>()
     private val _buttonIDs = intArrayOf(0, 0, 0, 0)
@@ -89,6 +90,15 @@ class SettingFragment : BaseFragment<FragmentSettingBinding, MainVM>() {
     }
 
     override fun onSubscribeObserver() {
+        with(_viewModel) {
+            user.observe(this@SettingFragment) {
+                val avatar: RoundedImageView = binding.root.findViewById(R.id.img_avatar)
+                val name: TextViewFont = binding.root.findViewById(R.id.tv_name)
+
+                avatar.loadImage(it.getAvatar())
+                name.text = it.name
+            }
+        }
     }
 
     override fun registerEvent() {
@@ -99,19 +109,8 @@ class SettingFragment : BaseFragment<FragmentSettingBinding, MainVM>() {
 
     private fun addMenuItem(menu: SettingMenu?): View {
         if (menu == null) {
-            val view: View = LayoutInflater.from(context)
-                .inflate(R.layout.item_setting_profile, view as ViewGroup, false)
-
-            val avatar: RoundedImageView = view.findViewById(R.id.img_avatar)
-            val name: TextViewFont = view.findViewById(R.id.tv_name)
-
-            with(mViewModel.getUser()) {
-                name.text = this.name
-                avatar.loadImage(this.getAvatar())
-            }
-            return view
+            return ItemSettingProfileBinding.inflate(layoutInflater).root
         }
-
         val view: View = LayoutInflater.from(context)
             .inflate(R.layout.item_setting_menu, view as ViewGroup?, false)
         val image = view.findViewById<AppCompatImageView>(R.id.img_icon)
@@ -160,7 +159,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding, MainVM>() {
 
                         btnConfirm.setOnClickListener(ClickUtil.onClick {
                             dialog.dismiss()
-                            mViewModel.logout()
+                            _viewModel.logout()
                         })
                     }
                 }

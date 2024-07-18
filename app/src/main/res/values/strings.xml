@@ -24,7 +24,6 @@
 
     <string name="logout">Đăng xuất</string>
     <string name="delete">Xóa</string>
-    <string name="no_connection">Không có kết nối</string>
 
     <string name="duplication">Nhân bản</string>
 
@@ -50,4 +49,15 @@
 
     <string name="logout_description">Anh/Chị sẽ thoát khỏi phiên hiện tại.</string>
     <string name="title_tablet">Module Title</string>
+
+    <string name="document">Công văn</string>
+    <string name="work">Công việc</string>
+    <string name="work_manager">Quản lý công việc</string>
+    <string name="signature">Ký số</string>
+    <string name="request_comment_need_handle">Yêu cầu góp ý cần xử lý</string>
+    <string name="desktop">Bàn làm việc</string>
+
+    <string name="text_deadline_title">Thời hạn:</string>
+    <string name="text_document_time_title">Ngày công văn:</string>
+    <string name="text_present_leader">Trình lãnh đạo</string>
 </resources>

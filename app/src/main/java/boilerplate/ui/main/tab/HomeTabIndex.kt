@@ -4,6 +4,7 @@ import android.util.Pair
 import androidx.fragment.app.Fragment
 import boilerplate.R
 import boilerplate.ui.conversation.ConversationFragment
+import boilerplate.ui.dashboard.DashboardFragment
 import boilerplate.ui.empty.EmptyFragment
 import boilerplate.ui.setting.SettingFragment
 
@@ -88,7 +89,7 @@ object HomeTabIndex {
         positionTab()
         val fragments = ArrayList<Pair<Int, Fragment>>()
 
-        fragments.add(Pair(ID_HOME_DASHBOARD, EmptyFragment.newInstance()))
+        fragments.add(Pair(ID_HOME_DASHBOARD, DashboardFragment.newInstance()))
         fragments.add(Pair(ID_CALENDAR_TAB, EmptyFragment.newInstance()))
         fragments.add(Pair(ID_CONTACT_TAB, EmptyFragment.newInstance()))
         fragments.add(Pair(ID_MESSAGE_TAB, ConversationFragment.newInstance()))

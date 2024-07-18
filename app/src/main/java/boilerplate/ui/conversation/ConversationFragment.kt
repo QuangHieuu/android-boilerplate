@@ -35,7 +35,7 @@ class ConversationFragment : BaseFragment<FragmentConversationBinding, MainVM>()
     private val _isImportant = false
     private val _currentFilter = 0
 
-    override val mViewModel: MainVM by activityViewModel()
+    override val _viewModel: MainVM by activityViewModel()
 
     override fun initialize() {
         _adapter = ConversationAdapter(object : ConversationAdapter.SimpleEvent() {
@@ -98,15 +98,15 @@ class ConversationFragment : BaseFragment<FragmentConversationBinding, MainVM>()
     }
 
     override fun onSubscribeObserver() {
-        with(mViewModel) {
-            loadConversation.observe(this@ConversationFragment) {
-                if (it.isEmpty() && lastId.isEmpty()) {
+        with(_viewModel) {
+            loadConversation.observe(this@ConversationFragment) { pair ->
+                if (!pair.second.isNullOrEmpty() && pair.first.isEmpty()) {
                     disableLoading()
                     binding.viewNoData.lnNoData.show()
                     binding.rcvMessage.gone()
                     return@observe
                 }
-                addData(it, lastId.isNotEmpty())
+                addData(pair.second ?: arrayListOf(), pair.first.isNotEmpty())
             }
         }
     }
@@ -125,7 +125,7 @@ class ConversationFragment : BaseFragment<FragmentConversationBinding, MainVM>()
     }
 
     private fun loadMore(last: String) {
-        mViewModel.apiGetConversation(last, 10, _isUnRead, _isImportant, null);
+        _viewModel.apiGetConversation(last, 10, _isUnRead, _isImportant, null);
     }
 
     private fun disableLoading() {

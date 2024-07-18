@@ -6,7 +6,7 @@ import androidx.core.content.edit
 import com.google.gson.Gson
 
 @Suppress("UNCHECKED_CAST")
-class SharedPrefsImpl(context: Context) : SharedPrefsApi {
+class SharedPrefsImpl(context: Context, private val gson: Gson) : SharedPrefsApi {
 
     private var sharedPreferences: SharedPreferences =
         context.getSharedPreferences(
@@ -36,7 +36,7 @@ class SharedPrefsImpl(context: Context) : SharedPrefsApi {
             }
 
             else -> {
-                Gson().fromJson(sharedPreferences.getString(key, ""), clazz)
+                gson.fromJson(sharedPreferences.getString(key, ""), clazz)
             }
         }
     }

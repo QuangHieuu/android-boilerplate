@@ -23,11 +23,13 @@ import androidx.core.content.ContextCompat
 import boilerplate.R
 import boilerplate.constant.AccountManager
 import boilerplate.constant.Constants.KEY_AUTH
+import boilerplate.utils.ClickUtil
 import boilerplate.utils.InternetManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.Headers
 import com.bumptech.glide.load.model.LazyHeaders
+import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.snackbar.BaseTransientBottomBar.ANIMATION_MODE_SLIDE
@@ -158,10 +160,16 @@ fun ImageView.loadImage(url: String?, accessToken: String? = AccountManager.getT
             .addHeader(KEY_AUTH, it)
             .build()
     } ?: Headers.DEFAULT)
+
+    val request = RequestOptions()
+        .error(R.drawable.ic_avatar)
+        .placeholder(R.drawable.ic_avatar)
+
     Glide
         .with(context)
         .asDrawable()
         .load(glideUrl)
+        .apply(request)
         .into(object : CustomTarget<Drawable>() {
             override fun onLoadFailed(errorDrawable: Drawable?) {
                 setImageDrawable(errorDrawable)
@@ -222,3 +230,7 @@ fun Context.isAppInBackground(): Boolean {
 
 fun Context.isTablet(): Boolean = Configuration.SCREENLAYOUT_SIZE_LARGE <=
         (resources.configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK)
+
+fun View.setClick(v: (v: View) -> Unit) {
+    setOnClickListener(ClickUtil.onClick { v(it) })
+}

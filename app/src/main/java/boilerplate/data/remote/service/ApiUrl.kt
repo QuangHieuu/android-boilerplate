@@ -56,13 +56,3 @@ object ApiUrl {
         HOST_FILE_PREVIEW = HOST_FILE + API + FILE_CHAT
     }
 }
-
-object ApiDomain {
-    const val LOGIN = "login"
-    const val E_OFFICE = "E_OFFICE"
-    const val CHAT = "CHAT"
-    const val NOTIFY = "NOTIFY"
-    const val FILE = "FILE"
-    const val FIREBASE = "FIREBASE"
-    const val CALENDAR = "CALENDAR"
-}

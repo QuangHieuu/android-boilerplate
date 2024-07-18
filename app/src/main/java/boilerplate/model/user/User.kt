@@ -34,8 +34,7 @@ class User : ExpandModel() {
         get() = if (field == null) "".also { field = it } else field
 
     @SerializedName("ds_chuc_danh")
-    var titles: ArrayList<Title>? = null
-        get() = if (field == null) ArrayList<Title>().also { field = it } else field
+    var titles: ArrayList<Title> = arrayListOf()
 
     @SerializedName("da_duyet")
     var isApproved = false
@@ -237,12 +236,12 @@ class User : ExpandModel() {
         )
     }
 
-    val mainRole: String?
+    val mainRole: String
         get() {
-            if (titles != null && titles!!.size > 0) {
-                for (title in titles!!) {
+            if (titles.isNotEmpty()) {
+                for (title in titles) {
                     if (title.isMain) {
-                        return title.id
+                        return title.id ?: ""
                     }
                 }
             }
@@ -255,11 +254,6 @@ class User : ExpandModel() {
         @SerializedName("tam_trang") val status: String
     )
 
-    inner class Result {
-        var items: ArrayList<User>? = null
-            get() = field ?: ArrayList()
-        var total = 0
-    }
 
     inner class State {
         @SerializedName("user_id")
@@ -274,5 +268,14 @@ class User : ExpandModel() {
         val currentPass: String,
         @SerializedName("new_password")
         val newPass: String
+    )
+
+    data class Role(
+        @SerializedName("ma_quyen")
+        val codeId: String,
+        @SerializedName("mo_ta")
+        val description: String,
+        @SerializedName("is_active")
+        val isActive: Boolean
     )
 }

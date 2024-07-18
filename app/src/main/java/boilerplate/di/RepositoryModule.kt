@@ -12,18 +12,27 @@ import boilerplate.data.remote.repository.auth.LoginRepository
 import boilerplate.data.remote.repository.auth.LoginRepositoryImpl
 import boilerplate.data.remote.repository.conversation.ConversationRepository
 import boilerplate.data.remote.repository.conversation.ConversationRepositoryImpl
+import boilerplate.data.remote.repository.dashboard.DashboardImpl
+import boilerplate.data.remote.repository.dashboard.DashboardRepository
+import boilerplate.data.remote.service.ApiService
+import com.google.gson.Gson
 import org.koin.dsl.module
 
 val repositoryModule = module {
-    single { provideUserRepository(get(), get()) }
+    single { provideUserRepository(get(), get(), get()) }
     single { provideTokenRepository(get()) }
     single { provideServerRepository(get()) }
-    single { providerLoginRepository(get()) }
+    single { providerLoginRepository(get(), get()) }
     single { providerConversationRepository(get()) }
+    single { providerDashBoard(get()) }
 }
 
-fun provideUserRepository(share: SharedPrefsApi, apiRequest: ApiRequest): UserRepository {
-    return UserRepositoryImpl(share, apiRequest)
+fun provideUserRepository(
+    share: SharedPrefsApi,
+    apiRequest: ApiRequest,
+    gson: Gson
+): UserRepository {
+    return UserRepositoryImpl(share, apiRequest, gson)
 }
 
 fun provideTokenRepository(share: SharedPrefsApi): TokenRepository {
@@ -34,10 +43,17 @@ fun provideServerRepository(share: SharedPrefsApi): ServerRepository {
     return ServerRepositoryImpl(share)
 }
 
-fun providerLoginRepository(apiRequest: ApiRequest): LoginRepository {
-    return LoginRepositoryImpl(apiRequest)
+fun providerLoginRepository(
+    apiRequest: ApiRequest,
+    userRepository: UserRepository
+): LoginRepository {
+    return LoginRepositoryImpl(apiRequest, userRepository)
 }
 
 fun providerConversationRepository(apiRequest: ApiRequest): ConversationRepository {
     return ConversationRepositoryImpl(apiRequest)
+}
+
+fun providerDashBoard(apiRequest: ApiRequest): DashboardRepository {
+    return DashboardImpl(apiRequest)
 }

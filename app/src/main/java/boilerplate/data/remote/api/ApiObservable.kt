@@ -1,9 +1,9 @@
 package boilerplate.data.remote.api
 
-import com.google.gson.Gson
-import com.google.gson.JsonParseException
 import boilerplate.data.remote.api.error.ApiError
 import boilerplate.data.remote.api.error.RetrofitException
+import boilerplate.utils.InternetException
+import com.google.gson.Gson
 import io.reactivex.rxjava3.core.CompletableObserver
 import io.reactivex.rxjava3.core.FlowableSubscriber
 import io.reactivex.rxjava3.core.Observer
@@ -51,6 +51,10 @@ abstract class ApiObservable<T : Any>(
     }
 
     override fun onError(t: Throwable) {
+        if (t is InternetException) {
+            sListener.notInternet()
+            return
+        }
         if (t is RetrofitException) {
             val json: String = t.errorMessage
             try {

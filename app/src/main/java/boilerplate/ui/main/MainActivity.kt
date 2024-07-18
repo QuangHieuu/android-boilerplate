@@ -4,6 +4,7 @@ import android.app.job.JobInfo
 import android.app.job.JobScheduler
 import android.content.ComponentName
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.lifecycle.Lifecycle
@@ -111,6 +112,10 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
         _signalRReceiver.unregister()
         SignalRManager.stopSignal()
         SignalRManager.unbindServices(this@MainActivity, _serviceIntent)
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
     }
 
     override fun initialize() {

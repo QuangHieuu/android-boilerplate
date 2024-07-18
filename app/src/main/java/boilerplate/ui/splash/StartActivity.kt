@@ -48,7 +48,7 @@ class StartActivity : BaseActivity<ActivityStartBinding, StartVM>() {
                     StartVM.STATE_LOGIN -> {
                         with(binding.viewAutoLogin) {
                             frameAutoLogin.visibility = View.GONE
-                            viewLoading.pulseView.stop()
+                            pulseView.stop()
                         }
                         openLoginScreen()
                     }
@@ -62,7 +62,7 @@ class StartActivity : BaseActivity<ActivityStartBinding, StartVM>() {
                             } else {
                                 with(binding.viewAutoLogin) {
                                     frameAutoLogin.visibility = View.VISIBLE
-                                    viewLoading.pulseView.start()
+                                    pulseView.start()
                                 }
                                 mViewModel.getMe()
                             }

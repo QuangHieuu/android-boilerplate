@@ -14,6 +14,7 @@ import boilerplate.utils.extension.BaseSchedulerProvider
 import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.withScheduler
 import com.google.firebase.messaging.FirebaseMessaging
+import io.reactivex.rxjava3.core.Flowable
 
 class StartVM(
     private val schedulerProvider: BaseSchedulerProvider,
@@ -69,9 +70,9 @@ class StartVM(
         launchDisposable {
             loginServer.getMe()
                 .withScheduler(schedulerProvider)
+                .flatMap { res -> loginServer.getRolePermission().flatMap { Flowable.just(res) } }
                 .subscribeWith(ApiObservable.apiCallback(success = { res ->
                     res.result.notNull {
-                        userImpl.saveUser(it)
                         _user.postValue(it)
                         registerDeviceId(it)
                     }

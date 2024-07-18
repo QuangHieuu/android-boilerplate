@@ -67,8 +67,4 @@ class Company : ExpandModel {
         shortName = ten
         id = ""
     }
-
-    class Result {
-        val items: ArrayList<Company>? = null
-    }
 }

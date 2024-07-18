@@ -1,6 +1,5 @@
 package boilerplate.base
 
-import android.app.Dialog
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -10,10 +9,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.core.view.WindowCompat
+import androidx.core.view.contains
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
-import boilerplate.utils.extension.notNull
 import boilerplate.widget.loading.LoadingScreen
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -25,10 +24,10 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
     protected val binding: AC
         get() = checkNotNull(_binding) { "View not create" }
 
-    private val loadingScreen: Dialog by lazy { LoadingScreen(requireContext()) }
-    private val mDisposable: CompositeDisposable by lazy { CompositeDisposable() }
+    private val _loadingScreen: LoadingScreen by lazy { LoadingScreen(requireActivity()) }
+    private val _disposable: CompositeDisposable by lazy { CompositeDisposable() }
 
-    protected abstract val mViewModel: VM
+    protected abstract val _viewModel: VM
 
     @Suppress("UNCHECKED_CAST")
     override fun onCreateView(
@@ -58,13 +57,16 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
         registerEvent()
         callApi()
 
-        with(mViewModel) {
-            loading.observe(viewLifecycleOwner) {
-                loadingScreen.notNull { dialog ->
-                    if (it) {
-                        dialog.show()
+        with(_viewModel) {
+            loading.observe(viewLifecycleOwner) { show ->
+                if (view.parent is ViewGroup) {
+                    val parent = view.parent as ViewGroup
+                    if (show && isVisible) {
+                        parent.addView(_loadingScreen)
                     } else {
-                        dialog.dismiss()
+                        if (parent.contains(_loadingScreen)) {
+                            parent.removeView(_loadingScreen)
+                        }
                     }
                 }
             }
@@ -73,13 +75,10 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
 
     override fun onDestroyView() {
         _binding = null
-
-        loadingScreen.notNull { it.dismiss() }
-
         super.onDestroyView()
         clearAdjustSoftInput()
-        mDisposable.dispose()
-        mDisposable.clear()
+        _disposable.dispose()
+        _disposable.clear()
     }
 
     protected abstract fun initialize()
@@ -116,7 +115,7 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
     }
 
     protected fun launchDisposable(vararg job: Disposable) {
-        mDisposable.addAll(*job)
+        _disposable.addAll(*job)
     }
 
     protected fun adjustSoftInput() {

@@ -97,6 +97,8 @@ dependencies {
     implementation(libs.firebase.database)
     implementation(libs.firebase.messaging)
 //    implementation(libs.firebase.analytics)
+
+    implementation(libs.autoimageslider)
 }
 
 apply {

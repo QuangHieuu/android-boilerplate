@@ -1,6 +1,7 @@
 package boilerplate.utils.extension
 
 import androidx.lifecycle.MutableLiveData
+import boilerplate.data.remote.api.ApiObservable
 import boilerplate.utils.InternetException
 import boilerplate.utils.InternetManager
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -9,6 +10,7 @@ import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Scheduler
 import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 
 class SchedulerProvider : BaseSchedulerProvider {
@@ -98,3 +100,11 @@ fun <T : Any> Flowable<T>.loading(liveData: MutableLiveData<Boolean>): Flowable<
 
 fun Completable.loading(liveData: MutableLiveData<Boolean>) =
     doOnSubscribe { liveData.postValue(true) }.doFinally { liveData.postValue(false) }
+
+
+fun <T : Any> Flowable<T>.with(
+    success: (response: T) -> Unit,
+    fail: (t: Throwable) -> Unit = {},
+    common: Boolean = false
+): Disposable =
+    subscribeWith(ApiObservable.apiCallback(success = { success(it) }, fail = { fail(it) }, common))

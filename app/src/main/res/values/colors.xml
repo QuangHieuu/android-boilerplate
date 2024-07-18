@@ -25,6 +25,13 @@
     <color name="color_toast_warning">#d19330</color>
     <color name="color_toast_fail">#DC374D</color>
 
+    <!--work-->
+    <color name="color_work_yellow">#d19330</color>
+    <color name="color_work_jade">#32d5c2</color>
+    <color name="color_work_blue">#326ef6</color>
+    <color name="color_work_green">#5ba83e</color>
+    <color name="color_work_red">#f60a18</color>
+
     <color name="color_conversation_unread">#ECF6FA</color>
 
     <color name="color_4a4a4a">#4a4a4a</color>
