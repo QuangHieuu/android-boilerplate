@@ -13,6 +13,7 @@ import androidx.core.view.contains
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
+import boilerplate.R
 import boilerplate.widget.loading.LoadingScreen
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -49,8 +50,11 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        view.isClickable = true
-        view.isFocusable = true
+        view.apply {
+            setBackgroundResource(R.color.colorAppBackground)
+            isClickable = true
+            isFocusable = true
+        }
 
         initialize()
         onSubscribeObserver()
@@ -62,7 +66,9 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
                 if (view.parent is ViewGroup) {
                     val parent = view.parent as ViewGroup
                     if (show && isVisible) {
-                        parent.addView(_loadingScreen)
+                        if (!parent.contains(_loadingScreen)) {
+                            parent.addView(_loadingScreen)
+                        }
                     } else {
                         if (parent.contains(_loadingScreen)) {
                             parent.removeView(_loadingScreen)

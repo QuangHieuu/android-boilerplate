@@ -17,16 +17,13 @@ class Company : ExpandModel {
         get() = if (field == null) "".also { field = it } else field
 
     @SerializedName("ds_phong_ban")
-    var departments: ArrayList<Department>? = null
-        get() = if (field == null) ArrayList<Department>().also { field = it } else field
+    var departments: ArrayList<Department> = arrayListOf()
 
     @SerializedName("ds_don_vi_con")
-    var childCompanies: ArrayList<Company>? = null
-        get() = if (field == null) ArrayList<Company>().also { field = it } else field
-        set
+    var childCompanies: ArrayList<Company> = arrayListOf()
 
     @SerializedName("phong_ban")
-    val department: Department? = null
+    var department: Department? = null
     val level = 0
 
     @SerializedName("gui_don_vi_lien_thong")

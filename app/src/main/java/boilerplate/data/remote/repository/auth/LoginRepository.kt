@@ -11,6 +11,7 @@ import boilerplate.model.user.User
 import boilerplate.utils.extension.checkInternet
 import boilerplate.utils.extension.notNull
 import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.rxjava3.core.Single
 
 interface LoginRepository {
     fun postUserLogin(userName: String, password: String): Flowable<LoginRes>
@@ -19,9 +20,9 @@ interface LoginRepository {
 
     fun postRegisterDevice(device: Device): Flowable<BaseResponse<Device>>
 
-    fun getRolePermission(): Flowable<BaseResult<User.Role>>
+    fun getRolePermission(): Single<BaseResult<User.Role>>
 
-    fun getContact(): Flowable<BaseResult<Company>>
+    fun getContact(): Single<BaseResult<Company>>
 }
 
 class LoginRepositoryImpl(
@@ -39,13 +40,14 @@ class LoginRepositoryImpl(
         return apiRequest.notify.postDevice(device).checkInternet()
     }
 
-    override fun getRolePermission(): Flowable<BaseResult<User.Role>> {
+    override fun getRolePermission(): Single<BaseResult<User.Role>> {
         val role = userRepository.getCurrentRole()
-        return apiRequest.eOffice.getRolePermision(role).checkInternet()
-            .doOnNext { userRepository.saveRolePermission(it.result?.items ?: arrayListOf()) }
+        return apiRequest.eOffice.getRolePermission(role).checkInternet()
+            .doOnSuccess { userRepository.saveRolePermission(it.result?.items ?: arrayListOf()) }
     }
 
-    override fun getContact(): Flowable<BaseResult<Company>> {
+    override fun getContact(): Single<BaseResult<Company>> {
         return apiRequest.chat.getContactLevel().checkInternet()
+            .doOnSuccess { userRepository.saveContact(it.result?.items ?: arrayListOf()) }
     }
 }

@@ -8,7 +8,7 @@ import boilerplate.model.dashboard.Dashboard
 import boilerplate.utils.extension.BaseSchedulerProvider
 import boilerplate.utils.extension.loading
 import boilerplate.utils.extension.notNull
-import boilerplate.utils.extension.with
+import boilerplate.utils.extension.result
 import boilerplate.utils.extension.withScheduler
 import io.reactivex.rxjava3.core.Flowable
 
@@ -33,7 +33,7 @@ class DashboardVM(
         launchDisposable {
             Flowable.concat(slider, statical)
                 .loading(_loading)
-                .withScheduler(schedulerProvider).with({})
+                .withScheduler(schedulerProvider).result({})
         }
     }
 }

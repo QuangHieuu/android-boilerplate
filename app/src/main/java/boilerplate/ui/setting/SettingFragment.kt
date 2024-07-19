@@ -95,7 +95,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding, MainVM>() {
                 val avatar: RoundedImageView = binding.root.findViewById(R.id.img_avatar)
                 val name: TextViewFont = binding.root.findViewById(R.id.tv_name)
 
-                avatar.loadImage(it.getAvatar())
+                avatar.loadImage(it.avatar)
                 name.text = it.name
             }
         }

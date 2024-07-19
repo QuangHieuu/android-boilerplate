@@ -102,8 +102,15 @@ fun Completable.loading(liveData: MutableLiveData<Boolean>) =
     doOnSubscribe { liveData.postValue(true) }.doFinally { liveData.postValue(false) }
 
 
-fun <T : Any> Flowable<T>.with(
-    success: (response: T) -> Unit,
+fun <T : Any> Flowable<T>.result(
+    success: (response: T) -> Unit = {},
+    fail: (t: Throwable) -> Unit = {},
+    common: Boolean = false
+): Disposable =
+    subscribeWith(ApiObservable.apiCallback(success = { success(it) }, fail = { fail(it) }, common))
+
+fun <T : Any> Single<T>.result(
+    success: (response: T) -> Unit = {},
     fail: (t: Throwable) -> Unit = {},
     common: Boolean = false
 ): Disposable =

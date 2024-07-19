@@ -3,6 +3,7 @@ package boilerplate.data.remote.api
 import boilerplate.data.remote.api.error.ApiError
 import boilerplate.data.remote.api.error.RetrofitException
 import boilerplate.utils.InternetException
+import boilerplate.utils.extension.notNull
 import com.google.gson.Gson
 import io.reactivex.rxjava3.core.CompletableObserver
 import io.reactivex.rxjava3.core.FlowableSubscriber
@@ -78,7 +79,7 @@ abstract class ApiObservable<T : Any>(
     abstract override fun onSuccess(response: T)
 
     private fun onStart() {
-        upstreamSubscription.get().request(Long.MAX_VALUE)
+        upstreamSubscription.get().notNull { it.request(Long.MAX_VALUE) }
     }
 
     private fun handleError(error: ApiError) {

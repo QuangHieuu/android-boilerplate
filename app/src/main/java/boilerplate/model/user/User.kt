@@ -3,12 +3,11 @@ package boilerplate.model.user
 import boilerplate.data.remote.service.ApiUrl
 import boilerplate.model.ExpandModel
 import boilerplate.model.file.AttachedFile
-import boilerplate.utils.ImageUtil.IMAGE_MAX_SIZE
-import boilerplate.utils.ImageUtil.IMAGE_THUMB_SIZE
 import com.google.gson.annotations.SerializedName
 import java.util.Locale
 
 class User : ExpandModel() {
+
     @SerializedName("nhan_vien_id")
     var id: String? = null
         get() = if (field == null) "".also { field = it } else field
@@ -40,7 +39,7 @@ class User : ExpandModel() {
     var isApproved = false
 
     @SerializedName("tam_trang")
-    var statusDesc: String? = null
+    var mood: String? = null
         get() = if (field == null) "".also { field = it } else field
 
     @SerializedName("ngay_sinh")
@@ -77,7 +76,7 @@ class User : ExpandModel() {
         get() = if (field == null) Department().also { field = it } else field
 
     @SerializedName("truc_tuyen")
-    var isOnline = 0
+    private var isOnline = 0
 
     @SerializedName("vai_tro")
     var vaiTro = 0
@@ -160,11 +159,15 @@ class User : ExpandModel() {
 
     fun isOnline() = isOnline == 1
 
+    fun setOnline(i: Int) {
+        isOnline = i
+    }
+
     var mainCompany: Company? = null
         get() {
             if (field == null) {
-                if (titles != null && titles!!.size > 0) {
-                    for (title in titles!!) {
+                if (titles.size > 0) {
+                    for (title in titles) {
                         if (title.isMain) {
                             return title.company.also { field = it }
                         }
@@ -175,7 +178,6 @@ class User : ExpandModel() {
             }
             return field
         }
-
 
     var mainDepartment: Department? = null
         get() {
@@ -193,6 +195,16 @@ class User : ExpandModel() {
             return field
         }
 
+    val avatar: String
+        get() {
+            return checkNotNull(avatarId).let {
+                if (it.startsWith("/")) {
+                    it.replaceFirst("/".toRegex(), "")
+                } else {
+                    it
+                }
+            }.let { String.format(Locale.getDefault(), "%s%s", ApiUrl.HOST_FILE, it) }
+        }
 
     val nameOnly: String
         get() {
@@ -200,41 +212,6 @@ class User : ExpandModel() {
             val index = ten.lastIndexOf(" ")
             return ten.substring(index + 1, ten.length).trim { it <= ' ' }
         }
-
-    fun getAvatar(): String {
-        val avatar = checkNotNull(avatarId).let {
-            if (it.startsWith("/")) {
-                it.replaceFirst("/".toRegex(), "")
-            } else {
-                it
-            }
-        }
-
-        return String.format(
-            Locale.getDefault(),
-            "%s%s?w=%d",
-            ApiUrl.HOST_FILE,
-            avatar,
-            IMAGE_MAX_SIZE
-        )
-    }
-
-    fun getAvatar(isThumb: Boolean): String {
-        val avatar = checkNotNull(avatarId).let {
-            if (it.startsWith("/")) {
-                it.replaceFirst("/".toRegex(), "")
-            } else {
-                it
-            }
-        }
-        return String.format(
-            Locale.getDefault(),
-            "%s%s?w=%d",
-            ApiUrl.HOST_FILE,
-            avatar,
-            if (isThumb) IMAGE_THUMB_SIZE else IMAGE_MAX_SIZE
-        )
-    }
 
     val mainRole: String
         get() {

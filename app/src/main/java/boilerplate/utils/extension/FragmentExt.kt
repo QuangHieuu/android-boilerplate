@@ -13,33 +13,39 @@ import androidx.viewbinding.ViewBinding
 import boilerplate.R
 import kotlin.reflect.KClass
 
-
-fun Fragment.replaceFragment(
-    @IdRes containerId: Int, fragment: Fragment,
-    addToBackStack: Boolean = true, tag: String = fragment::class.java.simpleName,
-    animateType: AnimateType = AnimateType.FADE
+fun Fragment.open(
+    split: Boolean = false,
+    fragment: Fragment,
+    addToBackStack: Boolean = true,
+    animateType: AnimateType = AnimateType.SLIDE_TO_LEFT,
+    @IdRes containerId: Int = R.id.app_container,
+    tag: String = fragment::class.java.simpleName,
 ) {
-    childFragmentManager.transact({
+    val fm = requireActivity().supportFragmentManager
+    fm.transact({
         if (addToBackStack) {
             addToBackStack(tag)
         }
-        replace(containerId, fragment, tag)
+        val isTablet = context?.isTablet()
+        if (isTablet == true && split) {
+            if (fm.isExistFragment(fragment)) {
+                fm.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            }
+            add(R.id.frame_tablet, fragment, tag)
+        } else {
+            add(containerId, fragment, tag)
+        }
     }, animateType = animateType)
 }
 
-fun Fragment.addFragment(
-    @IdRes containerId: Int,
-    fragment: Fragment,
-    addToBackStack: Boolean = true,
-    tag: String = fragment::class.java.simpleName,
-    animateType: AnimateType = AnimateType.FADE
+fun <T : Activity> Fragment.goTo(
+    cls: KClass<T>, bundle: Bundle? = null,
+    parcel: Parcelable? = null
 ) {
-    childFragmentManager.transact({
-        if (addToBackStack) {
-            addToBackStack(tag)
-        }
-        add(containerId, fragment, tag)
-    }, animateType = animateType)
+    val intent = Intent(context, cls.java)
+    if (bundle != null) intent.putExtra(boilerplate.constant.Constants.EXTRA_ARGS, bundle)
+    if (parcel != null) intent.putExtra(boilerplate.constant.Constants.EXTRA_ARGS, parcel)
+    startActivity(intent)
 }
 
 fun Fragment.clearAllFragment() {
@@ -61,18 +67,12 @@ fun Fragment.isCanPopBackStack(): Boolean {
     return false
 }
 
-fun isExistFragment(fragmentManager: FragmentManager, tag: String): Boolean {
-    val fragment = fragmentManager.findFragmentByTag(tag)
-    return fragment != null
-}
-
-
 /**
  * Runs a FragmentTransaction, then calls commitAllowingStateLoss().
  */
 inline fun FragmentManager.transact(
     action: FragmentTransaction.() -> Unit,
-    animateType: AnimateType = AnimateType.FADE
+    animateType: AnimateType = AnimateType.SLIDE_TO_LEFT
 ) {
     beginTransaction().apply {
         setCustomAnimations(this, animateType)
@@ -82,7 +82,7 @@ inline fun FragmentManager.transact(
 
 fun setCustomAnimations(
     transaction: FragmentTransaction,
-    animateType: AnimateType = AnimateType.FADE
+    animateType: AnimateType = AnimateType.SLIDE_TO_LEFT
 ) {
     when (animateType) {
         AnimateType.FADE -> {
@@ -108,8 +108,8 @@ fun setCustomAnimations(
 
         AnimateType.SLIDE_TO_LEFT -> {
             transaction.setCustomAnimations(
-                R.anim.enter_from_right, R.anim.exit_to_left,
-                R.anim.enter_from_left, R.anim.exit_to_right
+                R.anim.enter_from_right, R.anim.stay,
+                R.anim.stay, R.anim.exit_to_right
             )
         }
 
@@ -117,16 +117,6 @@ fun setCustomAnimations(
 
         }
     }
-}
-
-fun <T : Activity> Fragment.goTo(
-    cls: KClass<T>, bundle: Bundle? = null,
-    parcel: Parcelable? = null
-) {
-    val intent = Intent(context, cls.java)
-    if (bundle != null) intent.putExtra(boilerplate.constant.Constants.EXTRA_ARGS, bundle)
-    if (parcel != null) intent.putExtra(boilerplate.constant.Constants.EXTRA_ARGS, parcel)
-    startActivity(intent)
 }
 
 fun <VB : ViewBinding> Fragment.showDialog(

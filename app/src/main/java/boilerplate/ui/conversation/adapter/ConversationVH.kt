@@ -165,13 +165,13 @@ class ConversationVH(
                     if (userSize > 0 && user.user.id != AccountManager.getCurrentUserId()) {
                         onlyContainMe = false
                         builder.append(user.user.name)
-                        addSingleAvatar().loadImage(user.user.getAvatar(true))
+                        addSingleAvatar().loadImage(user.user.avatar)
                         _binding.frameUserOnline.isEnabled = user.user.isOnline()
                     }
                 }
             }
             if (onlyContainMe) {
-                addSingleAvatar().loadImage(AccountManager.getCurrentNhanVien().getAvatar())
+                addSingleAvatar().loadImage(AccountManager.getCurrentNhanVien().avatar)
                 builder.append(AccountManager.getCurrentNhanVien().name)
                 _binding.frameUserOnline.gone()
             }
@@ -256,7 +256,7 @@ class ConversationVH(
                     setTextBackground(size.toString())
                 }
             } else {
-                loadImage(user.user.getAvatar(true))
+                loadImage(user.user.avatar)
             }
         }.let {
             val params = RelativeLayout.LayoutParams(_imgSize, _imgSize)

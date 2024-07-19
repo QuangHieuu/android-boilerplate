@@ -16,6 +16,8 @@
     <string name="personal_inform">Thông tin cá nhân</string>
     <string name="watch_personal_inform">Xem thông tin cá nhân</string>
     <string name="no">Không</string>
+    <string name="exit">Thoát</string>
+    <string name="ignore">Bỏ qua</string>
 
     <string name="contact">Danh bạ</string>
     <string name="message">Tin nhắn</string>
@@ -26,6 +28,9 @@
     <string name="delete">Xóa</string>
 
     <string name="duplication">Nhân bản</string>
+    <string name="pick_company">Chọn đơn vị</string>
+    <string name="selected_or_unselected_all">Chọn/hủy tất cả</string>
+    <string name="create_group">Tạo nhóm</string>
 
     <string name="mark">Đánh dấu</string>
     <string name="un_mark">Bỏ đánh dấu</string>
@@ -57,7 +62,10 @@
     <string name="request_comment_need_handle">Yêu cầu góp ý cần xử lý</string>
     <string name="desktop">Bàn làm việc</string>
 
-    <string name="text_deadline_title">Thời hạn:</string>
-    <string name="text_document_time_title">Ngày công văn:</string>
-    <string name="text_present_leader">Trình lãnh đạo</string>
+    <string name="deadline_with_dot">Thời hạn:</string>
+    <string name="document_time_with_dot">Ngày công văn:</string>
+    <string name="present_leader">Trình lãnh đạo</string>
+
+    <string name="deny">Từ chối</string>
+    <string name="agree">Đồng ý</string>
 </resources>

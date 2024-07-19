@@ -8,9 +8,10 @@ import boilerplate.model.dashboard.Dashboard
 import boilerplate.model.device.Device
 import boilerplate.model.login.LoginRes
 import boilerplate.model.user.Company
+import boilerplate.model.user.Department
 import boilerplate.model.user.User
 import io.reactivex.rxjava3.core.Flowable
-import retrofit2.Call
+import io.reactivex.rxjava3.core.Single
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.Field
@@ -46,13 +47,13 @@ interface UserService {
     fun getMe(): Flowable<BaseResponse<User>>
 
     @GET("quyen/nhanvien/{id}")
-    fun getRolePermision(@Path("id") roleId: String?): Flowable<BaseResult<User.Role>>
+    fun getRolePermission(@Path("id") roleId: String?): Single<BaseResult<User.Role>>
 
     @GET("donvi/multilevel")
-    fun getContactLevel(): Flowable<BaseResult<Company>>
+    fun getContactLevel(): Single<BaseResult<Company>>
 
-//    var apiRole: Call<BaseRes<Role.Result>> = BaseRequest.getEOffice().getRoles(roleId)
-//    var apiContact: Call<BaseRes<Company.Result>> = BaseRequest.getChat().getContactLevel()
+    @GET("donvi/{id}/phongban")
+    fun getCompanyDepartment(@Path("id") companyId: String): Flowable<BaseResult<Department>>
 }
 
 interface DashboardService {

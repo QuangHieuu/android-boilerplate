@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.os.Parcelable
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import boilerplate.constant.Constants.EXTRA_ARGS
@@ -53,11 +52,6 @@ fun AppCompatActivity.clearAllFragment() {
     supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
 }
 
-
-fun AppCompatActivity.currentFragment(containerId: Int): Fragment? {
-    return supportFragmentManager.findFragmentById(containerId)
-}
-
 fun AppCompatActivity.startActivity(
     intent: Intent,
     flags: Int? = null
@@ -68,8 +62,8 @@ fun AppCompatActivity.startActivity(
     startActivity(intent)
 }
 
-fun AppCompatActivity.isExistFragment(fragment: Fragment): Boolean {
-    return supportFragmentManager.findFragmentByTag(fragment::class.java.simpleName) != null
+fun FragmentManager.isExistFragment(fragment: Fragment): Boolean {
+    return findFragmentByTag(fragment::class.java.simpleName) != null
 }
 
 fun AppCompatActivity.switchFragment(
@@ -80,8 +74,9 @@ fun AppCompatActivity.switchFragment(
     tag: String = newFragment::class.java.simpleName,
     animateType: AnimateType = AnimateType.SLIDE_TO_LEFT
 ) {
-    supportFragmentManager.transact({
-        if (isExistFragment(newFragment)) {
+    val fm = supportFragmentManager
+    fm.transact({
+        if (fm.isExistFragment(newFragment)) {
             hide(currentFragment).show(newFragment)
         } else {
             hide(currentFragment)
@@ -91,14 +86,6 @@ fun AppCompatActivity.switchFragment(
             add(containerId, newFragment, tag)
         }
     }, animateType = animateType)
-}
-
-fun AppCompatActivity.showDialogFragment(
-    fragment: DialogFragment,
-    tag: String = fragment::class.java.simpleName
-) {
-    val transaction = supportFragmentManager.beginTransaction()
-    fragment.show(transaction, tag)
 }
 
 fun AppCompatActivity.startActivityAtRoot(

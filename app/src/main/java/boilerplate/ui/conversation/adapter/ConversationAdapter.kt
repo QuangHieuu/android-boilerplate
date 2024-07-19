@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import boilerplate.R
 import boilerplate.constant.AccountManager
 import boilerplate.databinding.ItemConversationBinding
+import boilerplate.databinding.ItemLoadMoreBinding
 import boilerplate.model.conversation.Conversation
 import boilerplate.model.message.Message
 import boilerplate.widget.holder.LoadingVH
@@ -45,8 +46,7 @@ class ConversationAdapter(listener: SimpleEvent) : RecyclerSwipeAdapter<Recycler
                 mListener
             )
         } else {
-            val view = layoutInflater.inflate(R.layout.item_load_more, parent, false)
-            return LoadingVH(view)
+            return LoadingVH(ItemLoadMoreBinding.inflate(layoutInflater, parent, false))
         }
     }
 

@@ -90,7 +90,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardVM>() 
     override fun onSubscribeObserver() {
         with(_activityVM) {
             user.observe(this@DashboardFragment) {
-                binding.imgAvatar.loadImage(it.getAvatar())
+                binding.imgAvatar.loadImage(it.avatar)
                 binding.tvName.text = it.name
                 binding.tvRole.text = currentFullName
             }

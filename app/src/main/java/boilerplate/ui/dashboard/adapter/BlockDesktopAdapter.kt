@@ -76,7 +76,7 @@ class BlockDesktopAdapter(
             when (desktop.type) {
                 0 -> {
                     type = HomeFeatureMenu.DOCUMENTS.displayName
-                    titleDeadline = R.string.text_document_time_title
+                    titleDeadline = R.string.document_time_with_dot
                     color = R.color.color_work_blue
                     background = R.drawable.bg_feedback_status_blue
                     deadline = desktop.documentTime
@@ -84,7 +84,7 @@ class BlockDesktopAdapter(
 
                 1 -> {
                     type = HomeFeatureMenu.SIGNING.displayName
-                    titleDeadline = R.string.text_document_time_title
+                    titleDeadline = R.string.document_time_with_dot
                     color = R.color.color_work_yellow
                     background = R.drawable.bg_feedback_status_yellow
                     deadline = desktop.documentTime
@@ -92,7 +92,7 @@ class BlockDesktopAdapter(
 
                 2, 3 -> {
                     type = HomeFeatureMenu.WORKS.displayName
-                    titleDeadline = R.string.text_deadline_title
+                    titleDeadline = R.string.deadline_with_dot
                     color = R.color.color_work_green
                     background = R.drawable.bg_feedback_status_green
                     deadline = desktop.deadline

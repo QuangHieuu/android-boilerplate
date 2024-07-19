@@ -2,9 +2,12 @@ package boilerplate.data.local.repository.user
 
 import boilerplate.data.local.sharedPrefs.SharedPrefsApi
 import boilerplate.data.local.sharedPrefs.SharedPrefsKey
-import boilerplate.data.local.sharedPrefs.SharedPrefsKey.USER_ROLE_PERMISSION
 import boilerplate.data.remote.api.ApiRequest
 import boilerplate.data.remote.api.response.BaseResponse
+import boilerplate.data.remote.api.response.BaseResult
+import boilerplate.data.remote.api.response.BaseResults
+import boilerplate.model.user.Company
+import boilerplate.model.user.Department
 import boilerplate.model.user.User
 import boilerplate.utils.extension.checkInternet
 import com.google.gson.Gson
@@ -43,6 +46,16 @@ interface UserRepository {
     fun saveRolePermission(r: ArrayList<User.Role>)
 
     fun getRolePermission(): ArrayList<String>
+
+    fun saveContact(c: ArrayList<Company>)
+
+    fun getContactCompany(): ArrayList<Company>
+
+    fun getCurrentCompany(): Company
+
+    fun getCurrentDepartment(): Department
+
+    fun getCompanyDepartment(id: String): Flowable<BaseResult<Department>>
 }
 
 class UserRepositoryImpl(
@@ -67,12 +80,24 @@ class UserRepositoryImpl(
     }
 
     override fun saveUser(user: User) {
+        for (title in user.titles) {
+            if (title.isMain) {
+                if (title.company?.id.isNullOrEmpty()) {
+                    title.company?.id = title.companyId
+                }
+                if (title.department?.id.isNullOrEmpty()) {
+                    title.department?.id = title.departmentId
+                }
+            }
+        }
         share.put(SharedPrefsKey.USER_DATA, user)
         setCurrentRole(user.mainRole)
     }
 
     override fun wipeUserData() {
         share.clearKey(SharedPrefsKey.USER_DATA)
+        share.clearKey(SharedPrefsKey.USER_COMPANY_DATA)
+        share.clearKey(SharedPrefsKey.USER_ROLE_PERMISSION)
         share.clearKey(SharedPrefsKey.SIZE)
         share.clearKey(SharedPrefsKey.SOUND)
     }
@@ -119,17 +144,68 @@ class UserRepositoryImpl(
         for (role in r) {
             if (role.isActive) list.add(role.codeId)
         }
-        share.put(USER_ROLE_PERMISSION, list)
+        share.put(SharedPrefsKey.USER_ROLE_PERMISSION, list)
     }
 
     override fun getRolePermission(): ArrayList<String> {
-        val json = share.get(USER_ROLE_PERMISSION, String::class.java)
+        val json = share.get(SharedPrefsKey.USER_ROLE_PERMISSION, String::class.java)
 
         return if (json.isEmpty()) {
             arrayListOf()
         } else {
-            gson.fromJson(json, object : TypeToken<ArrayList<String>>() {}.type)
+            try {
+                gson.fromJson(json, object : TypeToken<ArrayList<String>>() {}.type)
+            } catch (ignore: Exception) {
+                arrayListOf()
+            }
         }
+    }
+
+    override fun saveContact(c: ArrayList<Company>) {
+        share.put(SharedPrefsKey.USER_COMPANY_DATA, c)
+    }
+
+    override fun getContactCompany(): ArrayList<Company> {
+        val json = share.get(SharedPrefsKey.USER_COMPANY_DATA, String::class.java)
+        return if (json.isEmpty()) {
+            arrayListOf()
+        } else {
+            try {
+                gson.fromJson(json, object : TypeToken<ArrayList<Company>>() {}.type)
+            } catch (ignore: Exception) {
+                arrayListOf()
+            }
+        }
+    }
+
+    override fun getCurrentCompany(): Company {
+        val user = getUser()
+        val role = getCurrentRole()
+
+        var company: Company? = null
+        for (title in user.titles) {
+            if (title.id.equals(role)) {
+                company = title.company
+            }
+        }
+        return company ?: Company()
+    }
+
+    override fun getCurrentDepartment(): Department {
+        val user = getUser()
+        val role = getCurrentRole()
+
+        var department: Department? = null
+        for (title in user.titles) {
+            if (title.id.equals(role)) {
+                department = title.department
+            }
+        }
+        return department ?: Department()
+    }
+
+    override fun getCompanyDepartment(id: String): Flowable<BaseResult<Department>> {
+        return api.chat.getCompanyDepartment(id).checkInternet()
     }
 
     override fun logout(): Flowable<BaseResponse<Boolean>> {

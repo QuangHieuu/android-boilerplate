@@ -11,10 +11,11 @@ import boilerplate.data.remote.repository.auth.LoginRepository
 import boilerplate.model.device.Device
 import boilerplate.model.user.User
 import boilerplate.utils.extension.BaseSchedulerProvider
+import boilerplate.utils.extension.loading
 import boilerplate.utils.extension.notNull
+import boilerplate.utils.extension.result
 import boilerplate.utils.extension.withScheduler
 import com.google.firebase.messaging.FirebaseMessaging
-import io.reactivex.rxjava3.core.Flowable
 
 class StartVM(
     private val schedulerProvider: BaseSchedulerProvider,
@@ -67,18 +68,26 @@ class StartVM(
     }
 
     fun getMe() {
+        val role = loginServer.getRolePermission()
+        val contact = loginServer.getContact()
+
         launchDisposable {
             loginServer.getMe()
+//                .flatMap { res ->
+//                    Log.d("SSS", "flatMap: ")
+//                    Single.concat(role, contact)
+//                        .toList()
+//                        .toFlowable()
+//                        .flatMap { Flowable.just(res) }
+//                }
                 .withScheduler(schedulerProvider)
-                .flatMap { res -> loginServer.getRolePermission().flatMap { Flowable.just(res) } }
-                .subscribeWith(ApiObservable.apiCallback(success = { res ->
+                .loading(_loading)
+                .result({ res ->
                     res.result.notNull {
                         _user.postValue(it)
                         registerDeviceId(it)
                     }
-                }, fail = {
-                    setLoading(false)
-                }))
+                })
         }
     }
 

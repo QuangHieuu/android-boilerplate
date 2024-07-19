@@ -1,13 +1,12 @@
 package boilerplate.model.user
 
-import com.google.gson.annotations.SerializedName
 import boilerplate.model.ExpandModel
+import com.google.gson.annotations.SerializedName
 
 class Department : ExpandModel() {
     @SerializedName("phong_ban_id")
     var id: String? = null
         get() = if (field == null) "".also { field = it } else field
-        private set
 
     @SerializedName("ten_phong_ban")
     var name: String? = null
@@ -33,31 +32,25 @@ class Department : ExpandModel() {
         get() = if (field == null) ArrayList<User>().also { field = it } else field
 
     @SerializedName("total_nhan_vien")
-    val totalUser = 0
+    var totalUser: Int = 0
 
     @SerializedName("trang_thai")
-    val status = 0
+    var status = 0
 
     @SerializedName("nguoi_ky")
-    val signer: User? = null
+    var signer: User? = null
 
     @SerializedName("ma_ky_so")
-    val signCode: String? = null
+    var signCode: String? = null
 
     @SerializedName("is_active")
-    val isActive = false
+    var isActive = false
 
     @SerializedName("phong_ban_lanh_dao")
-    val isLeaderDepartment = false
-    val loai = 0
-    val stt = 0
+    var isLeaderDepartment = false
+    var loai = 0
+    var stt = 0
 
     @SerializedName("thoi_gian_duyet")
-    val approveTime: String? = null
-
-    class Result {
-        var items: ArrayList<Department>? = null
-            get() = if (field == null) ArrayList<Department>().also { field = it } else field
-            private set
-    }
+    var approveTime: String? = null
 }

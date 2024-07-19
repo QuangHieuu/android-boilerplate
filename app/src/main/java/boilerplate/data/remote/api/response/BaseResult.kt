@@ -5,6 +5,12 @@ open class BaseResult<T> {
     val items: T? = null
 }
 
+open class BaseResults<T> {
+    val result: ArrayList<T>? = null
+    val items: T? = null
+}
+
 class Result<T> {
-    val items: ArrayList<T>? = null
+    val items: ArrayList<T> = arrayListOf()
+        get() = field
 }

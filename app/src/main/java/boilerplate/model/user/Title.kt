@@ -22,7 +22,14 @@ class Title {
         get() = field ?: Position().also { field = it }
 
     @SerializedName("doi_tuong")
-    var `object`: PersonObject? = null
+    var personObject: PersonObject? = null
         get() = field ?: PersonObject().also { field = it }
 
+    @SerializedName("don_vi_id")
+    var companyId: String? = null
+        get() = field ?: "".also { field = it }
+
+    @SerializedName("phong_ban_id")
+    var departmentId: String? = null
+        get() = field ?: "".also { field = it }
 }

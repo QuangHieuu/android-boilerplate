@@ -20,6 +20,7 @@ import boilerplate.service.signalr.SignalRManager
 import boilerplate.service.signalr.SignalRReceiver
 import boilerplate.service.signalr.SignalRService
 import boilerplate.ui.main.adapter.HomePagerAdapter
+import boilerplate.ui.main.adapter.customTab
 import boilerplate.ui.main.tab.HomeTabIndex
 import boilerplate.ui.splash.StartActivity
 import boilerplate.utils.InternetManager
@@ -45,8 +46,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
     private val _signalRReceiver by inject<SignalRReceiver>()
 
     private lateinit var _windowInfoTracker: WindowInfoTracker
-    private lateinit var mHomeAdapter: HomePagerAdapter
-    private lateinit var mTabMediator: TabLayoutMediator
+    private lateinit var _homeAdapter: HomePagerAdapter
 
     private lateinit var _serviceIntent: Intent
 
@@ -71,7 +71,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
             }
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 binding.frameTablet.apply { if (isTablet()) show() else gone() }
-                with(binding.appConstraint) {
+                with(binding.appContainer) {
                     val set = ConstraintSet()
                     set.clone(this)
                     if (isTablet()) {
@@ -142,33 +142,30 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
 
     private fun initHomepage() {
         with(binding) {
-            mHomeAdapter = HomePagerAdapter(supportFragmentManager, lifecycle)
-            viewPagerHome.setAdapter(mHomeAdapter)
-            viewPagerHome.setUserInputEnabled(false)
-            mTabMediator = TabLayoutMediator(
+            _homeAdapter = HomePagerAdapter(supportFragmentManager, lifecycle)
+            viewPagerHome.apply {
+                setAdapter(_homeAdapter)
+                setUserInputEnabled(false)
+                setOffscreenPageLimit(5)
+            }
+
+            HomeTabIndex.setupFragment().let {
+                _homeAdapter.addFragment(it)
+            }
+
+            TabLayoutMediator(
                 tabLayoutHome,
                 viewPagerHome,
                 false,
                 false
             ) { tab: TabLayout.Tab, position: Int ->
                 tab.setCustomView(
-                    HomePagerAdapter.getTabView(
-                        this@MainActivity,
-                        binding.root,
+                    tab.customTab(
                         HomeTabIndex.titleTab()[position],
                         HomeTabIndex.iconTab()[position]
                     )
                 )
-            }
-
-            HomeTabIndex.setupFragment().let {
-                viewPagerHome.setOffscreenPageLimit(it.size - 1)
-                mHomeAdapter.addOnlyForHomeFragment(it)
-            }
-            if (mTabMediator.isAttached) {
-                mTabMediator.detach()
-            }
-            mTabMediator.attach()
+            }.attach()
         }
     }
 

@@ -1,7 +1,7 @@
 package boilerplate.model
 
 open class ExpandModel {
-    var contact_level = 1
+    var contactLevel = 1
     var isChecked = false
     var isExpanding = false
     var isShow = false

@@ -6,13 +6,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import boilerplate.R
-import boilerplate.ui.main.tab.HomeTabIndex
+import boilerplate.databinding.ViewItemTabBinding
+import boilerplate.utils.extension.gone
+import boilerplate.utils.extension.show
 import boilerplate.widget.customText.TextViewFont
+import com.google.android.material.tabs.TabLayout
 
 /**
  * Created by dungvhp on 4/26/17.
@@ -43,32 +49,6 @@ class HomePagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
         notifyItemRangeInserted(0, list.size)
     }
 
-    fun addOnlyForHomeFragment(list: ArrayList<Pair<Int, Fragment>>) {
-        if (mFragments.size == 0) {
-            mFragments.addAll(list)
-            notifyItemRangeInserted(0, list.size)
-        } else {
-            if (mFragments.size != list.size) {
-                if (mFragments.size < list.size) {
-                    mFragments.add(
-                        HomeTabIndex.workPosition,
-                        list[HomeTabIndex.workPosition]
-                    )
-                    notifyItemInserted(HomeTabIndex.workPosition)
-                } else {
-                    mFragments.removeAt(HomeTabIndex.workPosition)
-                    notifyItemRemoved(HomeTabIndex.workPosition)
-                }
-            }
-            val homeIndex: Int = HomeTabIndex.homeDashboardPosition
-            if (mFragments[homeIndex].first != list[homeIndex].first) {
-                mFragments[homeIndex] = list[homeIndex]
-                notifyItemChanged(homeIndex)
-            }
-            notifyItemRangeChanged(HomeTabIndex.contactPosition, mFragments.size - 1)
-        }
-    }
-
     fun getTabIndex(pos: Int): Int {
         return mFragments[pos].first
     }
@@ -83,20 +63,47 @@ class HomePagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
         return index
     }
 
-    companion object {
-        fun getTabView(
-            context: Context,
-            root: ViewGroup,
-            title: String,
-            drawable: Int
-        ): View {
-            val view: View = LayoutInflater.from(context)
-                .inflate(R.layout.view_item_tab, root, false)
-            val icon = view.findViewById<ImageView>(R.id.img_icon)
-            val textViewFont: TextViewFont = view.findViewById(R.id.tv_title)
-            textViewFont.text = title
-            icon.setImageResource(drawable)
-            return view
+    fun getTabView(
+        context: Context,
+        root: ViewGroup,
+        title: String,
+        drawable: Int
+    ): View {
+        val view: View = LayoutInflater.from(context)
+            .inflate(R.layout.view_item_tab, root, false)
+        val icon = view.findViewById<ImageView>(R.id.img_icon)
+        val textViewFont: TextViewFont = view.findViewById(R.id.tv_title)
+        textViewFont.text = title
+        icon.setImageResource(drawable)
+        return view
+    }
+}
+
+fun TabLayout.Tab.customTab(
+    title: String,
+    @DrawableRes drawable: Int = -1,
+    count: Int = 0,
+    @ColorRes color: Int = -1
+): View {
+    val layoutInflater = LayoutInflater.from(view.context)
+    val binding = ViewItemTabBinding.inflate(layoutInflater)
+    with(binding) {
+        if (drawable != -1) {
+            imgIcon.show()
+            imgIcon.setImageResource(drawable)
+        } else {
+            imgIcon.gone()
+        }
+
+        if (color != -1) {
+            tvTitle.setTextColor(ContextCompat.getColor(binding.root.context, color))
+        }
+        tvTitle.text = title
+
+        if (count > 0) {
+            tvCount.show()
+            tvCount.text = count.toString()
         }
     }
+    return binding.root
 }

@@ -153,7 +153,11 @@ fun EditText.showKeyboard() {
     }
 }
 
-fun ImageView.loadImage(url: String?, accessToken: String? = AccountManager.getToken()) {
+fun ImageView.loadImage(url: String? = "", accessToken: String? = AccountManager.getToken()) {
+    if (url.isNullOrEmpty()) {
+        return
+    }
+
     val context = context
     val glideUrl = GlideUrl(url, accessToken?.let {
         LazyHeaders.Builder()

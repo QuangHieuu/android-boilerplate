@@ -4,7 +4,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 
-class ClickUtil(
+open class ClickUtil(
     private var longClick: Int,
     private val mListener: OnClick
 ) : View.OnClickListener {
