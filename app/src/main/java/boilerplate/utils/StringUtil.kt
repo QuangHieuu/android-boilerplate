@@ -30,9 +30,59 @@ object StringUtil {
         "((?:rgba|rgb)\\(\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,?\\s*([0-9.]*)\\s*\\))"
     const val REGEX_WEB_LINK: String =
         "((https?://|www\\\\.)[-a-zA-Z0-9+&@#/%?=~_|!:.;]*[-a-zA-Z0-9+&@#/%=~_|])"
-    const val REGEX_PHONE_NUMBER: String = "(\\+?84|0)([981735]{1,3})([0-9]|\\s|-|\\.){7,10}"
+    const val REGEX_PHONE_NUMBER: String =
+        "^\\s*\$|^(\\+?84|0)+([981735]{1,3})([0-9]|\\s|-|\\.){7,10}"
     const val REGEX_LINK_CONTAIN: String = "<a\\b[^>]*>(.*?)</a>"
     const val REGEX_MENTION_INPUT: String = "@[\\u4e00-\\u9fa5\\w\\-\\s]+"
+
+    const val MENTION_SIGN: String = "@"
+
+    private val htmlEscape: Array<Array<String>> = arrayOf(
+        arrayOf("&lt;", "<"),
+        arrayOf("&gt;", ">"),
+        arrayOf("&amp;", "&"),
+        arrayOf("&quot;", "\\\""),
+        arrayOf("&agrave;", "à"),
+        arrayOf("&Agrave;", "À"),
+        arrayOf("&acirc;", "â"),
+        arrayOf("&auml;", "ä"),
+        arrayOf("&Auml;", "Ä"),
+        arrayOf("&Acirc;", "Â"),
+        arrayOf("&aring;", "å"),
+        arrayOf("&Aring;", "Å"),
+        arrayOf("&aelig;", "æ"),
+        arrayOf("&AElig;", "Æ"),
+        arrayOf("&ccedil;", "ç"),
+        arrayOf("&Ccedil;", "Ç"),
+        arrayOf("&eacute;", "é"),
+        arrayOf("&Eacute;", "É"),
+        arrayOf("&egrave;", "è"),
+        arrayOf("&Egrave;", "È"),
+        arrayOf("&ecirc;", "ê"),
+        arrayOf("&Ecirc;", "Ê"),
+        arrayOf("&euml;", "ë"),
+        arrayOf("&Euml;", "Ë"),
+        arrayOf("&iuml;", "ï"),
+        arrayOf("&Iuml;", "Ï"),
+        arrayOf("&ocirc;", "ô"),
+        arrayOf("&Ocirc;", "Ô"),
+        arrayOf("&ouml;", "ö"),
+        arrayOf("&Ouml;", "Ö"),
+        arrayOf("&oslash;", "ø"),
+        arrayOf("&Oslash;", "Ø"),
+        arrayOf("&szlig;", "ß"),
+        arrayOf("&ugrave;", "ù"),
+        arrayOf("&Ugrave;", "Ù"),
+        arrayOf("&ucirc;", "û"),
+        arrayOf("&Ucirc;", "Û"),
+        arrayOf("&uuml;", "ü"),
+        arrayOf("&Uuml;", "Ü"),
+        arrayOf("&nbsp;", " "),
+        arrayOf("\"", "\\\""),
+        arrayOf("&copy;", "©"),
+        arrayOf("&reg;", "®"),
+        arrayOf("&euro;", "₠")
+    )
 
     @JvmStatic
     fun getHotLine(): String {
@@ -74,15 +124,15 @@ object StringUtil {
 
     @JvmStatic
     fun getHtml(text: String?): CharSequence {
-        var temp = text
-        if (temp != null) {
-            temp = temp.replace("\n".toRegex(), "<br>").replace("\t", "<br>")
+        if (text.isNullOrEmpty()) {
+            return ""
+        }
+        return text.let {
+            var temp = it.replace("\n".toRegex(), "<br>").replace("\t", "<br>")
             temp = replaceRGBColorsWithHex(temp)
             temp = formatSupport(temp)
             temp = formatWebLink(temp)
-            return removeEnterRow(getHtmlSpan(temp))
-        } else {
-            return ""
+            removeEnterRow(getHtmlSpan(temp))
         }
     }
 
@@ -181,9 +231,7 @@ object StringUtil {
     }
 
     private fun formatSupport(text: String): String {
-        val doc = Jsoup.parse(text)
-        val phone: String = formatPhone(doc.html())
-        doc.html(phone)
+        val doc = Jsoup.parse(formatPhone(text))
         val elementsIns = doc.select("ins")
         if (elementsIns.text().isNotEmpty()) {
             elementsIns.tagName("u")
@@ -362,4 +410,35 @@ object StringUtil {
         }
         return result.toString()
     }
+
+    fun unescapeHTML(s: String, start: Int): String {
+        var holder = s
+        val j: Int
+        var k: Int
+
+        val i = holder.indexOf("&", start)
+        if (i > -1) {
+            j = holder.indexOf(";", i)
+            if (j > i) {
+                // ok this is not most optimized way to
+                // do it, a StringBuffer would be better,
+                // this is left as an exercise to the reader!
+                val temp = holder.substring(i, j + 1)
+                // search in htmlEscape[][] if temp is there
+                k = 0
+                while (k < htmlEscape.size) {
+                    if (htmlEscape.get(k)
+                            .get(0) == temp
+                    ) break
+                    else k++
+                }
+                if (k < htmlEscape.size) {
+                    holder = holder.substring(0, i) + htmlEscape[k][1] + holder.substring(j + 1)
+                    return unescapeHTML(holder, i) // recursive call
+                }
+            }
+        }
+        return holder
+    }
+
 }

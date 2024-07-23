@@ -3,14 +3,10 @@ package boilerplate.model.message;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
 
 import boilerplate.model.conversation.Conversation;
 import boilerplate.model.file.AttachedFile;
 import boilerplate.model.user.User;
-import boilerplate.utils.DateTimeUtil;
 import boilerplate.utils.StringUtil;
 
 public class Message {
@@ -339,19 +335,6 @@ public class Message {
         return personPin;
     }
 
-    public static class Result {
-        private ArrayList<Message> items;
-        private int total;
-
-        public ArrayList<Message> getItems() {
-            return items;
-        }
-
-        public int getTotal() {
-            return total;
-        }
-    }
-
     public static class Option {
         private boolean sms = false;
         private boolean email = false;
@@ -459,126 +442,6 @@ public class Message {
         }
     }
 
-    public static class Search {
-        private Map<String, Object> data = new HashMap<>();
-
-        public Search() {
-            setPage(1);
-            String from = DateTimeUtil.getCurrentDateWith(Calendar.MONTH, -3);
-            String to = DateTimeUtil.getCurrentDate();
-            setFrom(DateTimeUtil.convertWithSuitableFormat(from, DateTimeUtil.FORMAT_POST_SERVER));
-            setTo(DateTimeUtil.convertWithSuitableFormat(to, DateTimeUtil.FORMAT_POST_SERVER));
-        }
-
-        public void setSearchPerson(int position, String userId) {
-            switch (position) {
-                case 0:
-                    data.put("nguoiGuiId", userId);
-                    data.put("nguoiNhanId", userId);
-                    break;
-                case 1:
-                    data.put("nguoiGuiId", userId);
-                    data.put("nguoiNhanId", "");
-                    break;
-                case 2:
-                    data.put("nguoiNhanId", userId);
-                    data.put("nguoiGuiId", "");
-                    break;
-            }
-        }
-
-        public void setConversationId(String id) {
-            data.put("hoiThoaiId", id);
-        }
-
-        public void setPage(int page) {
-            data.put("page", page);
-        }
-
-        public void setLimit(int limit) {
-            data.put("limit", limit);
-        }
-
-        public void setTextSearch(String textSearch) {
-            data.put("searchText", textSearch);
-        }
-
-        public void setFrom(String from) {
-            data.put("tuNgay", from);
-        }
-
-        public void setTo(String to) {
-            data.put("denNgay", to);
-        }
-
-        public void setSendSms(Boolean sendSms) {
-            data.put("guiKemSMS", sendSms);
-        }
-
-        public void setSendEmail(Boolean sendEmail) {
-            data.put("guiKemEmail", sendEmail);
-        }
-
-        public void setAttachedFile(Boolean attachedFile) {
-            data.put("fileDinhKem", attachedFile);
-        }
-
-        public void setImportant(Boolean important) {
-            data.put("tinNhanDanhDau", important);
-        }
-
-        public void setOneToOne(Boolean isOneToOne) {
-            if (isOneToOne) {
-                data.put("isGroup", 0);
-            } else {
-                data.put("isGroup", "null");
-            }
-        }
-
-        public Map<String, Object> getData() {
-            return data;
-        }
-
-        public Integer getPage() {
-            Object a = data.get("page");
-            return (int) a;
-        }
-
-        public Boolean getImportant() {
-            Object a = data.get("tinNhanDanhDau");
-            return (Boolean) a;
-        }
-
-        public Boolean getEmail() {
-            Object a = data.get("guiKemEmail");
-            return (Boolean) a;
-        }
-
-        public String getTo() {
-            Object a = data.get("denNgay");
-            if (a != null) {
-                return (String) a;
-            }
-            return DateTimeUtil.getCurrentDate();
-        }
-
-        public String getFrom() {
-            Object a = data.get("tuNgay");
-            if (a != null) {
-                return (String) a;
-            }
-            return DateTimeUtil.getCurrentDateWith(Calendar.MONTH, -1);
-        }
-
-        public String getConversationId() {
-            Object a = data.get("hoiThoaiId");
-            if (a != null) {
-                return (String) a;
-            }
-            return "";
-        }
-    }
-
     public static class ReceiverNotify {
         @SerializedName("nguoi_nhan_id")
         private String receiverId;
@@ -592,6 +455,35 @@ public class Message {
 
         public String getReceiverId() {
             return receiverId;
+        }
+    }
+
+    public static class SendMessageResult {
+        private final String value;
+        private final String message;
+
+        private Message entity;
+        private int status;
+
+        public SendMessageResult(String value, String message) {
+            this.value = value;
+            this.message = message;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public Message getEntity() {
+            return entity;
+        }
+
+        public int getStatus() {
+            return status;
         }
     }
 }

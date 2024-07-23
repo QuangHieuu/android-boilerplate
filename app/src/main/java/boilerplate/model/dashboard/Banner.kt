@@ -1,6 +1,6 @@
 package boilerplate.model.dashboard
 
-import boilerplate.data.remote.service.ApiUrl
+import boilerplate.data.remote.api.ApiUrl
 
 class Banner {
     var file: File? = null

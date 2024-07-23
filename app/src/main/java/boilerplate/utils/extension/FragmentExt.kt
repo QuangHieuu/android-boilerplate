@@ -14,8 +14,8 @@ import boilerplate.R
 import kotlin.reflect.KClass
 
 fun Fragment.open(
-    split: Boolean = false,
     fragment: Fragment,
+    split: Boolean = false,
     addToBackStack: Boolean = true,
     animateType: AnimateType = AnimateType.SLIDE_TO_LEFT,
     @IdRes containerId: Int = R.id.app_container,
@@ -28,9 +28,6 @@ fun Fragment.open(
         }
         val isTablet = context?.isTablet()
         if (isTablet == true && split) {
-            if (fm.isExistFragment(fragment)) {
-                fm.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-            }
             add(R.id.frame_tablet, fragment, tag)
         } else {
             add(containerId, fragment, tag)

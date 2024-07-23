@@ -14,7 +14,7 @@ import boilerplate.model.dashboard.HomeFeature.HomePage
 import boilerplate.model.dashboard.HomeFeatureMenu.Companion.blockDashboardWork
 import boilerplate.ui.dashboard.DashboardFragment.OnMenuListener
 import boilerplate.ui.dashboard.adapter.BlockWorkAdapter.WorkHolder
-import boilerplate.utils.ClickUtil
+import boilerplate.utils.extension.click
 
 class BlockWorkAdapter(private val _listener: OnMenuListener) : RecyclerView.Adapter<WorkHolder>() {
     private var _notAssign = 0
@@ -80,9 +80,7 @@ class BlockWorkAdapter(private val _listener: OnMenuListener) : RecyclerView.Ada
                 )
             }
             return binding.root.also {
-                it.setOnClickListener(ClickUtil.onClick {
-                    _listener.onMenu(page)
-                })
+                it.click { _listener.onMenu(page) }
             }
         }
     }

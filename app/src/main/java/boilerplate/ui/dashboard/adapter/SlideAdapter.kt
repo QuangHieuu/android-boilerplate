@@ -3,14 +3,12 @@ package boilerplate.ui.dashboard.adapter
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.ImageView
-import boilerplate.R
 import boilerplate.databinding.ItemDashboardBannerImageBinding
 import boilerplate.model.dashboard.Banner
 import boilerplate.ui.dashboard.DashboardFragment
 import boilerplate.ui.dashboard.adapter.SlideAdapter.SliderAdapterVH
 import boilerplate.utils.extension.notNull
-import boilerplate.utils.extension.setClick
+import boilerplate.utils.extension.click
 import com.bumptech.glide.Glide
 import com.smarteist.autoimageslider.SliderViewAdapter
 
@@ -45,14 +43,13 @@ class SlideAdapter(private val _listener: DashboardFragment.OnSliderImageListene
         private val _listener: DashboardFragment.OnSliderImageListener,
         private val _context: Context = _binding.root.context
     ) : ViewHolder(_binding.root) {
-        private val mImageView: ImageView = itemView.findViewById(R.id.imageSlider)
 
         fun setData(banner: Banner) {
             Glide.with(_context)
                 .load(banner.file?.url)
                 .into(_binding.imageSlider)
 
-            mImageView.setClick {
+            _binding.imageSlider.click {
                 banner.url.notNull { _listener.onClick(it) }
             }
         }

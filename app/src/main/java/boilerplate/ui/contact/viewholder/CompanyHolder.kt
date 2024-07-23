@@ -11,7 +11,7 @@ import boilerplate.databinding.ItemContactCompanyBinding
 import boilerplate.model.user.Company
 import boilerplate.model.user.Department
 import boilerplate.ui.contact.listener.SimpleListener
-import boilerplate.utils.ClickUtil
+import boilerplate.utils.extension.click
 import java.util.Locale
 
 class CompanyHolder(
@@ -107,13 +107,9 @@ class CompanyHolder(
                     )
                 }
                 tvName.text = name.append("\u0020").append(countAvail)
-                tvName.setOnClickListener(ClickUtil.onClick {
-                    _listener.onExpandDepartment(any)
-                })
+                tvName.click { _listener.onExpandDepartment(any) }
             }
-            _binding.imgDropDown.setOnClickListener(ClickUtil.onClick {
-                _binding.tvName.performClick()
-            })
+            _binding.imgDropDown.click { _binding.tvName.performClick() }
         }
     }
 }

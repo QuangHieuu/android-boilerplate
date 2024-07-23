@@ -2,8 +2,6 @@ package boilerplate.base
 
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +12,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
 import boilerplate.R
+import boilerplate.utils.extension.addTo
+import boilerplate.utils.extension.removeSelf
 import boilerplate.widget.loading.LoadingScreen
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -56,34 +56,30 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
             isFocusable = true
         }
 
-        initialize()
-        onSubscribeObserver()
-        registerEvent()
-        callApi()
-
         with(_viewModel) {
             loading.observe(viewLifecycleOwner) { show ->
-                if (view.parent is ViewGroup) {
-                    val parent = view.parent as ViewGroup
+                if (view is ViewGroup) {
                     if (show && isVisible) {
-                        if (!parent.contains(_loadingScreen)) {
-                            parent.addView(_loadingScreen)
+                        if (!view.contains(_loadingScreen)) {
+                            _loadingScreen.addTo(view)
                         }
                     } else {
-                        if (parent.contains(_loadingScreen)) {
-                            parent.removeView(_loadingScreen)
-                        }
+                        _loadingScreen.removeSelf()
                     }
                 }
             }
         }
+
+        initialize()
+        onSubscribeObserver()
+        registerEvent()
+        callApi()
     }
 
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
         clearAdjustSoftInput()
-        _disposable.dispose()
         _disposable.clear()
     }
 
@@ -94,27 +90,6 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
     protected abstract fun registerEvent()
 
     protected abstract fun callApi()
-
-    protected fun runOnMainUI(runnable: Runnable?) {
-        lifecycle.run {
-
-        }
-        if (!isAdded) {
-            return
-        }
-        requireActivity().runOnUiThread(runnable)
-    }
-
-    protected fun runOnMainUI(runnable: Runnable?, delay: Int) {
-        if (!isAdded) {
-            return
-        }
-        requireActivity().runOnUiThread {
-            Handler(Looper.getMainLooper()).postDelayed(
-                runnable!!, delay.toLong()
-            )
-        }
-    }
 
     protected fun popFragment() {
         requireActivity().supportFragmentManager.popBackStack()

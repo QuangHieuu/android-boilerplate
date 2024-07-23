@@ -16,6 +16,8 @@ import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.result
 import boilerplate.utils.extension.withScheduler
 import com.google.firebase.messaging.FirebaseMessaging
+import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.rxjava3.core.Single
 
 class StartVM(
     private val schedulerProvider: BaseSchedulerProvider,
@@ -73,15 +75,13 @@ class StartVM(
 
         launchDisposable {
             loginServer.getMe()
-//                .flatMap { res ->
-//                    Log.d("SSS", "flatMap: ")
-//                    Single.concat(role, contact)
-//                        .toList()
-//                        .toFlowable()
-//                        .flatMap { Flowable.just(res) }
-//                }
+                .flatMap { res ->
+                    Single.concat(role, contact)
+                        .toList()
+                        .toFlowable()
+                        .flatMap { Flowable.just(res) }
+                }
                 .withScheduler(schedulerProvider)
-                .loading(_loading)
                 .result({ res ->
                     res.result.notNull {
                         _user.postValue(it)

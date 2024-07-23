@@ -19,8 +19,8 @@ import boilerplate.ui.main.MainVM
 import boilerplate.ui.setting.SettingMenu.HOTLINE
 import boilerplate.ui.setting.SettingMenu.LOG_OUT
 import boilerplate.ui.setting.SettingMenu.PROFILE
-import boilerplate.utils.ClickUtil
 import boilerplate.utils.StringUtil
+import boilerplate.utils.extension.click
 import boilerplate.utils.extension.loadImage
 import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.showDialog
@@ -74,7 +74,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding, MainVM>() {
                 textSize = resources.getDimension(R.dimen.dp_11) / metrics.density
                 gravity = Gravity.CENTER
                 layoutParams = params
-                setOnClickListener { v ->
+                click { v ->
                     if (_pressNumber < 3) {
                         _pressNumber += 1
                         _buttonIDs[_pressNumber] = v.id
@@ -134,9 +134,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding, MainVM>() {
         } else {
             menu.title
         }
-        view.setOnClickListener(ClickUtil.onClick {
-            handleMenu(menu)
-        })
+        view.click { handleMenu(menu) }
         return view
     }
 
@@ -153,14 +151,11 @@ class SettingFragment : BaseFragment<FragmentSettingBinding, MainVM>() {
                         btnConfirm.setText(R.string.logout)
                         tvDescription.setText(R.string.logout_description)
 
-                        btnCancel.setOnClickListener(ClickUtil.onClick {
-                            dialog.dismiss()
-                        })
-
-                        btnConfirm.setOnClickListener(ClickUtil.onClick {
+                        btnCancel.click { dialog.dismiss() }
+                        btnConfirm.click {
                             dialog.dismiss()
                             _viewModel.logout()
-                        })
+                        }
                     }
                 }
             }
@@ -172,7 +167,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding, MainVM>() {
     private fun startCounter() {
         _handler = Handler(Looper.getMainLooper())
         _runnable = Runnable {
-            if (_buttonIDs.get(3) == 0) {
+            if (_buttonIDs[3] == 0) {
                 clearEverything()
             }
         }

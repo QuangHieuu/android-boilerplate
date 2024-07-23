@@ -1,10 +1,12 @@
 package boilerplate.model.file
 
+import android.content.Context
 import android.net.Uri
-import boilerplate.data.remote.service.ApiUrl
+import boilerplate.data.remote.api.ApiUrl
 import boilerplate.model.ExpandModel
 import boilerplate.utils.ImageUtil.IMAGE_MAX_SIZE
 import boilerplate.utils.ImageUtil.IMAGE_THUMB_SIZE
+import boilerplate.utils.SystemUtil
 import boilerplate.utils.SystemUtil.SYSTEM_DELETE
 import com.google.gson.annotations.SerializedName
 import java.util.Locale
@@ -28,6 +30,11 @@ open class AttachedFile : ExpandModel() {
     var fileName: String? = null
         get() = field ?: "".also { field = it }
 
+    fun getFileName(context: Context): String? {
+        if (uri == null) return fileName
+        return SystemUtil.getDisplayFilename(context, uri!!)
+    }
+
     @SerializedName(value = "ten_file")
     var realName: String? = null
         get() = field?.replace(SYSTEM_DELETE, "") ?: fileName
@@ -38,6 +45,11 @@ open class AttachedFile : ExpandModel() {
 
     @SerializedName(value = "kich_thuoc", alternate = ["size"])
     var fileSize = 0
+
+    fun getFileSize(context: Context): String {
+        if (fileSize != 0 || uri == null) return SystemUtil.getDisplayFileSize(fileSize)
+        return SystemUtil.getDisplayFileSize(context, uri!!)
+    }
 
     @SerializedName(value = "isMigrate", alternate = ["migrated"])
     var isMigrated = false
@@ -52,7 +64,12 @@ open class AttachedFile : ExpandModel() {
     var application: String? = null
         get() = if (field == null) "".also { field = it } else field
 
-    protected var url: String? = null
+    private var url: String? = null
+
+    fun getUrl(): String {
+        return url ?: ""
+    }
+
     protected var uri: Uri? = null
 
     var status = 0

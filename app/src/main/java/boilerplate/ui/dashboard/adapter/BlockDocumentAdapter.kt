@@ -15,7 +15,7 @@ import boilerplate.model.dashboard.HomeFeature.HomePage
 import boilerplate.model.dashboard.HomeFeatureMenu.Companion.blockDashboardDocument
 import boilerplate.ui.dashboard.DashboardFragment.OnMenuListener
 import boilerplate.ui.dashboard.adapter.BlockDocumentAdapter.DocumentVH
-import boilerplate.utils.ClickUtil
+import boilerplate.utils.extension.click
 
 class BlockDocumentAdapter(
     private val _listener: OnMenuListener
@@ -97,9 +97,7 @@ class BlockDocumentAdapter(
                 )
             }
             return binding.root.also {
-                it.setOnClickListener(ClickUtil.onClick {
-                    _listener.onMenu(page)
-                })
+                it.click { _listener.onMenu(page) }
             }
         }
     }

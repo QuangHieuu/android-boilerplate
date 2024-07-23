@@ -14,7 +14,7 @@ import boilerplate.model.dashboard.HomeFeature.HomePage
 import boilerplate.model.dashboard.HomeFeatureMenu.Companion.blockDashboardSign
 import boilerplate.ui.dashboard.DashboardFragment.OnMenuListener
 import boilerplate.ui.dashboard.adapter.BlockSignAdapter.AssignVH
-import boilerplate.utils.ClickUtil
+import boilerplate.utils.extension.click
 
 class BlockSignAdapter(
     private val _listener: OnMenuListener
@@ -76,9 +76,7 @@ class BlockSignAdapter(
                 )
             }
             return binding.root.also {
-                it.setOnClickListener(ClickUtil.onClick {
-                    _listener.onMenu(page)
-                })
+                it.click { _listener.onMenu(page) }
             }
         }
     }

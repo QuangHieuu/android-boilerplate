@@ -1,6 +1,6 @@
 package boilerplate.model.user
 
-import boilerplate.data.remote.service.ApiUrl
+import boilerplate.data.remote.api.ApiUrl
 import boilerplate.model.ExpandModel
 import boilerplate.model.file.AttachedFile
 import com.google.gson.annotations.SerializedName
@@ -10,27 +10,27 @@ class User : ExpandModel() {
 
     @SerializedName("nhan_vien_id")
     var id: String? = null
-        get() = if (field == null) "".also { field = it } else field
+        get() = field ?: "".also { field = it }
 
     @SerializedName("ten_nhan_vien")
     var name: String? = null
-        get() = if (field == null) "".also { field = it } else field
+        get() = field ?: "".also { field = it }
 
     @SerializedName("anh_dai_dien")
     var avatarId: String? = null
-        get() = if (field == null) "".also { field = it } else field
+        get() = field ?: "".also { field = it }
 
     @SerializedName("so_dien_thoai")
     var phoneNumber: String? = null
-        get() = if (field == null) "".also { field = it } else field
+        get() = field ?: "".also { field = it }
 
     @SerializedName("so_dien_thoai_khac")
     var diffPhoneNumber: String? = null
-        get() = if (field == null) "".also { field = it } else field
+        get() = field ?: "".also { field = it }
 
     @SerializedName("chuc_danh_id")
     var titleId: String? = null
-        get() = if (field == null) "".also { field = it } else field
+        get() = field ?: "".also { field = it }
 
     @SerializedName("ds_chuc_danh")
     var titles: ArrayList<Title> = arrayListOf()
@@ -40,14 +40,14 @@ class User : ExpandModel() {
 
     @SerializedName("tam_trang")
     var mood: String? = null
-        get() = if (field == null) "".also { field = it } else field
+        get() = field ?: "".also { field = it }
 
     @SerializedName("ngay_sinh")
     var dayOfBirth: String? = null
-        get() = if (field == null) "".also { field = it } else field
+        get() = field ?: "".also { field = it }
 
     var email: String? = null
-        get() = if (field == null) "".also { field = it } else field
+        get() = field ?: "".also { field = it }
 
     @SerializedName("ten_viet_tat")
     val shortName: String? = null
@@ -57,19 +57,19 @@ class User : ExpandModel() {
 
     @SerializedName("ma_phong_ban")
     var departmentShort: String? = null
-        get() = if (field == null) "".also { field = it } else field
+        get() = field ?: "".also { field = it }
 
     @SerializedName("don_vi_cha_id")
     var parentCompanyId: String? = null
-        get() = if (field == null) "".also { field = it } else field
+        get() = field ?: "".also { field = it }
 
     @SerializedName("phong_ban_chinh")
     var mainDepartmentName: String? = null
-        get() = if (field == null) "".also { field = it } else field
+        get() = field ?: "".also { field = it }
 
     @SerializedName("don_vi_id")
     var companyId: String? = null
-        get() = if (field == null) "".also { field = it } else field
+        get() = field ?: "".also { field = it }
 
     @SerializedName("phong_ban")
     var department: Department? = null
@@ -95,7 +95,7 @@ class User : ExpandModel() {
 
     @SerializedName("nhom_hay_lien_lac_id")
     var regularGroupId: String? = null
-        get() = if (field == null) "".also { field = it } else field
+        get() = field ?: "".also { field = it }
 
     @SerializedName("su_dung_evnca")
     var isUseEvnCa = false
@@ -105,11 +105,11 @@ class User : ExpandModel() {
 
     @SerializedName("so_dien_thoai_ky_so")
     var phoneNumberSignViettel: String? = null
-        get() = if (field == null) "".also { field = it } else field
+        get() = field ?: "".also { field = it }
 
     @SerializedName("so_dien_thoai_ky_so_vnpt")
     var phoneNumberSignVNPT: String? = null
-        get() = if (field == null) "".also { field = it } else field
+        get() = field ?: "".also { field = it }
 
     @SerializedName("trang_thai")
     var status = 0
@@ -119,22 +119,22 @@ class User : ExpandModel() {
 
     @SerializedName("truong_ky")
     var sign: String? = null
-        get() = if (field == null) "".also { field = it } else field
+        get() = field ?: "".also { field = it }
 
     @SerializedName("thoi_gian")
     var time: String? = null
-        get() = if (field == null) "".also { field = it } else field
+        get() = field ?: "".also { field = it }
 
     @SerializedName("thoi_gian_duyet")
     var approveTime: String? = null
-        get() = if (field == null) "".also { field = it } else field
+        get() = field ?: "".also { field = it }
 
     @SerializedName("su_dung_sms")
     val isUseSMS = false
 
     @SerializedName("noi_dung_y_kien")
     var reportContent: String? = null
-        get() = if (field == null) "".also { field = it } else field
+        get() = field ?: "".also { field = it }
 
     @SerializedName("ds_file_dinh_kem")
     var attachFiles: ArrayList<AttachedFile.Work>? = null
@@ -150,7 +150,7 @@ class User : ExpandModel() {
 
     @SerializedName("ngay_tao")
     var dayCreate: String? = null
-        get() = if (field == null) "".also { field = it } else field
+        get() = field ?: "".also { field = it }
 
     var level = 0
     val listReacted = ArrayList<String>()
@@ -182,8 +182,8 @@ class User : ExpandModel() {
     var mainDepartment: Department? = null
         get() {
             if (field == null) {
-                if (titles != null && titles!!.size > 0) {
-                    for (title in titles!!) {
+                if (titles.size > 0) {
+                    for (title in titles) {
                         if (title.isMain) {
                             return title.department.also { field = it }
                         }
@@ -231,14 +231,10 @@ class User : ExpandModel() {
         @SerializedName("tam_trang") val status: String
     )
 
-
-    inner class State {
-        @SerializedName("user_id")
-        var userId: String? = null
-            get() = if (field == null) "".also { field = it } else field
-
-        var state = 0
-    }
+    data class State(
+        @SerializedName("user_id") var userId: String,
+        var state: Int
+    )
 
     data class ChangePass(
         @SerializedName("current_password")

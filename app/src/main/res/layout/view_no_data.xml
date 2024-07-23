@@ -14,10 +14,11 @@
     <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         app:srcCompat="@drawable/ic_no_data" />
 
     <boilerplate.widget.customText.TextViewFont
-        android:id="@+id/text_no_data"
+        android:id="@+id/tv_no_data"
         style="@style/StyleRegular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -8,6 +8,7 @@
 
     <color name="colorPrimaryAlpha50">#8003A959</color>
     <color name="colorWhiteAlpha80">#CCFFFFFF</color>
+    <color name="colorWhiteAlpha30">#4DFFFFFF</color>
 
     <color name="transparent">#00000000</color>
 
@@ -33,6 +34,7 @@
     <color name="color_work_red">#f60a18</color>
 
     <color name="color_conversation_unread">#ECF6FA</color>
+    <color name="color_conversation_quote">#F1F1F1</color>
 
     <color name="color_4a4a4a">#4a4a4a</color>
     <color name="color_e6e6e6">#e6e6e6</color>

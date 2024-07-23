@@ -9,8 +9,8 @@ import boilerplate.R
 import boilerplate.base.BaseActivity
 import boilerplate.databinding.ActivityStartBinding
 import boilerplate.ui.main.MainActivity
-import boilerplate.utils.ClickUtil
 import boilerplate.utils.extension.AnimateType
+import boilerplate.utils.extension.click
 import boilerplate.utils.extension.goTo
 import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.popFragment
@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class StartActivity : BaseActivity<ActivityStartBinding, StartVM>() {
-    override val mViewModel: StartVM by viewModel()
+    override val _viewModel: StartVM by viewModel()
 
     private lateinit var splashScreen: SplashScreen
 
@@ -38,11 +38,11 @@ class StartActivity : BaseActivity<ActivityStartBinding, StartVM>() {
     }
 
     override fun onSubscribeObserver() {
-        with(mViewModel) {
+        with(_viewModel) {
             state.observe(this@StartActivity) {
                 when (it) {
                     StartVM.STATE_CHECK_LOGIN -> {
-                        mViewModel.getMe()
+                        _viewModel.getMe()
                     }
 
                     StartVM.STATE_LOGIN -> {
@@ -55,7 +55,7 @@ class StartActivity : BaseActivity<ActivityStartBinding, StartVM>() {
 
                     StartVM.STATE_AUTO_LOGIN -> {
                         popFragment()
-                        val token = mViewModel.token.value
+                        val token = _viewModel.token.value
                         lifecycleScope.launch(Dispatchers.Main) {
                             if (token.isNullOrEmpty()) {
                                 openLoginScreen()
@@ -64,7 +64,7 @@ class StartActivity : BaseActivity<ActivityStartBinding, StartVM>() {
                                     frameAutoLogin.visibility = View.VISIBLE
                                     pulseView.start()
                                 }
-                                mViewModel.getMe()
+                                _viewModel.getMe()
                             }
                             delay(200)
                             splashScreen.setKeepOnScreenCondition { false }
@@ -88,9 +88,7 @@ class StartActivity : BaseActivity<ActivityStartBinding, StartVM>() {
 
     override fun registerOnClick() {
         with(binding.viewAutoLogin) {
-            tvCancel.setOnClickListener(ClickUtil.onClick {
-                mViewModel.cancelAutoLogin()
-            })
+            tvCancel.click { _viewModel.cancelAutoLogin() }
         }
     }
 

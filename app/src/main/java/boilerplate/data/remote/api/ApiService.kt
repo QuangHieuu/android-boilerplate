@@ -1,4 +1,4 @@
-package boilerplate.data.remote.service
+package boilerplate.data.remote.api
 
 import boilerplate.data.remote.api.response.BaseResponse
 import boilerplate.data.remote.api.response.BaseResult
@@ -7,6 +7,7 @@ import boilerplate.model.dashboard.Banner
 import boilerplate.model.dashboard.Dashboard
 import boilerplate.model.device.Device
 import boilerplate.model.login.LoginRes
+import boilerplate.model.message.Message
 import boilerplate.model.user.Company
 import boilerplate.model.user.Department
 import boilerplate.model.user.User
@@ -66,15 +67,36 @@ interface DashboardService {
 
 interface ConversationService {
 
-    @GET("hoithoai")
+    @GET("hoithoai?ghim=false")
     fun getConversations(
         @Query("hoithoaiId") id: String?,
         @Query("limit") limit: Int,
         @Query("unread") isUnread: Boolean?,
         @Query("isQuanTrong") isImportant: Boolean?,
         @Query("name") search: String?
-    ): Flowable<BaseResponse<Conversation.Result>>
+    ): Flowable<BaseResult<Conversation>>
 
+    @GET("hoithoai/ghim")
+    fun getPinConversations(): Flowable<BaseResult<Conversation>>
+
+    @GET("hoithoai/{id}")
+    fun getConversationDetail(@Path("id") conversationId: String?): Flowable<BaseResponse<Conversation>>
+
+    @GET("hoithoai/{id}/tinnhan")
+    fun getConversationMessage(
+        @Path("id") conversationId: String,
+        @Query("limit") limit: Int,
+        @Query("tinnhanId") lastMessage: String?
+    ): Flowable<BaseResult<Message>>
+
+    @GET("hoithoai/{id}/tinnhan")
+    @Headers("api-version: 2")
+    fun getConversationMessage(
+        @Path("id") conversationId: String,
+        @Query("limit") limit: Int,
+        @Query("tinnhanId") lastMessage: String,
+        @Query("isDesc") isDesc: Boolean
+    ): Flowable<BaseResult<Message>>
 }
 
 interface ApiService :

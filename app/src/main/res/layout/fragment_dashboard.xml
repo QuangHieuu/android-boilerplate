@@ -5,7 +5,17 @@
     android:id="@+id/ctl_dashboard_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_dashboard">
+    tools:ignore="SpUsage">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/bg_dashboard"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <boilerplate.widget.image.RoundedImageView
         android:id="@+id/img_avatar"
@@ -40,6 +50,7 @@
         app:layout_constraintBottom_toTopOf="@id/tv_role"
         app:layout_constraintStart_toEndOf="@id/img_avatar"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
         tools:text="Nguyễn Thành Luân" />
 
     <boilerplate.widget.customText.TextViewFont
@@ -74,7 +85,7 @@
         app:layout_constraintEnd_toStartOf="@id/img_filter_work"
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/img_role"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_notification_on_black" />
 
@@ -93,6 +104,27 @@
         app:layout_constraintTop_toTopOf="@id/img_notify"
         app:layout_constraintVertical_bias="0"
         tools:visibility="visible" />
+
+    <HorizontalScrollView
+        android:id="@+id/scroll_tablet"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_20"
+        android:scrollbars="none"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/barrier_header"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintStart_toEndOf="@id/img_notify"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/ln_dashboard_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="right"
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/img_filter_work"
@@ -113,7 +145,7 @@
         android:layout_height="wrap_content"
         app:barrierDirection="bottom"
         app:barrierMargin="@dimen/dp_10"
-        app:constraint_referenced_ids="img_avatar,tv_name,img_notify,img_filter_work" />
+        app:constraint_referenced_ids="img_avatar,tv_name,img_notify,img_filter_work,scroll_tablet" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh_dashboard"

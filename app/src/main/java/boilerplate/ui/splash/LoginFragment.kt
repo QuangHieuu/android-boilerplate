@@ -14,7 +14,7 @@ import boilerplate.base.BaseFragment
 import boilerplate.data.remote.api.ApiServer
 import boilerplate.databinding.DialogChosenServerBinding
 import boilerplate.databinding.FragmentLoginBinding
-import boilerplate.utils.ClickUtil
+import boilerplate.utils.extension.click
 import boilerplate.utils.extension.showDialog
 
 class LoginFragment : BaseFragment<FragmentLoginBinding, StartVM>() {
@@ -79,19 +79,15 @@ class LoginFragment : BaseFragment<FragmentLoginBinding, StartVM>() {
     override fun registerEvent() {
         with(binding) {
 
-            btnLogin.setOnClickListener(ClickUtil.onClick {
+            btnLogin.click {
                 val username: String = edtUsername.editableText.toString()
                 val password: String = edtPassword.editableText.toString()
                 _viewModel.postLogin(username, password)
-            })
+            }
 
-            imgClearUsername.setOnClickListener(ClickUtil.onClick {
-                edtUsername.setText(R.string.no_text)
-            })
-            imgClearPass.setOnClickListener(ClickUtil.onClick {
-                edtPassword.setText(R.string.no_text)
-            })
-            imgShowPass.setOnClickListener(ClickUtil.onClick {
+            imgClearUsername.click { edtUsername.setText(R.string.no_text) }
+            imgClearPass.click { edtPassword.setText(R.string.no_text) }
+            imgShowPass.click {
                 if (mIsShowPass) {
                     imgShowPass.setImageResource(R.drawable.ic_eye_grey)
                     edtPassword.transformationMethod = PasswordTransformationMethod.getInstance()
@@ -100,7 +96,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding, StartVM>() {
                     edtPassword.transformationMethod = HideReturnsTransformationMethod.getInstance()
                 }
                 mIsShowPass = !mIsShowPass
-            })
+            }
 
             edtUsername.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(
@@ -177,7 +173,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding, StartVM>() {
                         tag = server.serverName
                     })
                 }
-                tvConfirm.setOnClickListener { v ->
+                tvConfirm.click {
                     val selectedId = radioGroup.checkedRadioButtonId
                     val radioButton = radioGroup.findViewById<RadioButton>(selectedId)
                     val server = radioButton.tag.toString()

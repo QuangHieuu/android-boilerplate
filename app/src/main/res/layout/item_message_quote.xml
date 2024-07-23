@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ln_quote"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/dp_5"
+    android:layout_marginBottom="@dimen/dp_5"
+    android:orientation="vertical"
+    tools:ignore="SpUsage">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/dp_10"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/img_forward"
+            android:layout_width="@dimen/dp_10"
+            android:layout_height="@dimen/dp_10"
+            android:layout_marginStart="@dimen/dp_10"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:src="@drawable/ic_forward" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <boilerplate.widget.customText.TextViewFont
+                android:id="@+id/tv_person_send"
+                style="@style/StyleBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textSize="@dimen/dp_11"
+                tools:text="Bao-Cao-CDS-6-Bao-Cao-CDS-6-" />
+
+            <boilerplate.widget.customText.TextViewFont
+                android:id="@+id/tv_department"
+                style="@style/StyleRegular"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/color_828282"
+                android:textSize="@dimen/dp_11"
+                tools:text="don vi - phong ban" />
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/img_close"
+            android:layout_width="@dimen/dp_17"
+            android:layout_height="@dimen/dp_17"
+            android:src="@drawable/ic_clear" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ln_file"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_10"
+        android:orientation="vertical"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <boilerplate.widget.customText.TextViewExpand
+        android:id="@+id/tv_message_quote"
+        style="@style/StyleRegular"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_10"
+        android:layout_marginEnd="@dimen/dp_10"
+        android:textColor="@color/color_7589A3"
+        android:textSize="@dimen/dp_13"
+        app:show_text_collapse="false" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_5"
+        android:gravity="end"
+        android:layoutDirection="rtl"
+        android:orientation="horizontal">
+
+        <boilerplate.widget.customText.TextViewFont
+            android:id="@+id/tv_go_to"
+            style="@style/StyleRegular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_5"
+            android:drawablePadding="@dimen/dp_3"
+            android:layoutDirection="ltr"
+            android:text="@string/go_to_message"
+            android:textColor="@color/color_7589A3"
+            android:textSize="@dimen/dp_12"
+            android:visibility="invisible"
+            app:drawableStartCompat="@drawable/ic_go_to"
+            tools:visibility="visible" />
+
+        <boilerplate.widget.customText.TextViewFont
+            android:id="@+id/tv_expend"
+            style="@style/StyleRegular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_5"
+            android:drawablePadding="@dimen/dp_3"
+            android:layoutDirection="ltr"
+            android:text="@string/show_more"
+            android:textColor="@color/color_7589A3"
+            android:textSize="@dimen/dp_12"
+            android:visibility="gone"
+            app:drawableStartCompat="@drawable/ic_double_down_grey"
+            tools:visibility="visible" />
+
+        <boilerplate.widget.customText.TextViewFont
+            android:id="@+id/tv_last_active"
+            style="@style/StyleRegular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginStart="@dimen/dp_10"
+            android:ellipsize="end"
+            android:layoutDirection="ltr"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textColor="@color/color_7589A3"
+            android:textSize="@dimen/dp_12"
+            tools:text="15:30 29/01/2024" />
+    </LinearLayout>
+</LinearLayout>

@@ -1,7 +1,6 @@
 package boilerplate.widget.customText
 
 import android.content.Context
-import android.content.res.TypedArray
 import android.graphics.Typeface
 import android.graphics.text.LineBreaker
 import android.os.Build
@@ -23,6 +22,8 @@ import boilerplate.R
 import boilerplate.utils.StringUtil.KEY_MENTION_ALL
 import boilerplate.utils.StringUtil.KEY_MENTION_PHONE
 import boilerplate.utils.StringUtil.KEY_MENTION_USER_ID
+import boilerplate.utils.extension.click
+import boilerplate.utils.extension.toTextSize
 
 open class TextViewExpand @JvmOverloads constructor(
     context: Context,
@@ -31,15 +32,15 @@ open class TextViewExpand @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr, defStyleAttr) {
     abstract class SimpleEvent : OnTextListener {
         override fun onReadMore(isCollapse: Boolean) {}
-        override fun onMention(userId: String?) {}
+        override fun onMention(userId: String) {}
         override fun onViewIsExpand(isExpand: Boolean) {}
-        override fun onPhoneNumber(number: String?) {}
+        override fun onPhoneNumber(number: String) {}
     }
 
     interface OnTextListener {
         fun onReadMore(isCollapse: Boolean)
-        fun onMention(userId: String?)
-        fun onPhoneNumber(number: String?)
+        fun onMention(userId: String)
+        fun onPhoneNumber(number: String)
         fun onViewIsExpand(isExpand: Boolean)
     }
 
@@ -55,7 +56,7 @@ open class TextViewExpand @JvmOverloads constructor(
     private var contentRealHeight = 0
     private var collapsedHeight = 0
     private var otherHeight = 0
-    private var textSize = 0f
+    private var size = 0f
 
     private lateinit var typeface: Typeface
     private lateinit var tvContent: TextViewFont
@@ -69,18 +70,21 @@ open class TextViewExpand @JvmOverloads constructor(
 
     private fun initView(attrs: AttributeSet?) {
         if (attrs != null) {
-            val array: TypedArray =
-                context.obtainStyledAttributes(attrs, R.styleable.TextViewExpand, 0, 0)
-            maxLines = array.getInt(R.styleable.TextViewExpand_max_line, MAX_LINES_ON_SHRINK)
-            isShowText = array.getBoolean(R.styleable.TextViewExpand_show_text_collapse, true)
-            isEnableCollapse = array.getBoolean(R.styleable.TextViewExpand_enable_collapse, true)
-            textSize = array.getDimension(R.styleable.TextViewExpand_android_textSize, 14F)
-            val typefaceAssetPath: Int = array.getResourceId(
-                R.styleable.TextViewExpand_customTypeface,
-                R.font.roboto_regular
-            )
-            typeface = ResourcesCompat.getFont(context, typefaceAssetPath)!!
-            array.recycle()
+            context.obtainStyledAttributes(attrs, R.styleable.TextViewExpand, 0, 0).apply {
+                maxLines = getInt(R.styleable.TextViewExpand_max_line, MAX_LINES_ON_SHRINK)
+                isShowText = getBoolean(R.styleable.TextViewExpand_show_text_collapse, true)
+                isEnableCollapse = getBoolean(R.styleable.TextViewExpand_enable_collapse, true)
+                size = getDimension(
+                    R.styleable.TextViewExpand_android_textSize,
+                    R.dimen.dp_14.toFloat()
+                ).toTextSize()
+
+                val typefaceAssetPath = getResourceId(
+                    R.styleable.TextViewExpand_customTypeface,
+                    R.font.roboto_regular
+                )
+                typeface = ResourcesCompat.getFont(context, typefaceAssetPath)!!
+            }.recycle()
         }
     }
 
@@ -90,13 +94,13 @@ open class TextViewExpand @JvmOverloads constructor(
         tvLabel = findViewById(R.id.moreLess)
 
         with(tvLabel) {
-            textSize = textSize
+            textSize = size
             typeface = typeface
         }
 
         with(tvContent) {
             maxLines = 1
-            textSize = textSize
+            textSize = size
             typeface = typeface
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 breakStrategy = LineBreaker.BREAK_STRATEGY_SIMPLE
@@ -119,7 +123,7 @@ open class TextViewExpand @JvmOverloads constructor(
         }
 
         LinkifyCompat.addLinks(tvContent, Linkify.ALL)
-        tvLabel.setOnClickListener { _: View? -> collapseText() }
+        tvLabel.click { collapseText() }
     }
 
     override fun onFinishInflate() {
@@ -198,8 +202,8 @@ open class TextViewExpand @JvmOverloads constructor(
         reMeasure()
     }
 
-    fun setEnableCollapse(`is`: Boolean) {
-        isEnableCollapse = `is`
+    fun setEnableCollapse(b: Boolean) {
+        isEnableCollapse = b
         reMeasure()
     }
 
@@ -212,14 +216,14 @@ open class TextViewExpand @JvmOverloads constructor(
         tvContent.setTextColor(color)
     }
 
-    fun addListener(listener: SimpleEvent) {
+    fun addListener(listener: SimpleEvent?) {
         mListener = listener
     }
 
     val isExpandable: Boolean
         get() = tvContent.lineCount > maxLines
 
-    fun openUserId(userId: String?) {
+    fun openUserId(userId: String) {
         mListener?.onMention(userId)
     }
 

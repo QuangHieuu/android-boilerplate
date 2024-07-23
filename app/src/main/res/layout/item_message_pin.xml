@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/dp_15"
+    android:layout_marginTop="@dimen/dp_7"
+    android:layout_marginEnd="@dimen/dp_15"
+    android:layout_marginBottom="@dimen/dp_7"
+    android:background="@drawable/bg_border_corner_white"
+    android:padding="@dimen/dp_15"
+    tools:ignore="HardcodedText,SpUsage">
+
+    <boilerplate.widget.image.RoundedImageView
+        android:id="@+id/img_avatar"
+        android:layout_width="@dimen/dp_35"
+        android:layout_height="0dp"
+        android:layout_marginBottom="@dimen/dp_5"
+        android:src="@drawable/ic_avatar"
+        app:layout_constraintBottom_toTopOf="@id/tv_sender"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toStartOf="@id/tv_user"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0" />
+
+    <boilerplate.widget.customText.TextViewFont
+        android:id="@+id/tv_user"
+        style="@style/StyleMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_10"
+        app:layout_constraintBottom_toTopOf="@id/tv_user_description"
+        app:layout_constraintEnd_toStartOf="@id/img_clear"
+        app:layout_constraintStart_toEndOf="@id/img_avatar"
+        app:layout_constraintTop_toTopOf="@id/img_avatar"
+        app:layout_constraintWidth="match_constraint"
+        tools:text="PTB. Nguyễn Xuân Tiến" />
+
+    <boilerplate.widget.customText.TextViewFont
+        android:id="@+id/tv_user_description"
+        style="@style/StyleRegular"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/user_pin"
+        android:textColor="@color/colorHint"
+        android:textSize="@dimen/dp_11"
+        app:layout_constraintBottom_toBottomOf="@id/img_avatar"
+        app:layout_constraintEnd_toEndOf="@id/tv_user"
+        app:layout_constraintStart_toStartOf="@id/tv_user"
+        app:layout_constraintTop_toBottomOf="@id/tv_user" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/img_clear"
+        android:layout_width="@dimen/dp_25"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/dp_10"
+        android:padding="@dimen/dp_5"
+        android:src="@drawable/ic_menu_dot_horizontal"
+        app:layout_constraintBottom_toBottomOf="@id/tv_user"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tv_user"
+        app:layout_constraintTop_toTopOf="@id/tv_user" />
+
+    <boilerplate.widget.customText.TextViewFont
+        android:id="@+id/tv_sender"
+        style="@style/StyleRegular"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/ln_file"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/img_avatar"
+        tools:text="sender" />
+
+    <LinearLayout
+        android:id="@+id/ln_file"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_marginBottom="@dimen/dp_5"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@id/tv_message_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_sender"
+        tools:visibility="visible" />
+
+    <boilerplate.widget.customText.TextViewFont
+        android:id="@+id/tv_message_content"
+        style="@style/StyleRegular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="8"
+        android:textColor="@color/color_7589A3"
+        android:textSize="@dimen/dp_12"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toTopOf="@id/tv_message_time"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ln_file"
+        app:layout_constraintWidth="1"
+        tools:text="asb" />
+
+    <boilerplate.widget.customText.TextViewFont
+        android:id="@+id/tv_message_time"
+        style="@style/StyleRegular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_5"
+        android:textColor="@color/colorHint"
+        android:textSize="@dimen/dp_10"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tv_origin_message"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_message_content"
+        app:layout_constraintWidth="match_constraint"
+        tools:text="16:00" />
+
+    <boilerplate.widget.customText.TextViewFont
+        android:id="@+id/tv_origin_message"
+        style="@style/StyleRegular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_5"
+        android:text="Xem tin nhắn gốc"
+        android:textColor="@color/colorPrimary"
+        android:textSize="@dimen/dp_12"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toEndOf="@id/tv_message_time"
+        app:layout_constraintTop_toBottomOf="@id/tv_message_content" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,13 +1,12 @@
-package boilerplate.data.remote.service
+package boilerplate.data.remote.api
 
-import boilerplate.data.remote.api.ApiServer
 import boilerplate.data.remote.api.ApiServer.LIVE
 import boilerplate.data.remote.api.ApiServer.STAGING
 import boilerplate.data.remote.api.ApiServer.TEST1
 
 object ApiUrl {
+    private const val FILE_CHAT: String = "filechat/get/"
     const val API: String = "api/"
-    const val FILE_CHAT: String = "filechat/get/"
 
     var DEFAULT: String = LIVE.serverName
 

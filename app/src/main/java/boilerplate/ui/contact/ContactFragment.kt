@@ -26,6 +26,11 @@ class ContactFragment : BaseFragment<FragmentContactBinding, MainVM>() {
     private lateinit var _adapter: HomePagerAdapter
 
     override fun initialize() {
+        initTabLayout()
+
+    }
+
+    private fun initTabLayout() {
         val tabTitle = arrayOf("Đơn vị", "Đơn vị khác",  /*, "Hay liên lạc"*/"Nhóm")
 
         with(binding) {
@@ -67,7 +72,6 @@ class ContactFragment : BaseFragment<FragmentContactBinding, MainVM>() {
                 )
             }.attach()
         }
-
     }
 
     override fun onSubscribeObserver() {

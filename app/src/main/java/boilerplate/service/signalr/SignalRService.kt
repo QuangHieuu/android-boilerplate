@@ -3,22 +3,18 @@ package boilerplate.service.signalr
 import android.app.Service
 import android.content.Intent
 import android.os.Binder
-import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import boilerplate.data.local.repository.user.TokenRepository
-import boilerplate.data.remote.service.ApiUrl
+import boilerplate.data.remote.api.ApiUrl
 import boilerplate.model.conversation.Conversation
 import boilerplate.model.conversation.ConversationUser
 import boilerplate.model.conversation.ConversationUser.JoinGroup
 import boilerplate.model.message.Message
-import boilerplate.service.signalr.SignalRReceiver.Companion.INTENT_FILTER
-import boilerplate.service.signalr.SignalRReceiver.Companion.SIGNALR_BUNDLE
-import boilerplate.service.signalr.SignalRReceiver.Companion.SIGNALR_DATA
-import boilerplate.service.signalr.SignalRReceiver.Companion.SIGNALR_KEY
 import boilerplate.utils.InternetManager
+import boilerplate.utils.StringUtil
 import boilerplate.utils.extension.notNull
+import boilerplate.utils.extension.sendResult
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.reflect.TypeToken
@@ -31,6 +27,7 @@ import microsoft.aspnet.signalr.client.hubs.HubProxy
 import microsoft.aspnet.signalr.client.transport.ClientTransport
 import microsoft.aspnet.signalr.client.transport.WebsocketTransport
 import org.koin.android.ext.android.inject
+import java.util.Date
 import java.util.concurrent.TimeUnit
 
 class SignalRService : Service() {
@@ -74,6 +71,7 @@ class SignalRService : Service() {
         const val CLIENT_METHOD_DELETE_PIN_MESSAGE: String = "deleteGhimTinNhan"
         const val CLIENT_METHOD_IMPORTANT_CONVERSATION: String = "danhDauHoiThoai"
         const val CLIENT_METHOD_SEEN_MESSAGE: String = "seenMessage"
+        const val CLIENT_METHOD_PIN_CONVERSATION: String = "ghimHoiThoai"
 
         //Phải kiểm tra kĩ key signalr khi sử dụng có thể viết hoa hoặc thường chữ cái đầu tiên
         const val SERVER_METHOD_SEND_MESSAGE: String = "SendMessage"
@@ -89,6 +87,7 @@ class SignalRService : Service() {
         const val SERVER_METHOD_CONVERSATION_DELETE_MEMBER: String = "DeleteThanhVienHoiThoai"
         const val SERVER_METHOD_ON_OFF_NOTIFY: String = "TatThongBaoHoiThoai"
         const val SERVER_METHOD_DISABLE_CONVERSATION: String = "DisableHoiThoai"
+        const val SERVER_METHOD_PIN_CONVERSATION: String = "GhimHoiThoai"
     }
 
     override fun onBind(intent: Intent): IBinder {
@@ -183,18 +182,244 @@ class SignalRService : Service() {
         start()
     }
 
+    fun sendMessage(message: Message, isSms: Boolean, isEmail: Boolean) {
+        _chatProxy.notNull { proxy ->
+            var isWrongFormat = false
+            if (message.getContent().contains(StringUtil.KEY_FORWARD_JSON)) {
+                val s: String = StringUtil.unescapeHTML(message.getContent(), 0)
+                val list: ArrayList<Int> =
+                    StringUtil.countWord(s, StringUtil.KEY_FORWARD_JSON_REGEX)
+                if (list.size < 2 || !s.startsWith(StringUtil.KEY_FORWARD_JSON)) {
+                    isWrongFormat = true
+                }
+            }
+            if (isWrongFormat) {
+
+            } else {
+                if (message.getContent().length <= 42000) {
+                    Message.SendMessageBody().apply {
+                        setListFile(message.getAttachedFiles())
+                        setConversationId(message.getConversationId())
+                        setContent(message.getContent())
+                        setOption(Message.Option(isSms, isEmail))
+                        setListSurvey(message.getSurveyFiles())
+                        setIsMgsSystem(message.isMsgSystem)
+                    }.let {
+                        proxy.invoke(
+                            SERVER_METHOD_SEND_MESSAGE,
+                            it,
+                        )
+                            .onError {}
+                            .onCancelled { }
+                    }
+                } else {
+
+                }
+            }
+        }
+    }
+
+    fun createConversation(conversation: Conversation.SignalBody) {
+        _chatProxy.notNull {
+            it.invoke(SERVER_METHOD_CREATE_CONVERSATION, conversation)
+                .onError {
+                    sendResult(
+                        SignalRResult.CREATE_CONVERSATION,
+                        SignalRResult.ERROR.key
+                    )
+                }
+                .onCancelled {
+                    sendResult(
+                        SignalRResult.CREATE_CONVERSATION,
+                        SignalRResult.ERROR.key
+                    )
+                }
+        }
+    }
+
+    fun pinConversation(conversationId: String?, isPin: Boolean) {
+        _chatProxy.notNull {
+            it.invoke(SERVER_METHOD_PIN_CONVERSATION, conversationId, isPin)
+                .onError {
+                    sendResult(
+                        SignalRResult.PIN_CONVERSATION,
+                        SignalRResult.ERROR.key
+                    )
+                }
+                .onCancelled {
+                    sendResult(
+                        SignalRResult.PIN_CONVERSATION,
+                        SignalRResult.ERROR.key
+                    )
+                }
+        }
+    }
+
+    fun sendLastTimeRead(
+        conversationId: String,
+        lastTimeRead: Date,
+        countRead: Int,
+        force: Boolean
+    ) {
+        _chatProxy.notNull {
+            it.invoke(
+                SERVER_METHOD_LAST_TIME_READ,
+                conversationId,
+                lastTimeRead,
+                countRead,
+                force
+            )
+                .onError { sendResult(SignalRResult.LAST_TIME_READ, SignalRResult.ERROR.key) }
+                .onCancelled { sendResult(SignalRResult.LAST_TIME_READ, SignalRResult.ERROR.key) }
+        }
+    }
+
+    fun leaveGroup(id: String, isLeaveInSilent: Boolean) {
+        _chatProxy.notNull {
+            it.invoke(SERVER_METHOD_LEAVE_GROUP, id, isLeaveInSilent)
+                .onError { sendResult(SignalRResult.LEAVE_GROUP, SignalRResult.ERROR.key) }
+                .onCancelled { sendResult(SignalRResult.LEAVE_GROUP, SignalRResult.ERROR.key) }
+        }
+    }
+
+    fun addMember(conversationId: String?, list: ArrayList<ConversationUser.SignalrBody>) {
+        _chatProxy.notNull {
+            it.invoke(SERVER_METHOD_ADD_MEMBER, conversationId, list)
+                .onError { sendResult(SignalRResult.ADD_MEMBER, SignalRResult.ERROR.key) }
+                .onCancelled { sendResult(SignalRResult.ADD_MEMBER, SignalRResult.ERROR.key) }
+        }
+    }
+
+    fun approveMemberOrNot(
+        isApprove: Boolean,
+        conversationId: String?,
+        list: ArrayList<ConversationUser.SignalrBody>
+    ) {
+        _chatProxy.notNull {
+            it.invoke(SERVER_METHOD_APPROVE_MEMBER, conversationId, isApprove, list)
+                .onError { sendResult(SignalRResult.APPROVED_MEMBER, SignalRResult.ERROR.key) }
+                .onCancelled { sendResult(SignalRResult.APPROVED_MEMBER, SignalRResult.ERROR.key) }
+        }
+    }
+
+    fun deleteGroup(conversationId: String?) {
+        _chatProxy.notNull {
+            it.invoke(SERVER_METHOD_DELETE_GROUP, conversationId)
+                .onError {
+                    sendResult(
+                        SignalRResult.DELETE_GROUP,
+                        SignalRResult.ERROR.key
+                    )
+                }
+                .onCancelled {
+                    sendResult(
+                        SignalRResult.DELETE_GROUP,
+                        SignalRResult.ERROR.key
+                    )
+                }
+        }
+    }
+
+    fun deleteMember(conversationId: String?, userId: String?) {
+        _chatProxy.notNull {
+            it.invoke(SERVER_METHOD_CONVERSATION_DELETE_MEMBER, conversationId, userId)
+                .onError {
+                    sendResult(
+                        SignalRResult.UPDATE_CONVERSATION_DELETE_MEMBER,
+                        SignalRResult.ERROR.key
+                    )
+                }
+                .onCancelled {
+                    sendResult(
+                        SignalRResult.UPDATE_CONVERSATION_DELETE_MEMBER,
+                        SignalRResult.ERROR.key
+                    )
+                }
+        }
+    }
+
+    fun updateConversationSetting(conversation: Conversation) {
+        _chatProxy.notNull {
+            val conversationId = conversation.conversationId
+            val changeInform = conversation.isChangeInform
+            val pinMessage = conversation.isAllowPinMessage
+            val approvedMember = conversation.isAllowApproved
+            val sendMessage = conversation.isAllowSendMessage
+            it.invoke(
+                SERVER_METHOD_CONVERSATION_SETTING,
+                conversationId,
+                changeInform,
+                pinMessage,
+                approvedMember,
+                sendMessage
+            )
+                .onError { throwable: Throwable? ->
+                    sendResult(
+                        SignalRResult.UPDATE_CONVERSATION_SETTING,
+                        SignalRResult.ERROR.key
+                    )
+                }
+                .onCancelled {
+                    sendResult(
+                        SignalRResult.UPDATE_CONVERSATION_SETTING,
+                        SignalRResult.ERROR.key
+                    )
+                }
+        }
+    }
+
+    fun assignConversationRole(userId: String?, conversationId: String?, role: Int) {
+        _chatProxy.notNull {
+            it.invoke(SERVER_METHOD_CONVERSATION_ROLE, userId, conversationId, role)
+                .onError {
+                    sendResult(
+                        SignalRResult.UPDATE_CONVERSATION_ROLE,
+                        SignalRResult.ERROR.key
+                    )
+                }
+                .onCancelled {
+                    sendResult(
+                        SignalRResult.UPDATE_CONVERSATION_ROLE,
+                        SignalRResult.ERROR.key
+                    )
+                }
+        }
+    }
+
+    fun onOffConversationNotify(conversationId: String?, isOn: Boolean) {
+        _chatProxy.notNull {
+            it.invoke(SERVER_METHOD_ON_OFF_NOTIFY, conversationId, isOn)
+                .onError {
+                    sendResult(
+                        SignalRResult.ON_OFF_CONVERSATION_NOTIFY,
+                        SignalRResult.ERROR.key
+                    )
+                }
+                .onCancelled {
+                    sendResult(
+                        SignalRResult.ON_OFF_CONVERSATION_NOTIFY,
+                        SignalRResult.ERROR.key
+                    )
+                }
+        }
+    }
+
+    fun disableConversation(conversationId: String?) {
+        _chatProxy.notNull {
+            it.invoke(SERVER_METHOD_DISABLE_CONVERSATION, conversationId)
+                .onError { sendResult(SignalRResult.DISABLE_CONVERSATION, SignalRResult.ERROR.key) }
+                .onCancelled {
+                    sendResult(
+                        SignalRResult.DISABLE_CONVERSATION,
+                        SignalRResult.ERROR.key
+                    )
+                }
+        }
+    }
+
     private fun sendResult(key: SignalRResult?, value: String) {
         key.notNull {
-            Intent(INTENT_FILTER)
-                .apply {
-                    putExtra(SIGNALR_BUNDLE, Bundle().apply {
-                        putString(SIGNALR_KEY, it.key)
-                        putString(SIGNALR_DATA, value)
-                    })
-                }
-                .let { intent ->
-                    LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
-                }
+            applicationContext.sendResult(key, value)
         }
     }
 
@@ -213,7 +438,7 @@ class SignalRService : Service() {
                 }
                 handle(CLIENT_METHOD_IMPORTANT_CONVERSATION) {
                     val pin = Conversation.Important(
-                        it[0].toString(),
+                        _gson.fromJson(it[0].toString(), Conversation::class.java),
                         it[1].asBoolean
                     )
                     sendResult(SignalRResult.IMPORTANT_CONVERSATION, _gson.toJson(pin))
@@ -233,16 +458,16 @@ class SignalRService : Service() {
                     sendResult(SignalRResult.REMOVE_PIN_MESSAGE, _gson.toJson(pin))
                 }
                 handle(CLIENT_METHOD_DISABLE_CONVERSATION) {
-                    sendResult(SignalRResult.REMOVE_PIN_MESSAGE, it[0].asString)
+                    sendResult(SignalRResult.DISABLE_CONVERSATION, it[0].asString)
                 }
                 handle(CLIENT_METHOD_UPDATE_MESSAGE) {
-                    sendResult(SignalRResult.REMOVE_PIN_MESSAGE, it[0].toString())
+                    sendResult(SignalRResult.UPDATE_MESSAGE, it[0].toString())
                 }
                 handle(CLIENT_METHOD_ON_OFF_NOTIFY) {
                     sendResult(SignalRResult.ON_OFF_CONVERSATION_NOTIFY, it[0].asString)
                 }
                 handle(CLIENT_METHOD_NEW_MESSAGE_SYSTEM) {
-                    sendResult(SignalRResult.NEW_MESSAGE_SYSTEM, it.get(0).toString())
+                    sendResult(SignalRResult.NEW_MESSAGE_SYSTEM, it[0].toString())
                 }
                 handle(CLIENT_METHOD_LEAVE_GROUP) {
                     val leaveGroup = ConversationUser.LeaveGroup(
@@ -340,6 +565,13 @@ class SignalRService : Service() {
                         it[2].asString
                     )
                     sendResult(SignalRResult.APPROVED_MEMBER, _gson.toJson(joinGroup))
+                }
+                handle(CLIENT_METHOD_PIN_CONVERSATION) {
+                    val pin: Conversation.Pin = Conversation.Pin(
+                        it[1].asBoolean,
+                        _gson.fromJson(it[0].toString(), Conversation::class.java)
+                    )
+                    sendResult(SignalRResult.PIN_CONVERSATION, _gson.toJson(pin))
                 }
             }
         }

@@ -5,8 +5,8 @@ import android.content.res.Resources
 import boilerplate.data.local.sharedPrefs.SharedPrefsApi
 import boilerplate.data.local.sharedPrefs.SharedPrefsImpl
 import boilerplate.data.local.sharedPrefs.SharedPrefsKey
-import boilerplate.data.remote.service.ApiUrl
-import boilerplate.service.signalr.SignalRReceiver
+import boilerplate.data.remote.api.ApiUrl
+import boilerplate.utils.extension.isTablet
 import com.google.gson.Gson
 import okhttp3.Cache
 import org.koin.android.ext.koin.androidApplication
@@ -16,7 +16,7 @@ val contextRequireModule = module {
     single { provideResources(androidApplication()) }
     single { provideSharedPrefsApi(get(), get()) }
     single { provideOkHttpCache(androidApplication()) }
-    single { provideSignalRReceiver(androidApplication()) }
+    single { provideLimit(androidApplication()) }
 }
 
 fun provideSharedPrefsApi(app: Application, gson: Gson): SharedPrefsApi {
@@ -36,6 +36,6 @@ fun provideResources(app: Application): Resources {
     return app.resources
 }
 
-fun provideSignalRReceiver(app: Application): SignalRReceiver {
-    return SignalRReceiver(app)
+fun provideLimit(app: Application): Int {
+    return if (app.isTablet()) 20 else 10
 }

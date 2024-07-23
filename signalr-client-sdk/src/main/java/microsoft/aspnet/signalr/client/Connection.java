@@ -6,8 +6,6 @@ See License.txt in the project root for license information.
 
 package microsoft.aspnet.signalr.client;
 
-import android.util.Log;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -683,7 +681,6 @@ public class Connection implements ConnectionBase {
 
                 @Override
                 public void onError(Throwable error) {
-                    Log.d("socket", "mConnectionFuture: "+error);
                     mConnectionFuture.triggerError(error);
                 }
             });

@@ -3,4 +3,9 @@
     <string name="warning_no_member_group">Chưa có liên lạc nào trong nhóm</string>
 
     <string name="warning_update_message_offline">Đang gửi tin nhắn : %s</string>
+
+    <string name="warning_confirm_delete_conversation">Anh/chị có muốn xóa hội thoại này không?</string>
+
+    <string name="warning_dialog_turn_off_notify">Toàn bộ thông báo tin nhắn của hội thoại sẽ được tắt cho đến khi được mở lại.</string>
+    <string name="warning_disable_chat_box">Hội thoại đã tắt tính năng phản hồi.\nChỉ lãnh đạo nhóm và người chỉ định mới được trao đổi tin nhắn.</string>
 </resources>

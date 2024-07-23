@@ -2,7 +2,7 @@ package boilerplate.data.local.repository.server
 
 import boilerplate.data.local.sharedPrefs.SharedPrefsApi
 import boilerplate.data.local.sharedPrefs.SharedPrefsKey
-import boilerplate.data.remote.service.ApiUrl
+import boilerplate.data.remote.api.ApiUrl
 
 interface ServerRepository {
     fun saveServer(server: String)

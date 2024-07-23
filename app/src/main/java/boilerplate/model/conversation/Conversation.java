@@ -3,17 +3,14 @@ package boilerplate.model.conversation;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.ListIterator;
 import java.util.Locale;
-import java.util.Map;
 
-import boilerplate.data.remote.service.ApiUrl;
+import boilerplate.constant.AccountManager;
+import boilerplate.data.remote.api.ApiUrl;
 import boilerplate.model.ExpandModel;
 import boilerplate.model.message.Message;
 import boilerplate.model.user.User;
-import boilerplate.utils.DateTimeUtil;
 
 public class Conversation extends ExpandModel {
     @SerializedName("hoi_thoai_id")
@@ -73,6 +70,15 @@ public class Conversation extends ExpandModel {
     private boolean isImportant = false;
     private boolean isCheck = false;
     private boolean isBind = false;
+
+    public String getPinDate() {
+        for (ConversationUser user : conversationUsers) {
+            if (user.getUser().getId().equals(AccountManager.getCurrentUserId())) {
+                return user.getPinDate();
+            }
+        }
+        return "";
+    }
 
     /**
      * isGroup
@@ -307,25 +313,6 @@ public class Conversation extends ExpandModel {
         }
     }
 
-    public static class Result {
-        private ArrayList<Conversation> items;
-        private int total;
-
-        private boolean result;
-
-        public ArrayList<Conversation> getItems() {
-            return items;
-        }
-
-        public int getTotal() {
-            return total;
-        }
-
-        public boolean isExist() {
-            return result;
-        }
-    }
-
     public static class ForwardBody {
         @SerializedName("hoi_thoai_id")
         private String conversationId;
@@ -529,15 +516,15 @@ public class Conversation extends ExpandModel {
     }
 
     public static class Important {
-        private final String conversation;
+        private final Conversation conversation;
         private final boolean isImportant;
 
-        public Important(String conversation, boolean isImportant) {
+        public Important(Conversation conversation, boolean isImportant) {
             this.conversation = conversation;
             this.isImportant = isImportant;
         }
 
-        public String getConversation() {
+        public Conversation getConversation() {
             return conversation;
         }
 
@@ -564,95 +551,6 @@ public class Conversation extends ExpandModel {
         }
     }
 
-    public static class Contact extends Search {
-
-        public Contact() {
-            super(false);
-            setMore(true);
-            setOneToOne(false);
-            setImportant(false);
-            setName(true);
-        }
-    }
-
-    public static class Search {
-        private Map<String, Object> data = new HashMap<>();
-
-        public Map<String, Object> getData() {
-            return data;
-        }
-
-        public Search(boolean withDay) {
-            setPage(1);
-            setLimit(10);
-            if (withDay) {
-                setFrom(DateTimeUtil.getCurrentDateWith(Calendar.MONTH, -3, DateTimeUtil.FORMAT_REVERT));
-                setTo(DateTimeUtil.getCurrentDate(DateTimeUtil.FORMAT_REVERT));
-            }
-        }
-
-        public void setPage(int page) {
-            data.put("page", page);
-        }
-
-        public void setLimit(int limit) {
-            data.put("limit", limit);
-        }
-
-        public void setTextSearch(String textSearch) {
-            data.put("searchText", textSearch);
-        }
-
-        public void setFrom(String from) {
-            data.put("tuNgay", from);
-        }
-
-        public void setTo(String to) {
-            data.put("denNgay", to);
-        }
-
-        public void setOneToOne(boolean oneToOne) {
-            data.put("hoiThoaiMotMot", oneToOne);
-        }
-
-        public void setMore(boolean more) {
-            data.put("hoiThoaiNhieuNguoi", more);
-        }
-
-        public void setName(boolean setName) {
-            data.put("isDatTen", setName);
-        }
-
-        public void setImportant(boolean important) {
-            data.put("isQuanTrong", important);
-        }
-
-        public void setUserId(String userId) {
-            data.put("nhanVienId", userId);
-        }
-
-        public Integer getPage() {
-            Object a = data.get("page");
-            return (int) a;
-        }
-
-        public String getTo() {
-            Object a = data.get("denNgay");
-            if (a != null) {
-                return (String) a;
-            }
-            return DateTimeUtil.getCurrentDate();
-        }
-
-        public String getFrom() {
-            Object a = data.get("tuNgay");
-            if (a != null) {
-                return (String) a;
-            }
-            return DateTimeUtil.getCurrentDateWith(Calendar.MONTH, -1);
-        }
-    }
-
     public static class AddMember {
         private final String mConversationId;
         private final ArrayList<ConversationUser> mAddMember;
@@ -668,6 +566,24 @@ public class Conversation extends ExpandModel {
 
         public ArrayList<ConversationUser> getAddMember() {
             return mAddMember;
+        }
+    }
+
+    public static class Pin {
+        private final boolean isPin;
+        private final Conversation conversation;
+
+        public Pin(boolean isPin, Conversation conversation) {
+            this.isPin = isPin;
+            this.conversation = conversation;
+        }
+
+        public boolean isPin() {
+            return isPin;
+        }
+
+        public Conversation getConversation() {
+            return conversation;
         }
     }
 }

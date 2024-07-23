@@ -23,6 +23,8 @@ enum class AnimateType {
     NO_ANIMATION
 }
 
+const val ANIMATION_DELAY: Long = 200
+
 fun <T : Activity> AppCompatActivity.goTo(
     cls: KClass<T>, bundle: Bundle? = null,
     parcel: Parcelable? = null

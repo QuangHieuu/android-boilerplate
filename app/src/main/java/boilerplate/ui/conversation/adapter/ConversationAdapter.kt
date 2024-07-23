@@ -9,11 +9,16 @@ import boilerplate.databinding.ItemConversationBinding
 import boilerplate.databinding.ItemLoadMoreBinding
 import boilerplate.model.conversation.Conversation
 import boilerplate.model.message.Message
+import boilerplate.utils.DateTimeUtil.compareTwoDateWithFormat
 import boilerplate.widget.holder.LoadingVH
 import com.daimajia.swipe.adapters.RecyclerSwipeAdapter
 import com.daimajia.swipe.implments.SwipeItemRecyclerMangerImpl
 
-class ConversationAdapter(listener: SimpleEvent) : RecyclerSwipeAdapter<RecyclerView.ViewHolder>() {
+class ConversationAdapter(
+    private val _listener: SimpleEvent,
+    private val _pin: Boolean = false
+) :
+    RecyclerSwipeAdapter<RecyclerView.ViewHolder>() {
     abstract class SimpleEvent {
         open fun onItemClick(con: Conversation) {
         }
@@ -28,10 +33,10 @@ class ConversationAdapter(listener: SimpleEvent) : RecyclerSwipeAdapter<Recycler
         }
     }
 
-    private val mList: MutableList<Any?> = ArrayList()
-    private val mSwipeManager = SwipeItemRecyclerMangerImpl(this)
+    private val _list: MutableList<Any?> = ArrayList()
+    private val _swipeManager = SwipeItemRecyclerMangerImpl(this)
 
-    private val mListener = listener
+    private var _isShowPin = true
 
     override fun getSwipeLayoutResourceId(position: Int): Int {
         return R.id.swipe_layout
@@ -42,8 +47,9 @@ class ConversationAdapter(listener: SimpleEvent) : RecyclerSwipeAdapter<Recycler
         if (viewType == TYPE_ITEM) {
             return ConversationVH(
                 ItemConversationBinding.inflate(layoutInflater, parent, false),
-                mSwipeManager,
-                mListener
+                _swipeManager,
+                _listener,
+                _pin
             )
         } else {
             return LoadingVH(ItemLoadMoreBinding.inflate(layoutInflater, parent, false))
@@ -58,32 +64,32 @@ class ConversationAdapter(listener: SimpleEvent) : RecyclerSwipeAdapter<Recycler
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (mList[position] is Conversation && mList[position] != null) {
-            (holder as ConversationVH).setData(mList[position] as Conversation?)
+        if (_list[position] is Conversation && _list[position] != null) {
+            (holder as ConversationVH).setData(_list[position] as Conversation?, _isShowPin)
         }
     }
 
     override fun getItemViewType(position: Int): Int {
-        if (mList[position] is Conversation) {
+        if (_list[position] is Conversation) {
             return TYPE_ITEM
         }
         return TYPE_LOAD
     }
 
     override fun getItemCount(): Int {
-        return mList.size
+        return _list.size
     }
 
     fun closeAll() {
-        mSwipeManager.closeAllItems()
+        _swipeManager.closeAllItems()
     }
 
     val lastConversationId: String
         get() {
-            if (mList.isNotEmpty()) {
-                val last = mList[mList.size - 1]
+            if (_list.isNotEmpty()) {
+                val last = _list[_list.size - 1]
                 if (last == null) {
-                    val item = mList[mList.size - 2] as Conversation?
+                    val item = _list[_list.size - 2] as Conversation?
                     return item!!.conversationId
                 }
                 val item = last as Conversation
@@ -93,34 +99,34 @@ class ConversationAdapter(listener: SimpleEvent) : RecyclerSwipeAdapter<Recycler
         }
 
     fun loadMore() {
-        mList.add(null)
-        notifyItemInserted(mList.size - 1)
+        _list.add(null)
+        notifyItemInserted(_list.size - 1)
     }
 
     fun cancelLoadMore() {
-        val size = mList.size
-        mList.remove(null)
+        val size = _list.size
+        _list.remove(null)
         notifyItemRemoved(size - 1)
     }
 
     fun addMore(items: ArrayList<Conversation>) {
-        val size = mList.size
-        mList.addAll(items)
+        val size = _list.size
+        _list.addAll(items)
         notifyItemRangeInserted(size, items.size)
     }
 
     fun insertData(result: ArrayList<Conversation>) {
-        val size = mList.size
+        val size = _list.size
         if (size != 0) {
-            mList.clear()
+            _list.clear()
             notifyItemRangeRemoved(0, size)
         }
-        mList.addAll(result)
+        _list.addAll(result)
         notifyItemRangeInserted(0, result.size)
     }
 
     fun updateImportant(id: String, isImportant: Boolean) {
-        val iterator = mList.listIterator()
+        val iterator = _list.listIterator()
         while (iterator.hasNext()) {
             val index = iterator.nextIndex()
             val ob = iterator.next()
@@ -142,15 +148,15 @@ class ConversationAdapter(listener: SimpleEvent) : RecyclerSwipeAdapter<Recycler
     }
 
     fun updateImportant(conversation: Conversation?) {
-        val index = mList.indexOf(conversation)
-        mList[index] = conversation
+        val index = _list.indexOf(conversation)
+        _list[index] = conversation
         notifyItemChanged(index, conversation)
     }
 
     fun newConversation(conversation: Conversation) {
         var needReplace = false
         var foundItem = false
-        val iterator = mList.listIterator()
+        val iterator = _list.listIterator()
         while (iterator.hasNext()) {
             val index = iterator.nextIndex()
             val ob = iterator.next()
@@ -171,13 +177,13 @@ class ConversationAdapter(listener: SimpleEvent) : RecyclerSwipeAdapter<Recycler
             }
         }
         if (needReplace || !foundItem) {
-            mList.add(0, conversation)
+            _list.add(0, conversation)
             notifyItemInserted(0)
         }
     }
 
     fun removeConversation(conversation: Conversation) {
-        val iterator = mList.listIterator()
+        val iterator = _list.listIterator()
         while (iterator.hasNext()) {
             val index = iterator.nextIndex()
             val ob = iterator.next()
@@ -191,12 +197,12 @@ class ConversationAdapter(listener: SimpleEvent) : RecyclerSwipeAdapter<Recycler
     }
 
     fun removeConversation(conversationId: String?) {
-        val iterator = mList.listIterator()
+        val iterator = _list.listIterator()
         while (iterator.hasNext()) {
             val index = iterator.nextIndex()
             val ob = iterator.next()
             if (ob is Conversation) {
-                if (ob.conversationId == String.format(conversationId!!)) {
+                if (ob.conversationId == conversationId) {
                     iterator.remove()
                     notifyItemRemoved(index)
                     break
@@ -206,7 +212,7 @@ class ConversationAdapter(listener: SimpleEvent) : RecyclerSwipeAdapter<Recycler
     }
 
     fun deleteMessage(conversationId: String) {
-        val iterator = mList.listIterator()
+        val iterator = _list.listIterator()
         while (iterator.hasNext()) {
             val index = iterator.nextIndex()
             val ob = iterator.next()
@@ -224,7 +230,7 @@ class ConversationAdapter(listener: SimpleEvent) : RecyclerSwipeAdapter<Recycler
     }
 
     fun leaveConversation(value: String) {
-        val iterator = mList.listIterator()
+        val iterator = _list.listIterator()
         while (iterator.hasNext()) {
             val index = iterator.nextIndex()
             val ob = iterator.next()
@@ -240,8 +246,8 @@ class ConversationAdapter(listener: SimpleEvent) : RecyclerSwipeAdapter<Recycler
 
     fun syncLastRead(conversationId: String, isOnlyUnread: Boolean) {
         val id: String? = AccountManager.getCurrentUserId()
-        synchronized(mList) {
-            val iterator = mList.listIterator()
+        synchronized(_list) {
+            val iterator = _list.listIterator()
             while (iterator.hasNext()) {
                 val index = iterator.nextIndex()
                 val ob = iterator.next()
@@ -277,8 +283,8 @@ class ConversationAdapter(listener: SimpleEvent) : RecyclerSwipeAdapter<Recycler
     fun newMessage(message: Message, isMe: Boolean, isUpdate: Boolean): Boolean {
         var foundConv: Conversation? = null
         var isChangePos = false
-        synchronized(mList) {
-            val iterator = mList.listIterator()
+        synchronized(_list) {
+            val iterator = _list.listIterator()
             while (iterator.hasNext()) {
                 val index = iterator.nextIndex()
                 val ob = iterator.next()
@@ -312,7 +318,7 @@ class ConversationAdapter(listener: SimpleEvent) : RecyclerSwipeAdapter<Recycler
                 }
             }
             if (isChangePos) {
-                mList.add(0, foundConv)
+                _list.add(0, foundConv)
                 notifyItemInserted(0)
             }
         }
@@ -320,10 +326,10 @@ class ConversationAdapter(listener: SimpleEvent) : RecyclerSwipeAdapter<Recycler
     }
 
     fun updateConversation(conversation: Conversation): Boolean {
-        synchronized(mList) {
+        synchronized(_list) {
             var isFound = false
             var foundIndex = 0
-            val iterator = mList.listIterator()
+            val iterator = _list.listIterator()
             while (iterator.hasNext()) {
                 val index = iterator.nextIndex()
                 val ob = iterator.next()
@@ -348,7 +354,7 @@ class ConversationAdapter(listener: SimpleEvent) : RecyclerSwipeAdapter<Recycler
                 }
             }
             if (foundIndex != 0) {
-                mList.add(0, conversation)
+                _list.add(0, conversation)
                 notifyItemMoved(foundIndex, 0)
             }
             return isFound
@@ -357,8 +363,8 @@ class ConversationAdapter(listener: SimpleEvent) : RecyclerSwipeAdapter<Recycler
 
     fun updateConversation(conversation: Conversation, newPosition: Int) {
         var isRepalce = false
-        synchronized(mList) {
-            val iterator = mList.listIterator()
+        synchronized(_list) {
+            val iterator = _list.listIterator()
             while (iterator.hasNext()) {
                 val removeIndex = iterator.nextIndex()
                 val ob = iterator.next()
@@ -377,7 +383,7 @@ class ConversationAdapter(listener: SimpleEvent) : RecyclerSwipeAdapter<Recycler
                 }
             }
             if (isRepalce) {
-                mList.add(newPosition, conversation)
+                _list.add(newPosition, conversation)
                 notifyItemInserted(newPosition)
             }
         }
@@ -385,7 +391,7 @@ class ConversationAdapter(listener: SimpleEvent) : RecyclerSwipeAdapter<Recycler
 
     fun onOffNotifyConversation(id: String): Boolean? {
         var isOffNotify: Boolean? = null
-        val iterator = mList.listIterator()
+        val iterator = _list.listIterator()
         while (iterator.hasNext()) {
             val index = iterator.nextIndex()
             val ob = iterator.next()
@@ -409,13 +415,223 @@ class ConversationAdapter(listener: SimpleEvent) : RecyclerSwipeAdapter<Recycler
     }
 
     fun clearAll() {
-        val size = mList.size
-        mList.clear()
+        val size = _list.size
+        _list.clear()
         notifyItemRangeRemoved(0, size)
     }
 
+    fun insertPin(conversation: Conversation) {
+        _list.add(0, conversation)
+        notifyItemInserted(0)
+    }
+
+    fun reInsertPinAfterRemove(conversation: Conversation) {
+        val iterator: MutableListIterator<Any?> = _list.listIterator()
+        while (iterator.hasNext()) {
+            val index = iterator.nextIndex()
+            val ob = iterator.next()
+            if (ob is Conversation) {
+                //Kiểm tra hội thoại pin có ngày hoạt động cuối nhỏ hơn thì mới add vào
+                if (!compareTwoDateWithFormat(conversation.lastActive, ob.lastActive)) {
+                    _list.add(index, conversation)
+                    notifyItemInserted(index)
+                    return
+                }
+            }
+        }
+    }
+
+    fun updatePinImportant(id: String, important: Boolean): Boolean {
+        val iterator: MutableListIterator<Any?> = _list.listIterator()
+        while (iterator.hasNext()) {
+            val index = iterator.nextIndex()
+            val ob = iterator.next()
+            if (ob is Conversation) {
+                if (ob.conversationId!! == id) {
+                    for (user in ob.conversationUsers) {
+                        if (user.user.id.equals(AccountManager.getCurrentUserId())) {
+                            user.isImportant = important
+                            break
+                        }
+                    }
+                    iterator.set(ob)
+                    notifyItemChanged(index, ob)
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    fun newPinConversation(conversation: Conversation): Boolean {
+        val iterator: MutableListIterator<Any?> = _list.listIterator()
+        while (iterator.hasNext()) {
+            val index = iterator.nextIndex()
+            val ob = iterator.next()
+            if (ob is Conversation) {
+                if (conversation.conversationId.equals(ob.conversationId)) {
+                    iterator.set(ob)
+                    notifyItemChanged(index)
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    fun newPinConversation(message: Message, isMe: Boolean, isUpdate: Boolean): Boolean {
+        val iterator: MutableListIterator<Any?> = _list.listIterator()
+        while (iterator.hasNext()) {
+            val index = iterator.nextIndex()
+            val ob = iterator.next()
+            if (ob is Conversation) {
+                if (message.conversationId.equals(ob.conversationId)) {
+                    if (isUpdate || message.messageId.equals(ob.lastMessage.messageId)) {
+                        ob.apply {
+                            if (isMe) {
+                                for (user in conversationUsers) {
+                                    if (user.user.id.equals(AccountManager.getCurrentUserId())) {
+                                        user.readNumber = message.conversation.totalMessage
+                                    }
+                                }
+                            }
+                            lastActive = message.conversation.lastActive
+                            lastMessage = message
+                            totalMessage = message.conversation.totalMessage
+                        }
+                        iterator.set(ob)
+                        notifyItemChanged(index)
+                    }
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    fun removePinConversation(conversationId: String?): Boolean {
+        val iterator: MutableListIterator<Any?> = _list.listIterator()
+        while (iterator.hasNext()) {
+            val index = iterator.nextIndex()
+            val ob = iterator.next()
+            if (ob is Conversation) {
+                if (ob.conversationId.equals(conversationId!!)) {
+                    iterator.remove()
+                    notifyItemRemoved(index)
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    fun leavePinConversation(conversationId: String): Boolean {
+        val iterator: MutableListIterator<Any?> = _list.listIterator()
+        while (iterator.hasNext()) {
+            val index = iterator.nextIndex()
+            val ob = iterator.next()
+            if (ob is Conversation) {
+                if (ob.conversationId.equals(conversationId)) {
+                    iterator.remove()
+                    notifyItemRemoved(index)
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    fun updatePinConversation(conversation: Conversation): Boolean {
+        val iterator: MutableListIterator<Any?> = _list.listIterator()
+        while (iterator.hasNext()) {
+            val removeIndex = iterator.nextIndex()
+            val ob = iterator.next()
+            if (ob is Conversation) {
+                if (ob.conversationId.equals(conversation.conversationId)) {
+                    iterator.set(conversation)
+                    notifyItemChanged(removeIndex)
+                    return false
+                }
+            }
+        }
+        return true
+    }
+
+    fun newPinMessage(message: Message, isMe: Boolean, isUpdate: Boolean): Boolean {
+        val iterator: MutableListIterator<Any?> = _list.listIterator()
+        while (iterator.hasNext()) {
+            val index = iterator.nextIndex()
+            iterator.next().let { ob ->
+                if (ob is Conversation) {
+                    if (message.conversationId.equals(ob.conversationId)) {
+                        if (isUpdate || message.messageId.equals(ob.lastMessage.messageId)) {
+                            if (isMe) {
+                                for (user in ob.conversationUsers) {
+                                    if (user.user.id.equals(AccountManager.getCurrentUserId())) {
+                                        user.readNumber = message.conversation.totalMessage
+                                    }
+                                }
+                            }
+                            ob.apply {
+                                lastActive = message.conversation.lastActive
+                                lastMessage = message
+                                totalMessage = message.conversation.totalMessage
+                            }
+                            iterator.set(ob)
+                            notifyItemChanged(index)
+                        }
+                        return true
+                    }
+                }
+            }
+        }
+        return false
+    }
+
+    fun deletePinMessage(conversationId: String?): Boolean {
+        val iterator: MutableListIterator<Any?> = _list.listIterator()
+        while (iterator.hasNext()) {
+            val index = iterator.nextIndex()
+            val ob = iterator.next()
+            if (ob is Conversation) {
+                val c = ob
+                if (c.conversationId.equals(conversationId)) {
+                    c.totalMessage -= 1
+                    c.lastMessage = null
+                    iterator.set(c)
+                    notifyItemChanged(index, c)
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    fun syncPinLastRead(conversationId: String?): Boolean {
+        val id: String = AccountManager.getCurrentNhanVien().id ?: ""
+        val iterator: MutableListIterator<Any?> = _list.listIterator()
+        while (iterator.hasNext()) {
+            val index = iterator.nextIndex()
+            val ob = iterator.next()
+            if (ob is Conversation) {
+                val c = ob
+                if (c.conversationId.equals(conversationId)) {
+                    for (user in c.conversationUsers) {
+                        if (user.user.id.equals(id)) {
+                            user.readNumber = c.totalMessage
+                        }
+                    }
+                    iterator.set(c)
+                    notifyItemChanged(index)
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
     val topConversation: ArrayList<Any?>
-        get() = ArrayList(mList.subList(0, 9))
+        get() = ArrayList(_list.subList(0, 9))
 
     companion object {
         private const val TYPE_ITEM = 1

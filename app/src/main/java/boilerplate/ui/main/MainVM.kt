@@ -1,15 +1,22 @@
 package boilerplate.ui.main
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.MutableLiveData
 import boilerplate.base.BaseViewModel
 import boilerplate.data.local.repository.user.TokenRepository
 import boilerplate.data.local.repository.user.UserRepository
 import boilerplate.data.remote.api.ApiObservable
+import boilerplate.data.remote.api.response.BaseResult
 import boilerplate.data.remote.repository.conversation.ConversationRepository
 import boilerplate.model.conversation.Conversation
+import boilerplate.model.message.Message
+import boilerplate.ui.main.tab.HomeTabIndex
 import boilerplate.utils.extension.BaseSchedulerProvider
+import boilerplate.utils.extension.ifEmpty
 import boilerplate.utils.extension.loading
+import boilerplate.utils.extension.result
 import boilerplate.utils.extension.withScheduler
+import io.reactivex.rxjava3.core.Flowable
 
 class MainVM(
     private val schedulerProvider: BaseSchedulerProvider,
@@ -20,37 +27,25 @@ class MainVM(
 
     val currentFullName = userRepo.getCurrentRoleFullName()
 
-    private val _currentLoad by lazy { MutableLiveData<Pair<String, ArrayList<Conversation>?>>() }
-    val loadConversation = _currentLoad
-
     private val _logout by lazy { MutableLiveData<Boolean>() }
     val logout = _logout
+
+    private val _tabPosition by lazy { MutableLiveData<ArrayList<String>>() }
+    val tabPosition = _tabPosition
+
+    private val _currentTabSelected by lazy { MutableLiveData(HomeTabIndex.POSITION_HOME_DASHBOARD) }
+    val currentSelected = _currentTabSelected
 
     private val _user by lazy { MutableLiveData(userRepo.getUser()) }
     val user = _user
 
-    fun apiGetConversation(
-        last: String,
-        limit: Int,
-        unread: Boolean,
-        isImportant: Boolean,
-        search: String?
-    ) {
-        launchDisposable {
-            conversationRepo.getConversations(
-                last,
-                limit,
-                if (isImportant) null else unread,
-                isImportant,
-                search
-            )
-                .apply { if (last.isEmpty()) loading(_loading) }
-                .withScheduler(schedulerProvider)
-                .subscribeWith(ApiObservable.apiCallback(success = {
-                    _currentLoad.postValue(Pair(last, it.result?.items))
-                }))
-        }
-    }
+    private val _conversations by lazy { MutableLiveData<Pair<String, ArrayList<Conversation>>>() }
+    val conversations = _conversations
+    private val _pinConversations by lazy { MutableLiveData<ArrayList<Conversation>>() }
+    val pinConversations = _pinConversations
+
+    private val _conversationUpdate by lazy { MutableLiveData<Conversation>() }
+    val conversationUpdate = _conversationUpdate
 
     fun logout() {
         launchDisposable {
@@ -60,6 +55,72 @@ class MainVM(
                     userRepo.wipeUserData()
                     _logout.postValue(true)
                 }))
+        }
+    }
+
+    @SuppressLint("CheckResult")
+    fun apiGetConversation(
+        last: String,
+        unread: Boolean,
+        isImportant: Boolean,
+        search: String?
+    ) {
+        val list: ArrayList<Flowable<BaseResult<Conversation>>> = arrayListOf()
+        val conversation = conversationRepo.getConversations(
+            last,
+            limit,
+            if (isImportant) null else unread,
+            isImportant,
+            search
+        ).doOnNext { _conversations.postValue(Pair(last, it.result?.items.ifEmpty())) }
+        list.add(conversation)
+
+        if (last.isEmpty() && !unread && !isImportant) {
+            val pinConversation = conversationRepo.getPinConversation()
+                .doOnNext { _pinConversations.postValue(it.result?.items.ifEmpty()) }
+
+            list.add(pinConversation)
+        }
+
+        launchDisposable {
+            Flowable.concat(list)
+                .apply { if (last.isEmpty()) loading(_loading) }
+                .withScheduler(schedulerProvider)
+                .result()
+        }
+    }
+
+    fun apiGetConversationDetail(message: Message) {
+        launchDisposable {
+            conversationRepo.getConversationDetail(message.conversationId)
+                .withScheduler(schedulerProvider)
+                .result({
+                    _conversationUpdate.postValue(it.result?.apply {
+                        lastActive = message.dateCreate
+                        lastMessage = message
+                        totalMessage = message.conversation.totalMessage
+                    })
+                })
+        }
+    }
+
+    fun apiGetConversationDetail(conversationId: String) {
+        launchDisposable {
+            conversationRepo.getConversationDetail(conversationId)
+                .withScheduler(schedulerProvider)
+                .result({
+                    _conversationUpdate.postValue(it.result)
+                })
+        }
+    }
+
+    fun apiGetConversationDetail(conversation: Conversation) {
+        launchDisposable {
+            conversationRepo.getConversationDetail(conversation.conversationId)
+                .withScheduler(schedulerProvider)
+                .result({
+                    _conversationUpdate.postValue(it.result)
+                })
         }
     }
 }

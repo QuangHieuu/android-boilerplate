@@ -17,6 +17,35 @@
         android:orientation="horizontal">
 
         <LinearLayout
+            android:id="@+id/ln_pin"
+            android:layout_width="@dimen/dp_61"
+            android:layout_height="match_parent"
+            android:background="@color/color_1552DC"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/dp_10"
+            android:visibility="gone">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/img_layout_pin"
+                android:layout_width="@dimen/dp_24"
+                android:layout_height="@dimen/dp_24"
+                android:layout_gravity="center"
+                android:padding="@dimen/dp_5"
+                android:src="@drawable/ic_pin_version_2_white" />
+
+            <boilerplate.widget.customText.TextViewFont
+                android:id="@+id/tv_pin"
+                style="@style/StyleMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/pin"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/dp_10" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/ln_copy"
             android:layout_width="@dimen/dp_61"
             android:layout_height="match_parent"
@@ -235,6 +264,15 @@
                     android:layout_marginStart="@dimen/dp_5"
                     android:visibility="gone"
                     app:srcCompat="@drawable/ic_bookmark"
+                    tools:visibility="visible" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/img_pin"
+                    android:layout_width="@dimen/dp_16"
+                    android:layout_height="@dimen/dp_16"
+                    android:layout_marginStart="@dimen/dp_5"
+                    android:visibility="gone"
+                    app:srcCompat="@drawable/ic_pin_version_2"
                     tools:visibility="visible" />
             </LinearLayout>
         </LinearLayout>

@@ -41,7 +41,7 @@ class ContactTabFragment : BaseFragment<FragmentContactTabBinding, ContactVM>() 
                 }
 
                 override fun onOpenInform(user: User) {
-                    open(true, EmptyFragment.newInstance())
+                    open(split = true, fragment = EmptyFragment.newInstance())
                 }
 
                 override fun onChatWith(item: User) {

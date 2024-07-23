@@ -2,10 +2,15 @@ package boilerplate.ui.dashboard
 
 import android.content.Intent
 import android.net.Uri
+import android.view.LayoutInflater.from
+import android.webkit.URLUtil
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.ConcatAdapter
 import boilerplate.base.BaseFragment
 import boilerplate.constant.AccountManager
 import boilerplate.databinding.FragmentDashboardBinding
+import boilerplate.databinding.ItemDashboardMenuTabBinding
 import boilerplate.model.dashboard.Desktop
 import boilerplate.model.dashboard.EOfficeMenu
 import boilerplate.model.dashboard.HomeFeature
@@ -15,7 +20,12 @@ import boilerplate.ui.dashboard.adapter.BlockDocumentAdapter
 import boilerplate.ui.dashboard.adapter.BlockSignAdapter
 import boilerplate.ui.dashboard.adapter.BlockWorkAdapter
 import boilerplate.ui.main.MainVM
+import boilerplate.ui.main.tab.HomeTabIndex
+import boilerplate.utils.extension.click
+import boilerplate.utils.extension.gone
+import boilerplate.utils.extension.isTablet
 import boilerplate.utils.extension.loadImage
+import boilerplate.utils.extension.show
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -50,6 +60,8 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardVM>() 
     private lateinit var _dynamic: ConcatAdapter
 
     override fun initialize() {
+        tableView()
+
         val listener = object : OnMenuListener {
             override fun onMenu(menu: HomeFeature.HomePage) {
                 handleMenu(menu)
@@ -58,8 +70,10 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardVM>() 
 
         _slider = BlockBannerAdapter(object : OnSliderImageListener {
             override fun onClick(url: String) {
-                if (url.isNotEmpty()) {
-                    startActivity(Intent(Intent.ACTION_VIEW).apply { setData(Uri.parse(url.trim())) })
+                if (url.isNotEmpty() && URLUtil.isValidUrl(url)) {
+                    Intent(Intent.ACTION_VIEW).apply {
+                        setData(Uri.parse(url.trim()))
+                    }.let { startActivity(it) }
                 }
             }
         })
@@ -90,49 +104,56 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardVM>() 
     override fun onSubscribeObserver() {
         with(_activityVM) {
             user.observe(this@DashboardFragment) {
-                binding.imgAvatar.loadImage(it.avatar)
-                binding.tvName.text = it.name
-                binding.tvRole.text = currentFullName
+                with(binding) {
+                    root.run {
+                        tvRole.text = currentFullName
+                        tvName.text = it.name
+                        imgAvatar.loadImage(it.avatar)
+                    }
+                }
             }
         }
         with(_viewModel) {
             banners.observe(this@DashboardFragment) { list ->
-                _slider.setBanners(list.orEmpty())
-
+                with(binding) {
+                    root.run { _slider.setBanners(list.orEmpty()) }
+                }
             }
             dashboard.observe(this@DashboardFragment) {
-                val statical = it.statical
+                binding.root.run {
+                    val statical = it.statical
 
-                if (AccountManager.hasIncomeDocument()) {
-                    _blockDocument.setData(
-                        statical?.documentUnProcess ?: 0,
-                        statical?.documentInProcess ?: 0
+                    if (AccountManager.hasIncomeDocument()) {
+                        _blockDocument.setData(
+                            statical?.documentUnProcess ?: 0,
+                            statical?.documentInProcess ?: 0
+                        )
+                        _dynamic.addAdapter(0, _blockDocument)
+                    } else {
+                        _dynamic.removeAdapter(_blockDocument)
+                    }
+                    if (AccountManager.hasDigitalSignManage()) {
+                        _blockSign.setData(statical?.signGoing ?: 0)
+
+                        val index = if (_dynamic.adapters.isEmpty()) 0 else 1
+                        _dynamic.addAdapter(index, _blockSign)
+                    } else {
+                        _dynamic.removeAdapter(_blockSign)
+                    }
+                    _dynamic.notifyItemRangeChanged(0, _dynamic.adapters.size)
+
+                    _blockWork.setData(
+                        statical?.workNotAssign ?: 0,
+                        statical?.workNeedDone ?: 0,
+                        statical?.workOverTime ?: 0
                     )
-                    _dynamic.addAdapter(0, _blockDocument)
-                } else {
-                    _dynamic.removeAdapter(_blockDocument)
+                    val list = if (it.desktop!!.size > 5) {
+                        it.desktop!!.subList(0, 5)
+                    } else {
+                        it.desktop!!
+                    }
+                    _blockDesktop.setData(list)
                 }
-                if (AccountManager.hasDigitalSignManage()) {
-                    _blockSign.setData(statical?.signGoing ?: 0)
-
-                    val index = if (_dynamic.adapters.isEmpty()) 0 else 1
-                    _dynamic.addAdapter(index, _blockSign)
-                } else {
-                    _dynamic.removeAdapter(_blockSign)
-                }
-                _dynamic.notifyItemRangeChanged(0, _dynamic.adapters.size)
-
-                _blockWork.setData(
-                    statical?.workNotAssign ?: 0,
-                    statical?.workNeedDone ?: 0,
-                    statical?.workOverTime ?: 0
-                )
-                val list = if (it.desktop!!.size > 5) {
-                    it.desktop!!.subList(0, 5)
-                } else {
-                    it.desktop!!
-                }
-                _blockDesktop.setData(list)
             }
         }
     }
@@ -142,6 +163,29 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardVM>() 
             swipeRefreshDashboard.setOnRefreshListener {
                 swipeRefreshDashboard.isRefreshing = false
                 _viewModel.getDashboard()
+            }
+        }
+        with(_activityVM) {
+            tabPosition.observe(this@DashboardFragment) {
+                if (it.isNotEmpty()) {
+                    binding.lnDashboardMenu.removeAllViews()
+                    val iterator: ListIterator<String> = it.listIterator()
+                    while (iterator.hasNext()) {
+                        val index = iterator.nextIndex()
+                        val pos = iterator.next()
+                        ItemDashboardMenuTabBinding.inflate(
+                            from(context),
+                            binding.root,
+                            false
+                        ).apply {
+                            imageTab.setImageResource(HomeTabIndex.tabIcon[index])
+                            tvTab.text = HomeTabIndex.tabTitle[index]
+                            root.click { _activityVM.currentSelected.value = pos }
+                        }.let { v ->
+                            binding.lnDashboardMenu.addView(v.root)
+                        }
+                    }
+                }
             }
         }
     }
@@ -173,6 +217,19 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardVM>() 
             }
 
             else -> {}
+        }
+    }
+
+    private fun tableView() {
+        with(binding) {
+            if (requireActivity().isTablet()) {
+                imgFilterWork.gone()
+                scrollTablet.show()
+
+                imgNotify.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                    horizontalBias = 0f
+                }
+            }
         }
     }
 }

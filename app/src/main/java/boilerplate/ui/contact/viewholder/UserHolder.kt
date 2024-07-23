@@ -5,7 +5,7 @@ import boilerplate.constant.AccountManager
 import boilerplate.databinding.ItemContactUserBinding
 import boilerplate.model.user.User
 import boilerplate.ui.contact.listener.OnContactListener
-import boilerplate.utils.ClickUtil
+import boilerplate.utils.extension.click
 import boilerplate.utils.extension.gone
 import boilerplate.utils.extension.isVisible
 import boilerplate.utils.extension.loadImage
@@ -53,16 +53,14 @@ class UserHolder(
                     imgPhone.show()
                 }
 
-                imgChat.setOnClickListener(ClickUtil.onClick { _listener.onChatWith(any) })
-                imgPhone.setOnClickListener(ClickUtil.onClick {
-                    _listener.onPhone(any.phoneNumber.orEmpty())
-                })
+                imgChat.click { _listener.onChatWith(any) }
+                imgPhone.click { _listener.onPhone(any.phoneNumber.orEmpty()) }
 
-                root.setOnClickListener(ClickUtil.onClick {
+                root.click {
                     if (!any.isForContactEdit) {
                         _listener.onOpenInform(any)
                     }
-                })
+                }
             }
         }
     }

@@ -2,6 +2,7 @@ package boilerplate.base
 
 import android.graphics.Rect
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -20,7 +21,7 @@ import it.cpc.vn.permission.PermissionUtils
 import java.lang.reflect.ParameterizedType
 
 abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatActivity() {
-    protected abstract val mViewModel: VM
+    protected abstract val _viewModel: VM
     private var _binding: AC? = null
     protected val binding: AC get() = _binding!!
 
@@ -32,17 +33,18 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
                 val stack = supportFragmentManager.backStackEntryCount
                 val fragmentTablet = supportFragmentManager.findFragmentById(R.id.frame_tablet)
                 if (isTablet()) {
-                    if (fragmentTablet != null && stack > 0) {
-                        supportFragmentManager.popBackStack()
+                    val hasContain = fragmentTablet != null
+                    if (hasContain) {
+                        if (stack >= 1) {
+                            finish()
+                        } else {
+                            supportFragmentManager.popBackStack()
+                        }
                     } else {
-                        finish()
+                        closeView(stack)
                     }
                 } else {
-                    if (stack == 0) {
-                        finish()
-                    } else {
-                        supportFragmentManager.popBackStack()
-                    }
+                    closeView(stack)
                 }
             }
         }
@@ -97,8 +99,12 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
                     val rect = Rect()
                     val coordinates = IntArray(2)
                     view.getLocationOnScreen(coordinates)
-                    rect[coordinates[0], coordinates[1], coordinates[0] + view.width] =
+                    rect.set(
+                        coordinates[0],
+                        coordinates[1],
+                        coordinates[0] + view.width,
                         coordinates[1] + view.height
+                    )
                     val x = ev.x.toInt()
                     val y = ev.y.toInt()
                     if (rect.contains(x, y)) {
@@ -108,6 +114,7 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
                     return consumed
                 }
                 if (view is EditTextFont && view.isFocusableInTouchMode) {
+                    Log.d("SSS", "activity: ")
                     view.hideKeyboard()
                 }
                 return consumed
@@ -117,7 +124,7 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
     }
 
     private fun baseObserver() {
-        with(mViewModel) {
+        with(_viewModel) {
             inValidaLogin.observe(this@BaseActivity) {
                 if (it) {
                     binding.root.showSnackBarFail(getString(R.string.error_auth_wrong))
@@ -129,4 +136,11 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
         }
     }
 
+    private fun closeView(stack: Int) {
+        if (stack == 0) {
+            finish()
+        } else {
+            supportFragmentManager.popBackStack()
+        }
+    }
 }

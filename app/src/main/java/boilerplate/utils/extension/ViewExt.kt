@@ -1,43 +1,39 @@
 package boilerplate.utils.extension
 
 import android.annotation.SuppressLint
-import android.app.ActivityManager
-import android.app.ActivityManager.RunningAppProcessInfo
 import android.content.Context
-import android.content.res.Configuration
 import android.graphics.drawable.Drawable
-import android.os.Build
+import android.os.Handler
+import android.os.Looper
+import android.view.LayoutInflater
 import android.view.View
-import android.view.WindowInsets
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ProgressBar
-import android.widget.Toast
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import boilerplate.R
 import boilerplate.constant.AccountManager
 import boilerplate.constant.Constants.KEY_AUTH
+import boilerplate.databinding.ViewToastBinding
+import boilerplate.model.file.ExtensionType
 import boilerplate.utils.ClickUtil
-import boilerplate.utils.InternetManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.Headers
 import com.bumptech.glide.load.model.LazyHeaders
+import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.snackbar.BaseTransientBottomBar.ANIMATION_MODE_SLIDE
 import com.google.android.material.snackbar.Snackbar
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.ObservableOnSubscribe
-import java.util.concurrent.TimeUnit
 
 
 fun View.show() {
@@ -56,23 +52,49 @@ fun View.isVisible(): Boolean {
     return visibility == View.VISIBLE
 }
 
+@SuppressLint("RestrictedApi")
 fun View.showSnackBar(
     @StringRes message: Int = R.string.no_text,
     @ColorRes color: Int = R.color.color_toast
 ) = Snackbar.make(rootView, message, Snackbar.LENGTH_SHORT).apply {
-    view.setBackgroundColor(ContextCompat.getColor(context, color))
+    animationMode = ANIMATION_MODE_SLIDE
+    view.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent))
+    val binding =
+        ViewToastBinding.inflate(LayoutInflater.from(context), rootView as ViewGroup, false)
+    with(binding) {
+        lnToast.setBackgroundColor(ContextCompat.getColor(context, color))
+        tvToast.setText(message)
+    }
+    val layout = view as Snackbar.SnackbarLayout
+    layout.addView(binding.root)
 }.show()
 
+@SuppressLint("RestrictedApi")
 fun View.showSnackBar(
     message: String = context.getString(R.string.no_text),
     @ColorRes color: Int = R.color.color_toast
 ) = Snackbar.make(rootView, message, Snackbar.LENGTH_SHORT).apply {
     animationMode = ANIMATION_MODE_SLIDE
-    view.setBackgroundColor(ContextCompat.getColor(context, color))
+    view.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent))
+    val binding =
+        ViewToastBinding.inflate(LayoutInflater.from(context), rootView as ViewGroup, false)
+    with(binding) {
+        lnToast.setBackgroundColor(ContextCompat.getColor(context, color))
+        tvToast.text = message
+    }
+    val layout = view as Snackbar.SnackbarLayout
+    layout.addView(binding.root)
 }.show()
 
 fun View.showSnackBarSuccess(
     message: String = ""
+) = showSnackBar(
+    message,
+    R.color.color_toast_success
+)
+
+fun View.showSnackBarSuccess(
+    @StringRes message: Int = R.string.no_text
 ) = showSnackBar(
     message,
     R.color.color_toast_success
@@ -85,8 +107,22 @@ fun View.showSnackBarFail(
     R.color.color_toast_fail
 )
 
+fun View.showSnackBarFail(
+    @StringRes message: Int = R.string.no_text
+) = showSnackBar(
+    message,
+    R.color.color_toast_fail
+)
+
 fun View.showSnackBarWarning(
     message: String = ""
+) = showSnackBar(
+    message,
+    R.color.color_toast_warning
+)
+
+fun View.showSnackBarWarning(
+    @StringRes message: Int = R.string.no_text
 ) = showSnackBar(
     message,
     R.color.color_toast_warning
@@ -110,29 +146,6 @@ fun WebView.loadWebViewUrl(url: String?, progressBar: ProgressBar?) {
     loadUrl(url)
 }
 
-fun View.clicks(isCheckNetwork: Boolean): Observable<View> {
-    val source: ObservableOnSubscribe<View> = ObservableOnSubscribe { emitter ->
-        emitter.setCancellable {
-            setOnClickListener(null)
-            emitter.onComplete()
-        }
-
-        setOnClickListener {
-            val isConnected = InternetManager.isConnected()
-            if (isCheckNetwork && !isConnected) {
-                val errorMessage = context.getString(R.string.error_internet_connect)
-                Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
-                return@setOnClickListener
-            }
-            emitter.onNext(this)
-        }
-    }
-    return Observable.create(source).throttleFirst(
-        1, TimeUnit.SECONDS,
-        AndroidSchedulers.mainThread()
-    )
-}
-
 fun EditText.hideKeyboard() {
     with(this) {
         clearFocus()
@@ -153,10 +166,23 @@ fun EditText.showKeyboard() {
     }
 }
 
-fun ImageView.loadImage(url: String? = "", accessToken: String? = AccountManager.getToken()) {
+fun ImageView.loadImage(
+    url: String? = "",
+    accessToken: String? = AccountManager.getToken(),
+    type: String? = "",
+    requestOptions: RequestOptions? = null
+) {
     if (url.isNullOrEmpty()) {
         return
     }
+
+    val loading: CircularProgressDrawable = CircularProgressDrawable(context).apply {
+        setColorSchemeColors(ContextCompat.getColor(context, R.color.color_1552DC))
+        setCenterRadius(25f)
+        setStrokeWidth(5f)
+    }
+
+    val isGif = ExtensionType.isFileGIF(type)
 
     val context = context
     val glideUrl = GlideUrl(url, accessToken?.let {
@@ -165,76 +191,114 @@ fun ImageView.loadImage(url: String? = "", accessToken: String? = AccountManager
             .build()
     } ?: Headers.DEFAULT)
 
-    val request = RequestOptions()
-        .error(R.drawable.ic_avatar)
-        .placeholder(R.drawable.ic_avatar)
+    val request = (requestOptions ?: RequestOptions().error(R.drawable.ic_avatar))
+        .placeholder(loading)
 
+    if (isGif) {
+        Glide
+            .with(context)
+            .asGif()
+            .load(glideUrl)
+            .apply(request)
+            .into(object : CustomTarget<GifDrawable>() {
+                override fun onLoadStarted(placeholder: Drawable?) {
+                    setImageDrawable(placeholder)
+                    loading.start()
+                }
+
+                override fun onResourceReady(
+                    resource: GifDrawable,
+                    transition: Transition<in GifDrawable>?
+                ) {
+                    setImageDrawable(resource)
+                    resource.start()
+                    loading.stop()
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {
+                    setImageResource(R.color.colorWhite)
+                    loading.stop()
+                }
+
+                override fun onLoadFailed(errorDrawable: Drawable?) {
+                    setImageDrawable(errorDrawable)
+                    loading.stop()
+                }
+            })
+    }
     Glide
         .with(context)
         .asDrawable()
         .load(glideUrl)
         .apply(request)
         .into(object : CustomTarget<Drawable>() {
+            override fun onLoadStarted(placeholder: Drawable?) {
+                setImageDrawable(placeholder)
+                loading.start()
+            }
+
             override fun onLoadFailed(errorDrawable: Drawable?) {
                 setImageDrawable(errorDrawable)
+                loading.stop()
             }
 
             override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
                 setImageDrawable(resource)
+                loading.stop()
             }
 
             override fun onLoadCleared(placeholder: Drawable?) {
                 setImageDrawable(placeholder)
+                loading.stop()
             }
         })
 }
 
-@SuppressLint("InternalInsetResource", "DiscouragedApi")
-fun AppCompatActivity.statusBarHeight(): Int {
-    val resourceId: Int = getResources().getIdentifier("status_bar_height", "dimen", "android")
-    if (resourceId > 0) {
-        val statusBarHeight: Int = getResources().getDimensionPixelSize(resourceId)
-        return statusBarHeight
-    }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        val windowInsets: WindowInsets = window.decorView.getRootWindowInsets()
-        return windowInsets.getInsets(WindowInsets.Type.statusBars()).top
-    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-        val windowInsets: WindowInsets = window.decorView.getRootWindowInsets()
-        val displayCutout = windowInsets.displayCutout
-        if (displayCutout != null) {
-            return displayCutout.safeInsetTop
-        }
-        return 0
-    } else {
-        val decorView: View = window.decorView
-        val insets = decorView.rootWindowInsets
-        if (insets != null) {
-            return insets.systemWindowInsetTop
-        }
-    }
-    return 0
+fun View.click(block: ((v: View) -> Unit)?) {
+    block.notNull { setOnClickListener(ClickUtil.onClick { v -> it(v) }) }
 }
 
-fun Context.isAppInBackground(): Boolean {
-    var isInBackground = true
-    val runningProcesses =
-        (getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).runningAppProcesses
-    for (processInfo in runningProcesses) {
-        if (processInfo.importance == RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
-            for (activeProcess in processInfo.pkgList) {
-                if (activeProcess == packageName) {
-                    isInBackground = false
-                }
-            }
-        }
-    }
-    return isInBackground
+//fun View.clicks(isCheckNetwork: Boolean): Observable<View> {
+//    val source: ObservableOnSubscribe<View> = ObservableOnSubscribe { emitter ->
+//        emitter.setCancellable {
+//            setOnClickListener(null)
+//            emitter.onComplete()
+//        }
+//
+//        setOnClickListener {
+//            val isConnected = InternetManager.isConnected()
+//            if (isCheckNetwork && !isConnected) {
+//                val errorMessage = context.getString(R.string.error_internet_connect)
+//                Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+//                return@setOnClickListener
+//            }
+//            emitter.onNext(this)
+//        }
+//    }
+//    return Observable.create(source).throttleFirst(
+//        1, TimeUnit.SECONDS,
+//        AndroidSchedulers.mainThread()
+//    )
+//}
+
+fun View.removeSelf() {
+    val parent = parent as? ViewGroup ?: return
+    parent.removeView(this)
 }
 
-fun Context.isTablet(): Boolean = Configuration.SCREENLAYOUT_SIZE_LARGE <=
-        (resources.configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK)
+fun View.addTo(parent: ViewGroup?) {
+    parent ?: return
+    parent.addView(
+        this,
+        ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
+    )
+}
 
-fun View.setClick(v: (v: View) -> Unit) {
-    setOnClickListener(ClickUtil.onClick { v(it) })
+inline fun View.launch(delay: Long = 0, crossinline r: () -> Unit) {
+    synchronized(this) {
+        Handler(Looper.getMainLooper()).postDelayed({ r() }, delay)
+    }
 }

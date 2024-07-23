@@ -1,6 +1,7 @@
 package boilerplate.utils
 
 import android.text.TextUtils
+import android.text.format.DateUtils
 import java.math.RoundingMode
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -45,12 +46,11 @@ object DateTimeUtil {
         DATE_FORMAT_Z
     )
 
-    @JvmStatic
     fun convertWithSuitableFormat(
-        input: String?,
-        outputFormat: String?,
-        timezoneIn: String?,
-        timezoneOut: String?
+        input: String,
+        outputFormat: String,
+        timezoneIn: String,
+        timezoneOut: String
     ): String {
         for (f in multiFormat) {
             val s: String =
@@ -60,8 +60,7 @@ object DateTimeUtil {
         return ""
     }
 
-    @JvmStatic
-    fun convertWithSuitableFormat(input: String?, outputFormat: String?): String {
+    fun convertWithSuitableFormat(input: String, outputFormat: String): String {
         for (f in multiFormat) {
             val s: String = convert(input, f, outputFormat)
             if (!s.isEmpty()) return s
@@ -69,23 +68,20 @@ object DateTimeUtil {
         return ""
     }
 
-    @JvmStatic
-    fun convertWithSuitableFormat(input: String?): Date? {
+    fun convertWithSuitableFormat(input: String): Date {
         var date: Date? = null
         for (f in multiFormat) {
             val inputFormat = SimpleDateFormat(f, Locale.getDefault())
             inputFormat.isLenient = false
             try {
-                date = inputFormat.parse(input)
+                date = inputFormat.parse(input)!!
                 break
             } catch (ignored: ParseException) {
             }
         }
-        return date
+        return date ?: Date()
     }
 
-
-    @JvmStatic
     fun getCurrentDateWith(set: Int, value: Int): String {
         val c = Calendar.getInstance()
         c.add(set, value)
@@ -93,31 +89,26 @@ object DateTimeUtil {
         return df.format(c.time)
     }
 
-    @JvmStatic
-    fun getCurrentDateWith(set: Int, value: Int, format: String?): String {
+    fun getCurrentDateWith(set: Int, value: Int, format: String): String {
         val c = Calendar.getInstance()
         c.add(set, value)
         val df = SimpleDateFormat(format, Locale.getDefault())
         return df.format(c.time)
     }
 
-
-    @JvmStatic
     fun getCurrentDate(format: String): String {
         val c = Calendar.getInstance()
         val df = SimpleDateFormat(format, Locale.getDefault())
         return df.format(c.time)
     }
 
-    @JvmStatic
     fun getCurrentDate(): String {
         val c = Calendar.getInstance()
         val df = SimpleDateFormat(FORMAT_NORMAL, Locale.getDefault())
         return df.format(c.time)
     }
 
-
-    private fun convert(input: String?, format: String?, formatOut: String?): String {
+    private fun convert(input: String, format: String, formatOut: String): String {
         if (TextUtils.isEmpty(input)) return ""
         val inputFormat = SimpleDateFormat(format, Locale.getDefault())
         val output = SimpleDateFormat(formatOut, Locale.getDefault())
@@ -134,11 +125,11 @@ object DateTimeUtil {
     }
 
     private fun convert(
-        input: String?,
-        format: String?,
-        formatOut: String?,
-        timezoneIn: String?,
-        timezoneOut: String?
+        input: String,
+        format: String,
+        formatOut: String,
+        timezoneIn: String,
+        timezoneOut: String
     ): String {
         if (TextUtils.isEmpty(input)) return ""
         val inputFormat = SimpleDateFormat(format, Locale.getDefault())
@@ -159,7 +150,7 @@ object DateTimeUtil {
         }
     }
 
-    fun convertToTextTimePast(date: String?): String {
+    fun convertToTextTimePast(date: String): String {
         val time: Long = convertToTimestamp(date) / 1000
         val now = System.currentTimeMillis() / 1000
         val diff = now - time
@@ -229,7 +220,7 @@ object DateTimeUtil {
         return convertWithSuitableFormat(date, FORMAT_NORMAL)
     }
 
-    fun convertToTimestamp(time: String?, inputFormat: String?): Long {
+    fun convertToTimestamp(time: String, inputFormat: String): Long {
         try {
             val formatter = SimpleDateFormat(inputFormat, Locale.getDefault())
             formatter.isLenient = false
@@ -240,8 +231,19 @@ object DateTimeUtil {
         }
     }
 
-    fun convertToTimestamp(time: String?): Long {
+    fun convertToTimestamp(time: String): Long {
         val date = convertWithSuitableFormat(time)
-        return date!!.time
+        return date.time
+    }
+
+    fun compareTwoDateWithFormat(input1: String, input2: String): Boolean {
+        val date1 = convertWithSuitableFormat(input1)
+        val date2 = convertWithSuitableFormat(input2)
+        return date1 < date2
+    }
+
+    fun isToDay(input: String?): Boolean {
+        val time = convertToTimestamp(input!!)
+        return DateUtils.isToday(time)
     }
 }

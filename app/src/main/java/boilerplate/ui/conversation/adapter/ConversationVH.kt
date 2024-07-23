@@ -13,12 +13,13 @@ import boilerplate.databinding.ItemConversationBinding
 import boilerplate.model.conversation.Conversation
 import boilerplate.model.conversation.ConversationUser
 import boilerplate.model.message.Message
-import boilerplate.utils.ClickUtil
 import boilerplate.utils.DateTimeUtil
 import boilerplate.utils.ImageUtil.IMAGE_THUMB_SIZE
 import boilerplate.utils.StringUtil
 import boilerplate.utils.SystemUtil.getFontSizeChat
+import boilerplate.utils.extension.click
 import boilerplate.utils.extension.gone
+import boilerplate.utils.extension.hide
 import boilerplate.utils.extension.loadImage
 import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.show
@@ -32,6 +33,7 @@ class ConversationVH(
     private val _binding: ItemConversationBinding,
     private val _sm: SwipeItemRecyclerMangerImpl?,
     private val mListListener: ConversationAdapter.SimpleEvent,
+    private val pin: Boolean,
     private val _context: Context = _binding.root.context
 ) : RecyclerView.ViewHolder(_binding.root) {
 
@@ -63,26 +65,29 @@ class ConversationVH(
         _unReadBackground = ContextCompat.getColor(_context, R.color.color_conversation_unread)
 
         with(_binding) {
-            rlConversationItem.setOnClickListener(ClickUtil.onClick {
-                _conversation?.let { con -> mListListener.onItemClick(con) }
-            })
-            lnMark.setOnClickListener(ClickUtil.onClick {
+            tvPin.setText(if (pin) R.string.un_pin else R.string.pin)
+            imgPin.apply { if (pin) show() else hide() }
+
+            rlConversationItem.click { _conversation?.let { con -> mListListener.onItemClick(con) } }
+            lnMark.click {
                 _conversation?.let { con -> mListListener.onMarkAsImportant(con) }
                 swipeLayout.close()
-            })
-            lnDelete.setOnClickListener(ClickUtil.onClick {
+            }
+            lnDelete.click {
                 _conversation?.let { con -> mListListener.onDelete(con) }
                 swipeLayout.close()
-            })
-            lnNotify.setOnClickListener(ClickUtil.onClick {
+            }
+            lnNotify.click {
                 _conversation?.let { con -> mListListener.onNotify(con, _isUserNotify) }
                 swipeLayout.close()
-            })
+            }
         }
     }
 
-    fun setData(con: Conversation?) {
+    fun setData(con: Conversation?, isShowPin: Boolean) {
         _conversation = con
+
+        _binding.lnPin.apply { if (isShowPin) show() else gone() }
 
         _sm?.bindView(itemView, bindingAdapterPosition)
 
@@ -140,7 +145,7 @@ class ConversationVH(
                 }
                 if (isGroup) {
                     if (!(user.user.id == con.creatorId && size > 3)) {
-                        if (!builder.toString().isEmpty() && needCreateName) {
+                        if (builder.toString().isNotEmpty() && needCreateName) {
                             builder.append(", ")
                         }
                         if (countName > 2 && needCreateName) {

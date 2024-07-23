@@ -4,4 +4,5 @@
     <string name="error_internet_connect">Mất kết nối internet, vui lòng thử lại</string>
     <string name="error_auth_wrong">Tài khoản đăng nhập hoặc mật khẩu không đúng</string>
 
+    <string name="error_delete_conversation">Xóa hội thoại không thành công</string>
 </resources>

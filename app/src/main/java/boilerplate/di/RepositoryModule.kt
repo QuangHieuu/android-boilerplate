@@ -14,7 +14,6 @@ import boilerplate.data.remote.repository.conversation.ConversationRepository
 import boilerplate.data.remote.repository.conversation.ConversationRepositoryImpl
 import boilerplate.data.remote.repository.dashboard.DashboardImpl
 import boilerplate.data.remote.repository.dashboard.DashboardRepository
-import boilerplate.data.remote.service.ApiService
 import com.google.gson.Gson
 import org.koin.dsl.module
 

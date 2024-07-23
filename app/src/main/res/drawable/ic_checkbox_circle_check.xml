@@ -4,13 +4,13 @@
         <layer-list>
             <item android:bottom="@dimen/dp_5" android:left="@dimen/dp_5" android:right="@dimen/dp_5" android:top="@dimen/dp_5">
                 <shape android:shape="oval">
-                    <solid android:color="@color/colorPrimary" />
+                    <solid android:color="@color/color_1552DC" />
                 </shape>
             </item>
 
             <item>
                 <shape android:shape="oval">
-                    <stroke android:width="4px" android:color="@color/colorPrimary" />
+                    <stroke android:width="4px" android:color="@color/color_1552DC" />
                     <size android:width="@dimen/dp_20" android:height="@dimen/dp_20" />
                 </shape>
             </item>

@@ -22,6 +22,8 @@ abstract class BaseViewModel() : ViewModel() {
         setApiCallback(gson)
     }
 
+    val limit: Int by KoinJavaComponent.inject(Int::class.java)
+
     protected val _loading by lazy { MutableLiveData<Boolean>() }
     val loading: LiveData<Boolean> = _loading
 
@@ -67,6 +69,7 @@ abstract class BaseViewModel() : ViewModel() {
 
             override fun onServerError(errorCode: Int, api: String, showError: Boolean) {
                 if (errorCode >= 500) {
+                    _error.postValue(Resources.getSystem().getString(R.string.error_general))
 //                    Firebase.reportServerError(this, api, AccountManager.getUsername(this))
                     return
                 }

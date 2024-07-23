@@ -1,7 +1,5 @@
 package boilerplate.data.remote.api
 
-import boilerplate.data.remote.service.ApiService
-import boilerplate.data.remote.service.ApiUrl
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 

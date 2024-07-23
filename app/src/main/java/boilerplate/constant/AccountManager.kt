@@ -2,6 +2,7 @@ package boilerplate.constant
 
 import boilerplate.data.local.repository.user.TokenRepository
 import boilerplate.data.local.repository.user.UserRepository
+import boilerplate.model.user.Company
 import boilerplate.model.user.User
 import org.koin.java.KoinJavaComponent.inject
 
@@ -19,16 +20,22 @@ object AccountManager {
     private val tokenImpl by inject<TokenRepository>(TokenRepository::class.java)
 
     @JvmStatic
+    fun getMainCompany(): Company {
+        return userImpl.getUser().mainCompany ?: Company()
+    }
+
+    @JvmStatic
     fun getCurrentUserId(): String? {
         return userImpl.getUser().id
     }
 
-    @JvmStatic
     fun getCurrentNhanVien(): User = userImpl.getUser()
 
-    @JvmStatic
     fun getToken(): String = tokenImpl.getToken()
 
+    fun isPlaySound(): Boolean {
+        return userImpl.getSystemSound()
+    }
 
     fun hasIncomeDocument(): Boolean {
         return userImpl.getRolePermission().contains(CONGVANDEN)

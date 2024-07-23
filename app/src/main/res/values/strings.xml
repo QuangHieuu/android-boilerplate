@@ -18,6 +18,11 @@
     <string name="no">Không</string>
     <string name="exit">Thoát</string>
     <string name="ignore">Bỏ qua</string>
+    <string name="pin">Ghim</string>
+    <string name="un_pin">Bỏ ghim</string>
+    <string name="off">Tắt</string>
+    <string name="home">Trang chủ</string>
+    <string name="today">Hôm nay</string>
 
     <string name="contact">Danh bạ</string>
     <string name="message">Tin nhắn</string>
@@ -32,6 +37,9 @@
     <string name="selected_or_unselected_all">Chọn/hủy tất cả</string>
     <string name="create_group">Tạo nhóm</string>
 
+    <string name="sent">Đã nhận</string>
+    <string name="seen">Đã xem</string>
+    <string name="pending">Chưa gửi</string>
     <string name="mark">Đánh dấu</string>
     <string name="un_mark">Bỏ đánh dấu</string>
     <string name="my_cloud">Cloud của tôi</string>
@@ -68,4 +76,19 @@
 
     <string name="deny">Từ chối</string>
     <string name="agree">Đồng ý</string>
+
+    <string name="delete_conversation_message">Xóa hội thoại</string>
+
+    <string name="new_message_count">Có %d tin nhắn mới</string>
+    <string name="audio_message">Tin nhắn thoại</string>
+    <string name="record_mode">Chuyển giọng nói thành văn bản</string>
+    <string name="record_action">Nhấn để ghi âm</string>
+    <string name="playback">Nghe lại</string>
+    <string name="user_pin">Người ghim tin nhắn</string>
+    <string name="go_to_message">Xem tin gốc</string>
+    <string name="survey_file">Phiếu khảo sát</string>
+    <string name="breakfast_file">Phiếu điểm tâm</string>
+
+    <string name="show_more_with_dot">\u0020…Xem thêm</string>
+    <string name="collapse_with_dot">\u0020…Thu gọn</string>
 </resources>

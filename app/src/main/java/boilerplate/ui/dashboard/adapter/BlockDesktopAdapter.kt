@@ -12,7 +12,7 @@ import boilerplate.model.dashboard.Desktop
 import boilerplate.model.dashboard.HomeFeatureMenu
 import boilerplate.ui.dashboard.DashboardFragment.OnDesktopListener
 import boilerplate.ui.dashboard.adapter.BlockDesktopAdapter.DesktopHolder
-import boilerplate.utils.ClickUtil
+import boilerplate.utils.extension.click
 
 class BlockDesktopAdapter(
     private val _listener: OnDesktopListener
@@ -129,11 +129,7 @@ class BlockDesktopAdapter(
                 )
             }
             return binding.root.also {
-                it.setOnClickListener(ClickUtil.onClick {
-                    _listener.onDesktop(
-                        desktop
-                    )
-                })
+                it.click { _listener.onDesktop(desktop) }
             }
         }
     }

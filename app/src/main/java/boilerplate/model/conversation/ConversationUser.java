@@ -29,7 +29,15 @@ public class ConversationUser {
     @SerializedName("roi_nhom")
     private int outGroup;
 
+    @SerializedName("ngay_ghim")
+    private String pinDate;
+
     public ConversationUser() {
+    }
+
+    public String getPinDate() {
+        if (pinDate == null) return pinDate = "";
+        return pinDate;
     }
 
     public boolean isOutGroup() {

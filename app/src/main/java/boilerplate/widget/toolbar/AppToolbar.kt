@@ -7,7 +7,7 @@ import android.view.View
 import android.widget.FrameLayout
 import boilerplate.R
 import boilerplate.databinding.ViewAppToolbarBinding
-import boilerplate.utils.ClickUtil
+import boilerplate.utils.extension.click
 import boilerplate.utils.extension.notNull
 
 class AppToolbar @JvmOverloads constructor(
@@ -99,9 +99,7 @@ class AppToolbar @JvmOverloads constructor(
 
     private fun init() {
         with(binding) {
-            btnBack.setOnClickListener(ClickUtil.onClick {
-                mBack.notNull { it.onPress() }
-            })
+            btnBack.click { mBack.notNull { it.onPress() } }
         }
     }
 

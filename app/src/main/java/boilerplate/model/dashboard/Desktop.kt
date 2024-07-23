@@ -30,7 +30,7 @@ class Desktop {
             if (field.isNullOrEmpty()) {
                 return "".also { field = it }
             } else {
-                return convertWithSuitableFormat(field, DateTimeUtil.FORMAT_NORMAL)
+                return convertWithSuitableFormat(field!!, DateTimeUtil.FORMAT_NORMAL)
             }
         }
 
@@ -40,7 +40,7 @@ class Desktop {
             if (field.isNullOrEmpty()) {
                 return "".also { field = it }
             } else {
-                return convertWithSuitableFormat(field, DateTimeUtil.FORMAT_NORMAL)
+                return convertWithSuitableFormat(field!!, DateTimeUtil.FORMAT_NORMAL)
             }
         }
 
