@@ -202,6 +202,7 @@
         style="@style/StyleRegular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dp_10"
         android:background="@drawable/bg_button_white"
         android:drawableStart="@drawable/ic_arrow_down_grey"
         android:drawablePadding="@dimen/dp_8"

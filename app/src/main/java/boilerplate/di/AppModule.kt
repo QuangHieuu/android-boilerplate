@@ -1,14 +1,14 @@
 package boilerplate.di
 
-import com.google.gson.FieldNamingPolicy
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.Strictness
 import boilerplate.data.remote.api.middleware.BooleanAdapter
 import boilerplate.data.remote.api.middleware.DoubleAdapter
 import boilerplate.data.remote.api.middleware.IntegerAdapter
 import boilerplate.utils.extension.BaseSchedulerProvider
 import boilerplate.utils.extension.SchedulerProvider
+import com.google.gson.FieldNamingPolicy
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.Strictness
 import org.koin.dsl.module
 
 val appModule = module {

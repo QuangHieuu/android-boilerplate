@@ -5,7 +5,11 @@
     <string name="warning_update_message_offline">Đang gửi tin nhắn : %s</string>
 
     <string name="warning_confirm_delete_conversation">Anh/chị có muốn xóa hội thoại này không?</string>
+    <string name="warning_remove_out_of_group">Anh/Chị đã bị mời ra khỏi nhóm</string>
 
     <string name="warning_dialog_turn_off_notify">Toàn bộ thông báo tin nhắn của hội thoại sẽ được tắt cho đến khi được mở lại.</string>
     <string name="warning_disable_chat_box">Hội thoại đã tắt tính năng phản hồi.\nChỉ lãnh đạo nhóm và người chỉ định mới được trao đổi tin nhắn.</string>
+    <string name="warning_file_maximum">Dung lượng file bạn tải lên vượt quá 25 MB. Vui lòng chọn file khác.</string>
+
+    <string name="warning_remove_pin">Anh/Chị có muốn bỏ ghim tin nhắn này không?</string>
 </resources>

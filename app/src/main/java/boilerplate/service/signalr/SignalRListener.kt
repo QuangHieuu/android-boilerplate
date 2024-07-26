@@ -22,6 +22,7 @@ private interface SignalRListener {
     fun createConversation(conversation: Conversation)
     fun newMessage(message: Message)
     fun sendMessage(sendMessage: Message.SendMessageResult)
+    fun sendMessageError(string: String)
     fun updateConversation(conversation: Conversation)
     fun leaveGroup(leaveGroup: LeaveGroup)
     fun deleteMember(leaveGroup: LeaveGroup)
@@ -38,7 +39,7 @@ private interface SignalRListener {
     fun updateConversationSetting(setting: Setting)
     fun approvedMember(joinGroup: JoinGroup)
     fun pinMessage(pinMessage: Message.Pin)
-    fun removePin(pinMessage: Message.Pin)
+    fun removePinMessage(pinMessage: Message.Pin)
     fun pinConversation(pinConversation: Conversation.Pin)
 }
 
@@ -56,6 +57,9 @@ abstract class SignalRImpl : SignalRListener {
     }
 
     override fun newMessage(message: Message) {
+    }
+
+    override fun sendMessageError(string: String) {
     }
 
     override fun sendMessage(sendMessage: Message.SendMessageResult) {
@@ -109,7 +113,7 @@ abstract class SignalRImpl : SignalRListener {
     override fun pinMessage(pinMessage: Message.Pin) {
     }
 
-    override fun removePin(pinMessage: Message.Pin) {
+    override fun removePinMessage(pinMessage: Message.Pin) {
     }
 
     override fun pinConversation(pinConversation: Conversation.Pin) {
@@ -155,6 +159,10 @@ class SubscriptionSignalr {
             SignalRResult.SEND_MESSAGE -> {
                 val sendMessage = _gson.fromJson(data, Message.SendMessageResult::class.java)
                 signalr?.sendMessage(sendMessage)
+            }
+
+            SignalRResult.SEND_MESSAGE_ERROR -> {
+                signalr?.sendMessageError(_gson.fromJson(data, String::class.java))
             }
 
             SignalRResult.NEW_MESSAGE -> {
@@ -237,7 +245,7 @@ class SubscriptionSignalr {
 
             SignalRResult.REMOVE_PIN_MESSAGE -> {
                 val pin = _gson.fromJson(data, Message.Pin::class.java)
-                signalr?.removePin(pin)
+                signalr?.removePinMessage(pin)
             }
 
             SignalRResult.IMPORTANT_CONVERSATION -> {

@@ -106,3 +106,7 @@ fun AppCompatActivity.popFragment() {
         if (backStackEntryCount <= 0) popBackStack()
     }
 }
+
+fun AppCompatActivity.findFragmentByTag(tag: String): Fragment? {
+    return supportFragmentManager.findFragmentByTag(tag)
+}

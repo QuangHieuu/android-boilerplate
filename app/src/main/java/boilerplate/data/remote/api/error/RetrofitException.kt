@@ -1,10 +1,8 @@
 package boilerplate.data.remote.api.error
 
-import android.util.Log
-import com.google.gson.Gson
 import boilerplate.data.remote.api.error.Type.HTTP
 import boilerplate.data.remote.api.error.Type.NETWORK
-import boilerplate.data.remote.api.error.Type.SERVER
+import com.google.gson.Gson
 import retrofit2.Response
 import java.io.IOException
 

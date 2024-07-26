@@ -2,7 +2,6 @@ package boilerplate.base
 
 import android.graphics.Rect
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -11,6 +10,8 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
 import boilerplate.R
+import boilerplate.ui.conversationDetail.ConversationDetailFragment
+import boilerplate.utils.extension.findFragmentByTag
 import boilerplate.utils.extension.hideKeyboard
 import boilerplate.utils.extension.isTablet
 import boilerplate.utils.extension.showSnackBarFail
@@ -74,6 +75,10 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
     override fun onDestroy() {
         super.onDestroy()
         PermissionUtils.disposable()
+        compositeDisposable.apply {
+            clear()
+            dispose()
+        }
     }
 
     protected abstract fun initialize()
@@ -89,6 +94,11 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        val fragment = findFragmentByTag(ConversationDetailFragment::class.java.simpleName)
+        if (fragment != null && fragment is ConversationDetailFragment && fragment.touchEvent(ev)) {
+            return super.dispatchTouchEvent(ev)
+        }
+
         if (ev.action == MotionEvent.ACTION_UP) {
             val view = currentFocus
             if (view != null) {
@@ -114,7 +124,6 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
                     return consumed
                 }
                 if (view is EditTextFont && view.isFocusableInTouchMode) {
-                    Log.d("SSS", "activity: ")
                     view.hideKeyboard()
                 }
                 return consumed

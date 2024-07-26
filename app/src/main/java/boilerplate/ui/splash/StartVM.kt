@@ -11,7 +11,6 @@ import boilerplate.data.remote.repository.auth.LoginRepository
 import boilerplate.model.device.Device
 import boilerplate.model.user.User
 import boilerplate.utils.extension.BaseSchedulerProvider
-import boilerplate.utils.extension.loading
 import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.result
 import boilerplate.utils.extension.withScheduler

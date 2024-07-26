@@ -80,7 +80,10 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
         _binding = null
         super.onDestroyView()
         clearAdjustSoftInput()
-        _disposable.clear()
+        _disposable.apply {
+            clear()
+            dispose()
+        }
     }
 
     protected abstract fun initialize()

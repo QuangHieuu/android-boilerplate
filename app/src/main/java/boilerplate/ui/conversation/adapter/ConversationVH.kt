@@ -89,7 +89,7 @@ class ConversationVH(
 
         _binding.lnPin.apply { if (isShowPin) show() else gone() }
 
-        _sm?.bindView(itemView, bindingAdapterPosition)
+        _sm?.bindView(_binding.root, bindingAdapterPosition)
 
         setFontSize()
         val isGroup = con!!.isGroup()

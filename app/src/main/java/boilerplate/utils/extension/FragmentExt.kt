@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.viewbinding.ViewBinding
 import boilerplate.R
+import boilerplate.constant.Constants
 import kotlin.reflect.KClass
 
 fun Fragment.open(
@@ -40,8 +41,8 @@ fun <T : Activity> Fragment.goTo(
     parcel: Parcelable? = null
 ) {
     val intent = Intent(context, cls.java)
-    if (bundle != null) intent.putExtra(boilerplate.constant.Constants.EXTRA_ARGS, bundle)
-    if (parcel != null) intent.putExtra(boilerplate.constant.Constants.EXTRA_ARGS, parcel)
+    if (bundle != null) intent.putExtra(Constants.EXTRA_ARGS, bundle)
+    if (parcel != null) intent.putExtra(Constants.EXTRA_ARGS, parcel)
     startActivity(intent)
 }
 

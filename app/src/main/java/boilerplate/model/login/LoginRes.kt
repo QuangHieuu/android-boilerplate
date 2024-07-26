@@ -1,8 +1,8 @@
 package boilerplate.model.login
 
 
-import com.google.gson.annotations.SerializedName
 import boilerplate.data.remote.api.response.BaseResponse
+import com.google.gson.annotations.SerializedName
 
 class LoginRes : BaseResponse<Any>() {
     @SerializedName("access_token")

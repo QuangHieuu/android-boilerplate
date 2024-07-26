@@ -8,11 +8,14 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.PopupWindow
 import android.widget.ProgressBar
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
@@ -21,7 +24,9 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import boilerplate.R
 import boilerplate.constant.AccountManager
 import boilerplate.constant.Constants.KEY_AUTH
+import boilerplate.databinding.ItemFileBinding
 import boilerplate.databinding.ViewToastBinding
+import boilerplate.model.file.AttachedFile
 import boilerplate.model.file.ExtensionType
 import boilerplate.utils.ClickUtil
 import com.bumptech.glide.Glide
@@ -36,8 +41,8 @@ import com.google.android.material.snackbar.BaseTransientBottomBar.ANIMATION_MOD
 import com.google.android.material.snackbar.Snackbar
 
 
-fun View.show() {
-    visibility = View.VISIBLE
+fun View.show(b: Boolean = true) {
+    visibility = if (b) View.VISIBLE else View.GONE
 }
 
 fun View.hide() {
@@ -258,6 +263,16 @@ fun View.click(block: ((v: View) -> Unit)?) {
     block.notNull { setOnClickListener(ClickUtil.onClick { v -> it(v) }) }
 }
 
+fun PopupWindow.dimBehind() {
+    val container = contentView.rootView
+    val context = contentView.context
+    val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    val p = container.layoutParams as WindowManager.LayoutParams
+    p.flags =
+        WindowManager.LayoutParams.FLAG_DIM_BEHIND or WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
+    p.dimAmount = 0.3f
+    wm.updateViewLayout(container, p)
+}
 //fun View.clicks(isCheckNetwork: Boolean): Observable<View> {
 //    val source: ObservableOnSubscribe<View> = ObservableOnSubscribe { emitter ->
 //        emitter.setCancellable {
@@ -301,4 +316,70 @@ inline fun View.launch(delay: Long = 0, crossinline r: () -> Unit) {
     synchronized(this) {
         Handler(Looper.getMainLooper()).postDelayed({ r() }, delay)
     }
+}
+
+
+//private fun addViewSurvey(file: AttachedFile.SurveyFile): View {
+//    val layoutInflater = LayoutInflater.from(itemView.context)
+//    val binding =
+//        ItemFileSurveyBinding.inflate(layoutInflater, itemView.rootView as ViewGroup, false)
+//
+//    with(binding) {
+//        root.setBackgroundResource(R.drawable.bg_message_survey)
+//
+//        tvFileName.apply {
+//            textSize = _mainSize
+//            text = file.displayTitle
+//        }
+//
+//        tvTitle.textSize = _mainSize
+//        if (file.isSurveyBreakfast) {
+//            tvTitle.text = itemView.context.getString(R.string.breakfast_file)
+//            tvTitle.setTextColor(ContextCompat.getColor(itemView.context, R.color.color_FF951A))
+//            imgIcon.setImageResource(R.drawable.ic_breakfast)
+//        } else {
+//            tvTitle.text = itemView.context.getString(R.string.survey_file)
+//            tvTitle.setTextColor(ContextCompat.getColor(itemView.context, R.color.colorPrimary))
+//            imgIcon.setImageResource(R.drawable.ic_survey_file)
+//        }
+//    }
+//    return binding.root.apply { click { _listener.openSurvey(file) } }
+//}
+fun LinearLayout.addFile(
+    file: AttachedFile,
+    showClear: Boolean = false,
+    sizeText: Float = 0f,
+    padding: Int = 0,
+    openFile: (file: AttachedFile) -> Unit
+) {
+    val name: String = file.getFileName(context)?.replace("_system_deleted", "") ?: ""
+    val size: String = file.getFileSize(context)
+    val binding =
+        ItemFileBinding.inflate(LayoutInflater.from(context), rootView as ViewGroup, false)
+    with(binding) {
+        imgClear.show(showClear)
+
+        tvFileName.apply {
+            if (sizeText != 0f) {
+                textSize = sizeText
+            }
+            text = name
+        }
+        tvFileSize.apply {
+            show(size.isNotEmpty() && !size.startsWith("0"))
+            if (isVisible()) {
+                if (sizeText != 0f) {
+                    textSize = sizeText
+                }
+                text = size
+            }
+        }
+        imgIcon.setImageResource(ExtensionType.getFileIcon(file.fileName))
+    }
+    binding.root.apply {
+        click { openFile(file as AttachedFile.Conversation) }
+        if (padding != 0) {
+            setPadding(0, padding / 2, 0, padding / 2)
+        }
+    }.let { this.addView(it) }
 }

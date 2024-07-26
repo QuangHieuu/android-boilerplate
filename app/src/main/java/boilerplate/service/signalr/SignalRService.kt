@@ -95,6 +95,11 @@ class SignalRService : Service() {
         return _binder
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        _disposable.dispose()
+    }
+
     private var _chatHub: HubConnection? = null
     private var _chatTransport: ClientTransport? = null
     private var _chatProxy: HubProxy? = null
@@ -114,6 +119,7 @@ class SignalRService : Service() {
             }
             _chatHub.notNull {
                 if (it.state == ConnectionState.Disconnected) {
+                    Log.d(TAG, "check: reconnect " + it.state)
                     reconnect()
                     return@doOnNext
                 }
@@ -156,7 +162,8 @@ class SignalRService : Service() {
                     bearerToken = token
                     start(_chatTransport)
                 }
-                _disposable.add(_subscription.subscribe())
+                val boolean = _disposable.add(_subscription.subscribe())
+                Log.d(TAG, "start: " + boolean)
             }
         }
     }
@@ -168,7 +175,7 @@ class SignalRService : Service() {
     }
 
     fun stop() {
-        _disposable.dispose()
+        _disposable.clear()
         _chatHub.notNull {
             it.stop()
             it.disconnect()
@@ -194,7 +201,10 @@ class SignalRService : Service() {
                 }
             }
             if (isWrongFormat) {
-
+                sendResult(
+                    SignalRResult.SEND_MESSAGE_ERROR,
+                    "Tin nhắn được gửi không đúng định dạng"
+                )
             } else {
                 if (message.getContent().length <= 42000) {
                     Message.SendMessageBody().apply {
@@ -205,15 +215,15 @@ class SignalRService : Service() {
                         setListSurvey(message.getSurveyFiles())
                         setIsMgsSystem(message.isMsgSystem)
                     }.let {
-                        proxy.invoke(
-                            SERVER_METHOD_SEND_MESSAGE,
-                            it,
-                        )
-                            .onError {}
-                            .onCancelled { }
+                        proxy.invoke(SERVER_METHOD_SEND_MESSAGE, it)
+                            .onError { sendResult(SignalRResult.SEND_MESSAGE_ERROR, "") }
+                            .onCancelled { sendResult(SignalRResult.SEND_MESSAGE_ERROR, "") }
                     }
                 } else {
-
+                    sendResult(
+                        SignalRResult.SEND_MESSAGE_ERROR,
+                        "Anh/chị không thể gửi tin nhắn do nội dung hoặc thông tin chuyển tiếp quá dài"
+                    )
                 }
             }
         }

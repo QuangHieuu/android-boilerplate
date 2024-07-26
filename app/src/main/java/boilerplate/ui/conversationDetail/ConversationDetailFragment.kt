@@ -1,6 +1,13 @@
 package boilerplate.ui.conversationDetail
 
+import android.graphics.Rect
 import android.os.Bundle
+import android.view.Gravity
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
+import android.view.animation.AnimationUtils
+import android.widget.PopupWindow
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -9,7 +16,10 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.SmoothScroller
 import boilerplate.R
 import boilerplate.base.BaseFragment
+import boilerplate.databinding.DialogBaseBinding
 import boilerplate.databinding.FragmentConversationDetailBinding
+import boilerplate.databinding.ItemPinOnScreenBinding
+import boilerplate.databinding.PopupMessagePinBinding
 import boilerplate.model.conversation.Conversation
 import boilerplate.model.conversation.ConversationRole
 import boilerplate.model.conversation.ConversationRole.ALLOW_MEMBER
@@ -17,21 +27,37 @@ import boilerplate.model.conversation.ConversationRole.MAIN
 import boilerplate.model.conversation.ConversationRole.MEMBER
 import boilerplate.model.conversation.ConversationRole.SUB
 import boilerplate.model.conversation.ConversationUser
+import boilerplate.model.file.AttachedFile
 import boilerplate.model.message.Message
+import boilerplate.service.signalr.SignalRImpl
 import boilerplate.service.signalr.SignalRManager
 import boilerplate.service.signalr.SignalRResult
 import boilerplate.ui.conversationDetail.adpater.MessageAdapter
 import boilerplate.ui.conversationDetail.adpater.SimpleMessageEvent
+import boilerplate.utils.StringUtil
+import boilerplate.utils.SystemUtil
+import boilerplate.utils.extension.ANIMATION_DELAY
+import boilerplate.utils.extension.addFile
 import boilerplate.utils.extension.click
+import boilerplate.utils.extension.dimBehind
 import boilerplate.utils.extension.gone
 import boilerplate.utils.extension.isTablet
+import boilerplate.utils.extension.isVisible
+import boilerplate.utils.extension.launch
 import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.sendResult
 import boilerplate.utils.extension.show
+import boilerplate.utils.extension.showDialog
+import boilerplate.utils.extension.showKeyboard
+import boilerplate.utils.extension.showSnackBarFail
+import boilerplate.utils.extension.showSnackBarSuccess
+import boilerplate.utils.extension.showSnackBarWarning
+import boilerplate.widget.chatBox.SimpleBoxListener
 import boilerplate.widget.recyclerview.EndlessListener
 import com.google.gson.Gson
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Date
+import java.util.Locale
 import kotlin.math.max
 
 class ConversationDetailFragment :
@@ -70,10 +96,65 @@ class ConversationDetailFragment :
     private var _currentCount = 0
     private var _isLoadMore = false
     private var _isGotoMessage = false
+    private var _isLeaveGroup = false
+
+
+    private var _pointClickX = 0
+    private var _pointClickY = 0
 
     override fun initialize() {
         with(binding) {
             imgBack.apply { if (requireActivity().isTablet()) gone() else show() }
+            chatBox.setupForChat()
+            chatBox.setListener(object : SimpleBoxListener() {
+                override fun onSendMessage(
+                    content: String,
+                    uploadFile: ArrayList<AttachedFile.Conversation>,
+                    currentFile: ArrayList<AttachedFile.Conversation>,
+                    surveyFile: ArrayList<AttachedFile.SurveyFile>,
+                    isSms: Boolean,
+                    isEmail: Boolean
+                ) {
+                    _viewModel.sendMessage(
+                        content,
+                        uploadFile,
+                        currentFile,
+                        surveyFile,
+                        isSms,
+                        isEmail
+                    )
+                }
+
+                override fun onEditMessage(
+                    lastMessage: Message,
+                    content: String,
+                    uploadFile: ArrayList<AttachedFile.Conversation>,
+                    currentFile: ArrayList<AttachedFile.Conversation>,
+                    surveyFile: ArrayList<AttachedFile.SurveyFile>,
+                    isSms: Boolean,
+                    isEmail: Boolean
+                ) {
+
+                }
+
+                override fun onAttachedClick() {
+                }
+
+                override fun onCameraClick() {
+                }
+
+                override fun onPickImageClick() {
+                }
+
+                override fun onEditFocus(focus: Boolean) {
+                }
+
+                override fun onOpenRecord() {
+                }
+
+                override fun onStartRecord(modeSpeech: Boolean) {
+                }
+            })
             _smoothScroller = object : LinearSmoothScroller(context) {
                 override fun getVerticalSnapPreference(): Int = SNAP_TO_END
             }
@@ -126,6 +207,34 @@ class ConversationDetailFragment :
                 addItemDecoration(divider)
                 setItemAnimator(null)
                 addOnScrollListener(_endlessListener)
+                addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+                    if (bottom < oldBottom && chatBox.getEditMessage().isFocused && _isOnTop && !_isGotoMessage) {
+                        snapScrollPosition(0)
+                        tvCountNewMessage.gone()
+                    }
+                }
+            }
+            chatBox.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+                if (top < oldTop && !chatBox.getEditMessage().isFocused && _isOnTop && !_isGotoMessage) {
+                    snapScrollPosition(0)
+                }
+            }
+            tvCountNewMessage.click {
+                _isGotoMessage = false
+                syncReadMessage()
+                if (_previousCount == _viewModel.limit) {
+                    _viewModel.apiGetMoreMessage("")
+                } else {
+                    snapScrollPosition(0)
+                }
+                it.gone()
+            }
+
+            btnPinMessage.click {
+                createPinExpand().apply {
+                    showAsDropDown(ctlToolbar, 0, 0, Gravity.NO_GRAVITY)
+                    dimBehind()
+                }
             }
         }
     }
@@ -145,7 +254,9 @@ class ConversationDetailFragment :
                         }
                 }
             }
-
+            pinMessage.observe(this@ConversationDetailFragment) { pin ->
+                handlePinMessage(pin)
+            }
             conversation.observe(this@ConversationDetailFragment) {
                 binding.apply { rcvMessage.show() }
                     .viewNoData.apply { lnNoData.gone() }
@@ -186,6 +297,16 @@ class ConversationDetailFragment :
                     insertLoadMore(pair.first, pair.second)
                 }
             }
+            recevice.observe(this@ConversationDetailFragment) { count ->
+                if (count > 0 && !_isOnTop) {
+                    binding.tvCountNewMessage.apply {
+                        text = getString(R.string.new_message_count, count)
+                        show()
+                    }
+                } else {
+                    binding.tvCountNewMessage.gone()
+                }
+            }
         }
     }
 
@@ -193,12 +314,54 @@ class ConversationDetailFragment :
         with(binding) {
             imgBack.click { popFragment() }
         }
+        listenerToSignalR()
     }
 
     override fun callApi() {
         handleArgument()
     }
 
+    fun touchEvent(ev: MotionEvent): Boolean {
+        when (ev.action) {
+            MotionEvent.ACTION_DOWN -> {
+                _pointClickX = ev.rawX.toInt()
+                _pointClickY = ev.rawY.toInt()
+            }
+
+            MotionEvent.ACTION_UP -> {
+                val parent = binding.root as ViewGroup
+                val editBox = binding.chatBox
+
+                val rect = Rect()
+                val location = IntArray(2)
+                parent.getLocationOnScreen(location)
+                rect.set(
+                    location[0],
+                    location[1],
+                    location[0] + parent.measuredWidth,
+                    location[1] + parent.measuredHeight
+                )
+                if (rect.contains(_pointClickX, _pointClickY)) {
+                    val editRect = Rect()
+                    val editLocation = IntArray(2)
+
+                    editBox.getLocationOnScreen(editLocation)
+                    editRect.set(
+                        editLocation[0],
+                        editLocation[1],
+                        editLocation[0] + editBox.measuredWidth,
+                        editLocation[1] + editBox.measuredHeight
+                    )
+                    if (editRect.contains(_pointClickX, _pointClickY)) {
+                        editBox.getEditMessage().showKeyboard()
+                    }
+                } else {
+                    return false
+                }
+            }
+        }
+        return true
+    }
 
     private fun handleArgument() {
         arguments.notNull {
@@ -207,9 +370,8 @@ class ConversationDetailFragment :
             _viewModel.apiGetDetail(conversationId, messageId)
             val content = it.getString(KEY_MESSAGE, "")
             if (content.isNotEmpty()) {
-
+                binding.chatBox.setContentKeyboard(content)
             }
-
         }
     }
 
@@ -226,7 +388,7 @@ class ConversationDetailFragment :
                 chatBox.enableChat(true)
                 tvTitle.setText(R.string.my_cloud)
                 tvSubTitle.gone()
-                _viewModel.userReadMessage = con.totalMessage
+                _viewModel.hasRead = con.totalMessage
                 return
             }
             if (con.isGroup()) {
@@ -262,7 +424,7 @@ class ConversationDetailFragment :
                             }
                         }
                         if (it.user.id.equals(_viewModel.user.id)) {
-                            _viewModel.unreadMessage = it.readNumber
+                            _viewModel.hasRead = it.readNumber
                             if (!isAllowSend) {
                                 isAllowSend = when (ConversationRole.fromType(it.getVaiTro())) {
                                     MAIN, SUB, ALLOW_MEMBER -> true
@@ -282,8 +444,8 @@ class ConversationDetailFragment :
                 for (user in con.conversationUsers) {
                     if (!user.user.id.equals(_viewModel.user.id)) {
                         user.let {
-                            _viewModel.unreadMessage = it.readNumber
-                            _viewModel.otherReadMessage = it.readNumber
+                            _viewModel.hasRead = it.readNumber
+                            _viewModel.otherRead = it.readNumber
 
                             it.user.apply {
                                 tvTitle.text = name
@@ -296,7 +458,7 @@ class ConversationDetailFragment :
                 if (onlyContainMe) {
                     tvTitle.text = _viewModel.user.name
                     tvSubTitle.gone()
-                    _viewModel.unreadMessage = con.totalMessage
+                    _viewModel.hasRead = con.totalMessage
                 }
             }
         }
@@ -328,15 +490,10 @@ class ConversationDetailFragment :
 
     private fun syncReadMessage() {
         with(_viewModel) {
-            if (conversation.value != null && (countNewMessage != 0 || conversation.value!!.totalMessage > userReadMessage)) {
-                userReadMessage = conversation.value!!.totalMessage
-                SignalRManager.sendLastTimeRead(
-                    conversationId,
-                    Date(),
-                    userReadMessage,
-                    true
-                )
-                countNewMessage = 0
+            if (conversation.value != null && (conversation.value!!.totalMessage > hasRead)) {
+                hasRead = conversation.value!!.totalMessage
+                SignalRManager.sendLastTimeRead(conversationId, Date(), hasRead, true)
+                recevice.postValue(0)
             }
         }
     }
@@ -344,5 +501,301 @@ class ConversationDetailFragment :
     private fun snapScrollPosition(pos: Int) {
         _smoothScroller.targetPosition = pos
         _layoutManager.startSmoothScroll(_smoothScroller)
+    }
+
+    private fun showCountMessage() {
+        _viewModel.recevice.let { it.postValue(it.value?.plus(1) ?: 0) }
+    }
+
+    private fun listenerToSignalR() {
+        SignalRManager.addController(this.javaClass.simpleName)
+            .setListener(object : SignalRImpl() {
+                override fun newMessage(message: Message) {
+                    _viewModel.conversation.value?.totalMessage = message.conversation.totalMessage
+                    if (_isGotoMessage) {
+                        showCountMessage()
+                    } else {
+                        _adapter.newMessage(message)
+                        if (_isOnTop) {
+                            snapScrollPosition(0)
+                            syncReadMessage()
+                        } else {
+                            showCountMessage()
+                        }
+                    }
+                }
+
+                override fun sendMessage(sendMessage: Message.SendMessageResult) {
+                    sendMessage.entity.notNull {
+                        if (it.conversationId.equals(_viewModel.conversationId)) {
+                            if (it.status == 1 || it.status == 0) {
+                                if (!_isGotoMessage) {
+                                    _adapter.newMessage(it)
+
+                                    binding.root.launch {
+                                        snapScrollPosition(0)
+                                        showCountMessage()
+                                        syncReadMessage()
+                                    }
+                                }
+                                binding.chatBox.finishSendingMessage()
+                            } else {
+                                binding.chatBox.finishSendWhenError()
+                                binding.root.showSnackBarFail(R.string.error_general)
+                            }
+                        }
+                    }
+                }
+
+                override fun sendMessageError(string: String) {
+                    with(binding) {
+                        root.showSnackBarFail(string.ifEmpty { getString(R.string.error_general) })
+                        chatBox.finishSendWhenError()
+                    }
+                }
+
+                override fun deleteMessage(list: ArrayList<String>) {
+                    for (string in list) {
+                        _adapter.removeMessage(id = string)
+                    }
+                }
+
+                override fun updateMessage(message: Message) {
+                    checkCurrentConversation(message.conversationId) {
+                        _adapter.updateMessage(message)
+                    }
+                }
+
+                override fun pinMessage(pinMessage: Message.Pin) {
+                    checkCurrentConversation(pinMessage.conversationId) {
+
+                    }
+                }
+
+                override fun removePinMessage(pinMessage: Message.Pin) {
+                    checkCurrentConversation(pinMessage.conversationId) {
+
+                    }
+                }
+
+                override fun newReaction(message: Message) {
+                    checkCurrentConversation(message.conversationId) {
+                        _adapter.updateReaction(message)
+                    }
+                }
+
+                override fun deleteGroup(conversationId: String) {
+                    checkCurrentConversation(conversationId) {
+                        binding.root.showSnackBarSuccess(R.string.success_delete_group)
+                    }
+                }
+
+                override fun updateConversation(conversation: Conversation) {
+                    checkCurrentConversation(conversation.conversationId) {
+                        _viewModel.conversation.postValue(conversation)
+                    }
+                }
+
+                override fun updateConversationSetting(setting: Conversation.Setting) {
+                    checkCurrentConversation(setting.conversationId) {
+                        _viewModel.conversation.value?.apply {
+                            isChangeInform = setting.isChangeInform
+                            isAllowPinMessage = setting.isAllowPinMessage
+                            isAllowApproved = setting.isAllowApproved
+                            isAllowSendMessage = setting.isAllowSendMessage
+                        }.let { _viewModel.conversation.postValue(it) }
+                    }
+                }
+
+                override fun updateRole(updateRole: ConversationUser.UpdateRole) {
+                    checkCurrentConversation(updateRole.conversationId) {
+                        if (updateRole.userId == _viewModel.user.id) {
+                            _viewModel.conversation.value?.apply {
+                                for (member in conversationUsers) {
+                                    if (member.user.id == _viewModel.user.id) {
+                                        member.setVaiTro(updateRole.role)
+                                        break
+                                    }
+                                }
+                            }.let { _viewModel.conversation.postValue(it) }
+                        }
+                    }
+                }
+
+                override fun addMember(addMember: Conversation.AddMember) {
+                    checkCurrentConversation(addMember.conversationId) {
+                        _viewModel.conversation.value?.apply {
+                            conversationUsers.addAll(addMember.addMember)
+                        }.let { _viewModel.conversation.postValue(it) }
+                    }
+                }
+
+                override fun deleteMember(leaveGroup: ConversationUser.LeaveGroup) {
+                    checkCurrentConversation(leaveGroup.conversationId) {
+                        if (_viewModel.user.id == leaveGroup.conversationId) {
+                            _isLeaveGroup = true
+                            binding.root.showSnackBarWarning(R.string.warning_remove_out_of_group)
+                            popFragment()
+                        } else {
+                            _viewModel.conversation.postValue(leaveGroup.conversation)
+                        }
+                    }
+                }
+
+                override fun seenMessage(seenMessage: Conversation.SeenMessage) {
+
+                }
+            })
+    }
+
+    private fun checkCurrentConversation(id: String, block: () -> Unit) {
+        if (_viewModel.conversationId == id) {
+            block()
+        }
+    }
+
+    private fun handlePinMessage(pin: ArrayList<Message>) {
+        with(binding) {
+            ctlPinMessage.apply {
+                show(pin.isNotEmpty())
+                if (isVisible && pin.isNotEmpty()) {
+                    lnContainerPin.removeAllViews()
+                    lnContainerPin.addView(
+                        addViewPinMessage(
+                            pin[0],
+                            false,
+                            null
+                        )
+                    )
+                    btnPinMessage.text = if (pin.size == 1) {
+                        String.format("1")
+                    } else {
+                        String.format(Locale.getDefault(), "+%d", pin.size + 1)
+                    }
+                }
+            }
+        }
+
+    }
+
+    private fun addViewPinMessage(
+        pin: Message,
+        isShowFile: Boolean,
+        popupWindow: PopupWindow?
+    ): View {
+        val size: Float = SystemUtil.getFontSizeChat(requireActivity())
+        return ItemPinOnScreenBinding.inflate(
+            layoutInflater,
+            binding.root as ViewGroup,
+            false
+        ).apply {
+            ctlPin.apply {
+                if (isShowFile) {
+                    setBackgroundResource(R.drawable.bg_border_only_top)
+                    imgRemovePin.apply {
+                        show()
+                        click {
+                            showDialog(DialogBaseBinding.inflate(layoutInflater)) { view, dialog ->
+                                with(view) {
+                                    tvTitle.setText(R.string.remove_pin)
+                                    tvDescription.setText(R.string.warning_remove_pin)
+                                    btnConfirm.setText(R.string.remove_pin)
+
+                                    btnConfirm.click {
+                                        _viewModel.removePinMessage(pin.messageId)
+                                        dialog.dismiss()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            pickerPin.removeAllViews()
+            val newList = arrayListOf<AttachedFile.Conversation>()
+            if (pin.attachedFiles.isNotEmpty()) {
+                newList.add(pin.attachedFiles[0])
+                pickerPin.apply {
+                    show()
+                    addFile(
+                        pin.attachedFiles[0],
+                        sizeText = size,
+                        padding = 5
+                    ) {
+                        root.performClick()
+                    }
+                }
+            }
+
+            if (pin.surveyFiles.isNotEmpty()) {
+                pickerPin.apply {
+                    show()
+                }
+            } else {
+                if (newList.isEmpty()) {
+                    StringUtil.getHtml(pin.mainContent[0]).toString().let { string ->
+                        tvPinContent.apply {
+                            if (string.isEmpty()) {
+                                show()
+                                setText(R.string.forward_message)
+                            } else {
+                                text = string
+                                show(!pickerPin.isVisible() || isShowFile)
+                            }
+                        }
+                    }
+                } else {
+                    tvPinContent.gone()
+                }
+            }
+
+            tvPinContent.textSize = size
+            tvFromPerson.apply {
+                textSize = size
+                text = context.getString(R.string.send_from, pin.personPin.name)
+            }
+        }.root.apply { click { popupWindow?.dismiss() } }
+    }
+
+    private fun createPinExpand(): PopupWindow {
+        val sizeText = SystemUtil.getFontSizeChat(requireActivity())
+        val bind =
+            PopupMessagePinBinding.inflate(layoutInflater, binding.root as ViewGroup, false)
+        val popupWindow = PopupWindow(
+            bind.root,
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+
+        val fadeIn = AnimationUtils.loadAnimation(context, R.anim.fade_in)
+        val slideDown = AnimationUtils.loadAnimation(context, R.anim.enter_from_top)
+
+        with(bind) {
+            tvSeeAllPin.apply {
+                textSize = sizeText
+                click {
+//                    mListener.openPinScreen()
+                    popupWindow.dismiss()
+                }
+            }
+            tvCollapse.click { popupWindow.dismiss() }
+            lnPin.removeAllViews()
+            for (pin in _viewModel.pinMessage.value.orEmpty()) {
+                lnPin.addView(addViewPinMessage(pin, true, popupWindow))
+            }
+
+            lnHeader.apply {
+                show()
+                animation = fadeIn
+                launch(ANIMATION_DELAY) {
+                    lnPin.show().also { animation = slideDown }
+                    tvCollapse.show().also { animation = fadeIn }
+                }
+            }
+        }
+
+        popupWindow.inputMethodMode = PopupWindow.INPUT_METHOD_NEEDED
+        popupWindow.isOutsideTouchable = true
+        return popupWindow
     }
 }

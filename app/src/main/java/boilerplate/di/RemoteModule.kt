@@ -3,7 +3,6 @@ package boilerplate.di
 import boilerplate.BuildConfig
 import boilerplate.data.local.repository.user.TokenRepository
 import boilerplate.data.remote.api.ApiRequest
-import boilerplate.data.remote.api.ApiServer
 import boilerplate.data.remote.api.middleware.InterceptorImpl
 import boilerplate.data.remote.api.middleware.RxErrorHandlingCallAdapterFactory
 import com.google.gson.Gson

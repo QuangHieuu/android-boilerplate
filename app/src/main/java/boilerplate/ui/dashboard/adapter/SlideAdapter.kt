@@ -7,8 +7,8 @@ import boilerplate.databinding.ItemDashboardBannerImageBinding
 import boilerplate.model.dashboard.Banner
 import boilerplate.ui.dashboard.DashboardFragment
 import boilerplate.ui.dashboard.adapter.SlideAdapter.SliderAdapterVH
-import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.click
+import boilerplate.utils.extension.notNull
 import com.bumptech.glide.Glide
 import com.smarteist.autoimageslider.SliderViewAdapter
 

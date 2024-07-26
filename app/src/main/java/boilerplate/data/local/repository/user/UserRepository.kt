@@ -5,7 +5,6 @@ import boilerplate.data.local.sharedPrefs.SharedPrefsKey
 import boilerplate.data.remote.api.ApiRequest
 import boilerplate.data.remote.api.response.BaseResponse
 import boilerplate.data.remote.api.response.BaseResult
-import boilerplate.data.remote.api.response.BaseResults
 import boilerplate.model.user.Company
 import boilerplate.model.user.Department
 import boilerplate.model.user.User

@@ -2,18 +2,33 @@ package boilerplate.utils
 
 import android.content.Context
 import android.net.Uri
+import android.os.Environment
 import android.provider.OpenableColumns
+import android.webkit.MimeTypeMap
 import boilerplate.R
 import boilerplate.data.local.repository.user.UserRepository
 import boilerplate.utils.extension.toTextSize
 import org.koin.java.KoinJavaComponent.inject
+import java.io.BufferedInputStream
+import java.io.BufferedOutputStream
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
+import java.io.OutputStream
+import java.util.Locale
+import java.util.Objects
 
 object SystemUtil {
     private val userImpl by inject<UserRepository>(UserRepository::class.java)
 
+    const val CLIPBOARD_MESSAGE: String = "CLIPBOARD_MESSAGE"
+
     const val SYSTEM_DELETE = "_system_deleted"
+
+    const val urlFolder: String = "/folder"
+    const val urlFolderNoSplit: String = "folder"
+
+    const val BUFFER_SIZE: Int = 1024 * 2
 
     const val SIZE_SMALL: Int = 0 // size = 14;
     const val SIZE_MEDIUM: Int = 1 // size = 17;
@@ -41,6 +56,40 @@ object SystemUtil {
     @JvmStatic
     fun getAppPlaySound(): Boolean {
         return userImpl.getSystemSound()
+    }
+
+    fun copy(context: Context, srcUri: Uri?, dstFile: File?) {
+        try {
+            val inputStream = context.contentResolver.openInputStream(srcUri!!)
+            if (inputStream != null) {
+                val outputStream: OutputStream = FileOutputStream(dstFile)
+                val `in` = BufferedInputStream(inputStream, BUFFER_SIZE)
+                val out = BufferedOutputStream(outputStream, BUFFER_SIZE)
+                val buffer = ByteArray(BUFFER_SIZE)
+                var count = 0
+                var n: Int
+                while ((`in`.read(buffer, 0, BUFFER_SIZE).also { n = it }) != -1) {
+                    out.write(buffer, 0, n)
+                    count += n
+                }
+                out.flush()
+                inputStream.close()
+                outputStream.close()
+            }
+        } catch (ignore: IOException) {
+        }
+    }
+
+    fun getMime(file: File): String {
+        var type = ""
+        try {
+            val mime = MimeTypeMap.getSingleton()
+            val index = file.name.lastIndexOf('.') + 1
+            val ext = file.name.substring(index).lowercase(Locale.getDefault())
+            type = mime.getMimeTypeFromExtension(ext) ?: ""
+        } catch (_: Exception) {
+        }
+        return type
     }
 
     fun getDisplayFilename(context: Context, uri: Uri): String {
@@ -128,5 +177,169 @@ object SystemUtil {
         } catch (ignore: IOException) {
         }
         return fileSize
+    }
+
+    fun getFileSize(context: Context, uri: Uri?): Float {
+        return uri?.let {
+            val cr = context.contentResolver
+            try {
+                val `is` = cr.openInputStream(uri)
+                if (`is` != null) {
+                    val fileSize = Math.round((`is`.available() / (1024f * 1024f)) * 100f) / 100f
+                    `is`.close()
+                    fileSize
+                } else {
+                    0f
+                }
+            } catch (e: IOException) {
+                0f
+            }
+        } ?: 0f
+    }
+
+    fun getInAppDocumentFolder(context: Context): String {
+        val file = File(
+            context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString() + urlFolder
+        )
+        if (!file.exists()) {
+            val result = file.mkdirs()
+        }
+        return file.absolutePath
+    }
+
+    fun getInAppDownloadFolder(context: Context): String {
+        val file = File(
+            context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + urlFolder
+        )
+        if (!file.exists()) {
+            val result = file.mkdirs()
+        }
+        return file.absolutePath
+    }
+
+    fun getSystemDownloadFolder(): String {
+        val file = File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                .toString() + urlFolder
+        )
+        if (!file.exists()) {
+            val result = file.mkdirs()
+        }
+        return file.absolutePath
+    }
+
+    fun getInAppImageFolder(context: Context): String {
+        val file = File(
+            context.getExternalFilesDir(Environment.DIRECTORY_DCIM)
+                .toString() + urlFolder
+        )
+        if (!file.exists()) {
+            val result = file.mkdirs()
+        }
+        return file.absolutePath
+    }
+
+    fun getSystemImageFolder(): String {
+        val file = File(
+            Environment
+                .getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
+                .toString() + urlFolder
+        )
+        if (!file.exists()) {
+            val result = file.mkdirs()
+        }
+        return file.absolutePath
+    }
+
+    fun getAppCacheFolder(context: Context): String {
+        val file =
+            File(context.externalCacheDir.toString() + urlFolder)
+        if (!file.exists()) {
+            val result = file.mkdirs()
+        }
+        return file.absolutePath
+    }
+
+    fun removeTempFiles(context: Context) {
+        val mediaStorageDir = File(getAppCacheFolder(context))
+        if (mediaStorageDir.exists()) {
+            if (mediaStorageDir.isDirectory) {
+                delete(mediaStorageDir)
+            }
+        }
+    }
+
+    fun delete(f: File) {
+        synchronized(f) {
+            if (f.isDirectory && f.listFiles() != null) {
+                for (c in Objects.requireNonNull(f.listFiles())) {
+                    delete(c)
+                }
+            }
+            val result = f.delete()
+        }
+    }
+
+    fun getSaveLocationConversation(context: Context): String {
+        val parent = getInAppDocumentFolder(context)
+        val file = File("$parent/Conversation")
+        if (!file.exists()) {
+            val result = file.mkdirs()
+        }
+        return file.absolutePath
+    }
+
+    fun getSaveLocationMessage(context: Context): String {
+        val parent = getInAppDocumentFolder(context)
+        val file = File("$parent/Message")
+        if (!file.exists()) {
+            val result = file.mkdirs()
+        }
+        return file.absolutePath
+    }
+
+    fun getSaveLocationUnSent(context: Context): String {
+        val parent = getInAppDocumentFolder(context)
+        val file = File("$parent/Pending")
+        if (!file.exists()) {
+            val result = file.mkdirs()
+        }
+        return file.absolutePath
+    }
+
+    fun getSaveLocationFile(context: Context, conversationId: String): String {
+        val parent = getInAppDocumentFolder(context)
+        val file = File("$parent/MessageFile/$conversationId")
+        if (!file.exists()) {
+            val result = file.mkdirs()
+        }
+        return file.absolutePath
+    }
+
+    fun getSaveLocationFile(context: Context): String {
+        val parent = getInAppDocumentFolder(context)
+        val file = File("$parent/MessageFile/")
+        if (!file.exists()) {
+            val result = file.mkdirs()
+        }
+        return file.absolutePath
+    }
+
+    fun getSaveConversationUser(context: Context): String {
+        val parent = getInAppDocumentFolder(context)
+        val file = File("$parent/UserConversation/")
+        if (!file.exists()) {
+            val result = file.mkdirs()
+        }
+        return file.absolutePath
+    }
+
+    fun removeDocumentFile(context: Context) {
+        val mediaStorageDir = File(getInAppDocumentFolder(context))
+        if (mediaStorageDir.exists()) {
+            if (mediaStorageDir.isDirectory) {
+                delete(mediaStorageDir)
+            }
+        }
     }
 }

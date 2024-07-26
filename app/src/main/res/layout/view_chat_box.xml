@@ -211,7 +211,7 @@
             app:layout_constraintTop_toTopOf="@id/barrier_bottom" />
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/img_send_like"
+            android:id="@+id/btn_send_like"
             android:layout_width="0dp"
             android:layout_height="@dimen/dp_36"
             android:layout_gravity="center_vertical|end"

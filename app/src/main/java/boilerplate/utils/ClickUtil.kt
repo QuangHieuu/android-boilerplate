@@ -3,9 +3,10 @@ package boilerplate.utils
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import boilerplate.utils.extension.ANIMATION_DELAY
 
 open class ClickUtil(
-    private var longClick: Int,
+    private var longClick: Long,
     private val mListener: OnClick
 ) : View.OnClickListener {
     interface OnClick {
@@ -20,7 +21,7 @@ open class ClickUtil(
 
     companion object {
         fun onClick(
-            time: Int = CLICK_LOCK_INTERVAL,
+            time: Long = ANIMATION_DELAY,
             block: (v: View) -> Unit
         ): View.OnClickListener = ClickUtil(time, object : OnClick {
             override fun onClick(v: View) {
@@ -28,15 +29,14 @@ open class ClickUtil(
             }
         })
 
-        private const val CLICK_LOCK_INTERVAL = 800
         private val mHandler = Handler(Looper.getMainLooper())
         private val mClickLockRunnable = Runnable { sIsLocked = false }
         private var sIsLocked = false
 
         @Synchronized
-        fun isLocked(longClick: Int): Boolean {
+        fun isLocked(longClick: Long): Boolean {
             if (sIsLocked) return true
-            mHandler.postDelayed(mClickLockRunnable, longClick.toLong())
+            mHandler.postDelayed(mClickLockRunnable, longClick)
             sIsLocked = true
             return false
         }

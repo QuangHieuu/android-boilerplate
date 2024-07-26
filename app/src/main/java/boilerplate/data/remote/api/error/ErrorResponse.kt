@@ -1,10 +1,10 @@
 package boilerplate.data.remote.api.error
 
+import boilerplate.utils.extension.convertStringToListStringWithFormatPattern
 import boilerplate.utils.extension.notNull
 import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.Response
-import boilerplate.utils.extension.convertStringToListStringWithFormatPattern
 import java.io.IOException
 
 data class ErrorResponse(private val response: Response<*>?) {

@@ -6,6 +6,7 @@ import android.text.Spanned
 import boilerplate.R
 import boilerplate.constant.AccountManager
 import boilerplate.model.message.Message
+import boilerplate.utils.extension.notNull
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import java.util.regex.Pattern
@@ -441,4 +442,23 @@ object StringUtil {
         return holder
     }
 
+    fun findUserMentionId(text: String): ArrayList<String> {
+        val list = ArrayList<String>()
+        val doc = Jsoup.parse(text)
+        val mentionTag = doc.getElementsByTag("mention")
+        if (mentionTag.text().isNotEmpty()) {
+            for (element in mentionTag) {
+                val pattern2 = Pattern.compile(REGEX_MENTION)
+                val m2 = pattern2.matcher(element.wholeText())
+                while (m2.find()) {
+                    m2.group(3).notNull { list.add(it) }
+                }
+            }
+        }
+        return list
+    }
+
+    fun getMentionMessage(id: String?, name: String?): String {
+        return String.format("<mention>[%s](%s)</mention>", name, id)
+    }
 }

@@ -18,6 +18,7 @@ import boilerplate.ui.conversationDetail.viewHolder.TimeHolder
 import boilerplate.ui.conversationDetail.viewHolder.WithdrawReceiverHolder
 import boilerplate.ui.conversationDetail.viewHolder.WithdrawSendHolder
 import boilerplate.utils.DateTimeUtil
+import boilerplate.utils.extension.notNull
 import boilerplate.widget.customText.TextViewExpand
 import boilerplate.widget.holder.LoadingVH
 import com.daimajia.swipe.adapters.RecyclerSwipeAdapter
@@ -164,7 +165,7 @@ class MessageAdapter(
         _isGroup = group
     }
 
-    fun insertData(list: java.util.ArrayList<Any>) {
+    fun insertData(list: ArrayList<Any>) {
         val size: Int = _list.size
         if (size > 0) {
             _list.clear()
@@ -276,5 +277,131 @@ class MessageAdapter(
             }
         }
         return list[0]
+    }
+
+    fun newMessage(entity: Message) {
+        val current = DateTimeUtil.convertWithSuitableFormat(
+            entity.dateCreate,
+            DateTimeUtil.FORMAT_NORMAL
+        )
+        val size: Int = _list.size
+        if (size > 0) {
+            val ob: Any? = _list[0]
+            if (ob is Message) {
+                val last = DateTimeUtil.convertWithSuitableFormat(
+                    ob.dateCreate,
+                    DateTimeUtil.FORMAT_NORMAL
+                )
+                if (last != current) {
+                    _list.add(0, current)
+                    notifyItemInserted(0)
+                    notifyItemChanged(1)
+                }
+            }
+            val index: Int = _list.indexOf(entity)
+            if (index == -1) {
+                if (ob is Message) {
+                    val currentTimeStamp = DateTimeUtil.convertToTimestamp(ob.dateCreate)
+                    val inputTimeStamp =
+                        DateTimeUtil.convertToTimestamp(entity.dateCreate)
+                    val indexInput = if (inputTimeStamp >= currentTimeStamp) 0 else 1
+                    _list.add(indexInput, entity)
+                    notifyItemInserted(indexInput)
+                    notifyItemChanged(indexInput + 1)
+                } else {
+                    _list.add(0, entity)
+                    notifyItemInserted(0)
+                    notifyItemChanged(1)
+                }
+            } else {
+                notifyItemChanged(index, entity)
+                notifyItemChanged(index + 1)
+            }
+        } else {
+            val list = arrayListOf<Any>()
+            list.add(entity)
+            list.add(current)
+            _list.addAll(list)
+            notifyItemRangeInserted(0, list.size)
+        }
+    }
+
+    fun updateMessage(input: Message) {
+        for (ob in _list) {
+            val index: Int = _list.indexOf(ob)
+            if (ob is Message) {
+                if (ob.messageId.equals(input.messageId)) {
+                    _list[index] = input
+                    notifyItemChanged(index, input)
+                    break
+                }
+            }
+        }
+    }
+
+    fun removeMessage(id: String? = null, message: Message? = null) {
+        val iterator: MutableListIterator<Any?> = _list.listIterator()
+        while (iterator.hasNext()) {
+            val index = iterator.nextIndex()
+            val current = iterator.next()
+            if (current is Message) {
+                id.notNull {
+                    if (current.messageId == it) {
+                        iterator.remove()
+                        notifyItemRemoved(index)
+                        return
+                    }
+                }
+                message.notNull {
+                    if (current.messageId == it.messageId) {
+                        iterator.remove()
+                        notifyItemRemoved(index)
+                        return
+                    }
+                }
+            }
+
+        }
+    }
+
+    fun updateReaction(message: Message) {
+        for (ob in _list) {
+            if (ob is Message) {
+                val index: Int = _list.indexOf(ob)
+                if (ob.messageId.equals(message.messageId)) {
+                    ob.reactions.clear()
+                    ob.reactions.addAll(message.reactions)
+                    _list.set(index, ob)
+                    notifyItemChanged(index, ob)
+                    break
+                }
+            }
+        }
+    }
+
+
+    fun removeAllMessage() {
+        val size: Int = _list.size
+        _list.clear()
+        notifyItemRangeRemoved(0, size)
+    }
+
+    fun markAllUnimportant() {
+        for (ob in _list) {
+            if (ob is Message) {
+                val index: Int = _list.indexOf(ob)
+                ob.isImportant = false
+                _list.set(index, ob)
+                notifyItemChanged(index, ob)
+            }
+        }
+    }
+
+    fun focusMessage(message: Message?) {
+        val size: Int = _list.size
+        _list.clear()
+        notifyItemRemoved(size)
+        _list.add(message)
+        notifyItemInserted(0)
     }
 }

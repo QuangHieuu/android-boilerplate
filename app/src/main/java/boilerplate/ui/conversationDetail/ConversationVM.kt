@@ -1,22 +1,30 @@
 package boilerplate.ui.conversationDetail
 
+import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import boilerplate.base.BaseViewModel
 import boilerplate.data.local.repository.user.UserRepository
 import boilerplate.data.remote.api.response.BaseResult
 import boilerplate.data.remote.repository.conversation.ConversationRepository
 import boilerplate.model.conversation.Conversation
+import boilerplate.model.file.AttachedFile
 import boilerplate.model.message.Message
+import boilerplate.model.user.User
+import boilerplate.service.signalr.SignalRManager
 import boilerplate.utils.DateTimeUtil
+import boilerplate.utils.FileUtils
 import boilerplate.utils.extension.BaseSchedulerProvider
 import boilerplate.utils.extension.loading
+import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.result
 import boilerplate.utils.extension.withScheduler
 import io.reactivex.rxjava3.core.Flowable
+import okhttp3.MultipartBody
 import java.util.Date
 import java.util.TreeMap
 
 class ConversationVM(
+    private val application: Application,
     private val schedulerProvider: BaseSchedulerProvider,
     private val conversationRepo: ConversationRepository,
     userRepo: UserRepository,
@@ -35,10 +43,14 @@ class ConversationVM(
     private val _messageError by lazy { MutableLiveData<Throwable>() }
     val messageError = _messageError
 
-    var countNewMessage = 0
-    var userReadMessage = 0
-    var unreadMessage = 0
-    var otherReadMessage = 0
+    private val _countReceiveMessage by lazy { MutableLiveData(0) }
+    var recevice = _countReceiveMessage
+
+    private val _pinMessages by lazy { MutableLiveData<ArrayList<Message>>() }
+    var pinMessage = _pinMessages
+
+    var hasRead = 0
+    var otherRead = 0
     var lastMessage: String = ""
 
     lateinit var goToMessageId: String
@@ -76,7 +88,12 @@ class ConversationVM(
 //        }
         launchDisposable {
             conversationRepo.getConversationDetail(id)
-                .doOnNext { _conversation.postValue(it.result) }
+                .doOnNext { response ->
+                    response.result.notNull {
+                        _pinMessages.postValue(it.pinMessage)
+                        _conversation.postValue(it)
+                    }
+                }
                 .doOnError { _conversationError.postValue(it) }
                 .flatMap { message }
                 .map { res ->
@@ -90,6 +107,28 @@ class ConversationVM(
                 .withScheduler(schedulerProvider)
                 .loading(_loading)
                 .result({}, {})
+        }
+    }
+
+    fun sendMessage(
+        content: String,
+        uploadFiles: ArrayList<AttachedFile.Conversation>,
+        currentFile: ArrayList<AttachedFile.Conversation>,
+        surveyFile: ArrayList<AttachedFile.SurveyFile>,
+        isSms: Boolean,
+        isEmail: Boolean
+    ) {
+        val sendMessage = createSendMessage(isSms, isEmail).apply {
+            setContent(content)
+            attachedFiles = currentFile
+            surveyFiles = surveyFile
+        }
+
+        if (uploadFiles.isNotEmpty()) {
+            val files: List<MultipartBody.Part> = FileUtils.multipartFiles(application, uploadFiles)
+//            apiUploadFile(message, files, sendSms, sendEmail)
+        } else {
+            SignalRManager.sendMessage(sendMessage, isSms, isEmail)
         }
     }
 
@@ -117,6 +156,24 @@ class ConversationVM(
 
 
     private fun isOtherReadMessage(): Boolean {
-        return otherReadMessage == conversation.value?.totalMessage
+        return otherRead == conversation.value?.totalMessage
+    }
+
+    private fun createSendMessage(sendSms: Boolean, sendEmail: Boolean): Message {
+        val user = User().apply {
+            id = user.id
+        }
+
+        return Message().apply {
+            conversationId = this@ConversationVM.conversationId
+            isSendSms = sendSms
+            isSendMail = sendEmail
+            personSend = user
+            personSendId = user.id
+        }
+    }
+
+    fun removePinMessage(messageId: String) {
+
     }
 }

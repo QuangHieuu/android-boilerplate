@@ -70,7 +70,7 @@ open class AttachedFile : ExpandModel() {
         return url ?: ""
     }
 
-    protected var uri: Uri? = null
+    var uri: Uri? = null
 
     var status = 0
     var isPreventRemove = true

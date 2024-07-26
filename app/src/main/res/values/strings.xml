@@ -91,4 +91,10 @@
 
     <string name="show_more_with_dot">\u0020…Xem thêm</string>
     <string name="collapse_with_dot">\u0020…Thu gọn</string>
+
+    <string name="see_all">Xem tất cả</string>
+    <string name="pin_message">Tin nhắn ghim</string>
+    <string name="send_from">Tin nhắn của %s</string>
+    <string name="forward_message">Tin nhắn chuyển tiếp</string>
+    <string name="remove_pin">Bỏ ghim</string>
 </resources>

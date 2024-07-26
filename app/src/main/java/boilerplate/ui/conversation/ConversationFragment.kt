@@ -21,7 +21,6 @@ import boilerplate.service.signalr.SignalRResult
 import boilerplate.ui.conversation.adapter.ConversationAdapter
 import boilerplate.ui.conversationDetail.ConversationDetailFragment
 import boilerplate.ui.main.MainVM
-import boilerplate.utils.ClickUtil
 import boilerplate.utils.extension.AnimateType
 import boilerplate.utils.extension.click
 import boilerplate.utils.extension.gone
@@ -202,6 +201,7 @@ class ConversationFragment : BaseFragment<FragmentConversationBinding, MainVM>()
         with(binding) {
             swipeLayout.setOnRefreshListener {
                 _endLessListener.refreshPage()
+                SignalRManager.reconnectSignal()
                 loadMore("")
             }
         }
