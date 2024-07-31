@@ -17,6 +17,7 @@ object SharedPrefsKey {
     const val USER_ROLE = "USER_ROLE"
     const val USER_ROLE_PERMISSION = "USER_ROLE_PERMISSION"
     const val USER_COMPANY_DATA = "USER_COMPANY_DATA"
+    const val USER_CONVERSATION_CONFIG = "USER_CONVERSATION_CONFIG"
 
     const val SOUND: String = "SOUND"
     const val SIZE: String = "size"

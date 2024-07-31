@@ -54,7 +54,6 @@ dependencies {
 
     implementation(files("libs/jsoup-1.16.1.jar"))
 
-    implementation(project(":permission"))
     implementation(project(":excel-to-pdf"))
     implementation(project(":signalr-client-sdk"))
 

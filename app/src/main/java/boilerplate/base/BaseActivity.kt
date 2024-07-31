@@ -18,7 +18,6 @@ import boilerplate.utils.extension.showSnackBarFail
 import boilerplate.widget.customText.EditTextFont
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
-import it.cpc.vn.permission.PermissionUtils
 import java.lang.reflect.ParameterizedType
 
 abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatActivity() {
@@ -32,14 +31,14 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val stack = supportFragmentManager.backStackEntryCount
-                val fragmentTablet = supportFragmentManager.findFragmentById(R.id.frame_tablet)
+                val fullScreen = supportFragmentManager.findFragmentById(R.id.app_container)
+                val splitScreen = supportFragmentManager.findFragmentById(R.id.frame_tablet)
                 if (isTablet()) {
-                    val hasContain = fragmentTablet != null
-                    if (hasContain) {
-                        if (stack >= 1) {
-                            finish()
-                        } else {
+                    if (splitScreen != null) {
+                        if (stack > 1 || fullScreen != null) {
                             supportFragmentManager.popBackStack()
+                        } else {
+                            finish()
                         }
                     } else {
                         closeView(stack)
@@ -62,7 +61,6 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
                 .apply { _binding = this }.root
         )
 
-        PermissionUtils.initPermissionCheck()
         onBackPressedDispatcher.addCallback(this@BaseActivity, backPress)
 
         initialize()
@@ -74,7 +72,6 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 
     override fun onDestroy() {
         super.onDestroy()
-        PermissionUtils.disposable()
         compositeDisposable.apply {
             clear()
             dispose()
@@ -95,7 +92,11 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         val fragment = findFragmentByTag(ConversationDetailFragment::class.java.simpleName)
-        if (fragment != null && fragment is ConversationDetailFragment && fragment.touchEvent(ev)) {
+        if (fragment != null &&
+            fragment is ConversationDetailFragment &&
+            fragment.isVisible &&
+            fragment.touchEvent(ev)
+        ) {
             return super.dispatchTouchEvent(ev)
         }
 

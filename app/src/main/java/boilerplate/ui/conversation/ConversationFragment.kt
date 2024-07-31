@@ -269,13 +269,13 @@ class ConversationFragment : BaseFragment<FragmentConversationBinding, MainVM>()
                         }
                     }
                     for (conversation in listPin) {
-                        _adapter.updateConversation(conversation)
+                        _adapterPin.updateConversation(conversation)
                     }
                     val iterator: ListIterator<Conversation> = listNormal.listIterator()
                     while (iterator.hasNext()) {
                         val index = iterator.nextIndex()
                         val conversation = iterator.next()
-                        _adapter.updateConversation(conversation, index)
+                        _adapter.updatePosition(conversation, index)
                     }
                 }
 
@@ -334,7 +334,7 @@ class ConversationFragment : BaseFragment<FragmentConversationBinding, MainVM>()
                 }
 
                 override fun updateConversation(conversation: Conversation) {
-                    _viewModel.apiGetConversationDetail(conversation)
+                    _viewModel.conversationUpdate.postValue(conversation)
                 }
 
                 override fun leaveGroup(leaveGroup: ConversationUser.LeaveGroup) {
@@ -349,15 +349,7 @@ class ConversationFragment : BaseFragment<FragmentConversationBinding, MainVM>()
                             _adapter.leaveConversation(leaveGroup.conversationId)
                         }
                     } else {
-                        val boolean: Boolean =
-                            if (_adapterPin.updatePinConversation(leaveGroup.conversation)) {
-                                false
-                            } else {
-                                !_adapter.updateConversation(leaveGroup.conversation)
-                            }
-                        if (boolean) {
-                            _viewModel.apiGetConversationDetail(leaveGroup.conversationId)
-                        }
+                        _viewModel.conversationUpdate.postValue(leaveGroup.conversation)
                     }
                 }
 

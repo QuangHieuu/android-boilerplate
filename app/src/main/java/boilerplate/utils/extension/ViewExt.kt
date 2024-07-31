@@ -5,6 +5,8 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,9 +27,11 @@ import boilerplate.R
 import boilerplate.constant.AccountManager
 import boilerplate.constant.Constants.KEY_AUTH
 import boilerplate.databinding.ItemFileBinding
+import boilerplate.databinding.ItemLinkBinding
 import boilerplate.databinding.ViewToastBinding
 import boilerplate.model.file.AttachedFile
 import boilerplate.model.file.ExtensionType
+import boilerplate.model.message.Message
 import boilerplate.utils.ClickUtil
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
@@ -39,6 +43,8 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.snackbar.BaseTransientBottomBar.ANIMATION_MODE_SLIDE
 import com.google.android.material.snackbar.Snackbar
+import java.net.MalformedURLException
+import java.net.URL
 
 
 fun View.show(b: Boolean = true) {
@@ -349,7 +355,7 @@ fun LinearLayout.addFile(
     file: AttachedFile,
     showClear: Boolean = false,
     sizeText: Float = 0f,
-    padding: Int = 0,
+    padding: Int = 5,
     openFile: (file: AttachedFile) -> Unit
 ) {
     val name: String = file.getFileName(context)?.replace("_system_deleted", "") ?: ""
@@ -382,4 +388,46 @@ fun LinearLayout.addFile(
             setPadding(0, padding / 2, 0, padding / 2)
         }
     }.let { this.addView(it) }
+}
+
+fun LinearLayout.addLink(message: Message, openFile: () -> Unit) {
+    val binding =
+        ItemLinkBinding.inflate(LayoutInflater.from(context), rootView as ViewGroup, false)
+
+    with(binding) {
+        try {
+            val url = URL(message.content)
+            val host = url.host
+
+            tvTitle.apply {
+                show()
+                text = host
+            }
+            tvLink.text = url.toString()
+        } catch (ignore: MalformedURLException) {
+            tvTitle.gone()
+            tvLink.text = message.content
+        }
+    }
+    addView(binding.root.apply { click { openFile() } })
+}
+
+fun EditText.addListener(
+    before: ((s: CharSequence) -> Unit)? = null,
+    change: ((s: CharSequence) -> Unit)? = null,
+    after: ((s: Editable) -> Unit)? = null
+) {
+    addTextChangedListener(object : TextWatcher {
+        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+            before.notNull { it(s) }
+        }
+
+        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+            change.notNull { it(s) }
+        }
+
+        override fun afterTextChanged(s: Editable) {
+            after.notNull { it(s) }
+        }
+    })
 }

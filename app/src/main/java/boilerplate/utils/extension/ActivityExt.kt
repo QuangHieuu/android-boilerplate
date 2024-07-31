@@ -42,12 +42,18 @@ fun AppCompatActivity.replaceFragmentInActivity(
     tag: String = fragment::class.java.simpleName,
     animateType: AnimateType = AnimateType.SLIDE_TO_LEFT
 ) {
-    supportFragmentManager.transact({
-        if (addToBackStack) {
-            addToBackStack(tag)
-        }
-        replace(containerId, fragment, tag)
-    }, animateType = animateType)
+    supportFragmentManager.transact(
+        begin = {
+
+        },
+        end = {
+            if (addToBackStack) {
+                addToBackStack(tag)
+            }
+            replace(containerId, fragment, tag)
+        },
+        animateEnd = animateType
+    )
 }
 
 fun AppCompatActivity.clearAllFragment() {
@@ -77,17 +83,23 @@ fun AppCompatActivity.switchFragment(
     animateType: AnimateType = AnimateType.SLIDE_TO_LEFT
 ) {
     val fm = supportFragmentManager
-    fm.transact({
-        if (fm.isExistFragment(newFragment)) {
-            hide(currentFragment).show(newFragment)
-        } else {
-            hide(currentFragment)
-            if (addToBackStack) {
-                addToBackStack(tag)
+    fm.transact(
+        begin = {
+
+        },
+        end = {
+            if (fm.isExistFragment(newFragment)) {
+                hide(currentFragment).show(newFragment)
+            } else {
+                hide(currentFragment)
+                if (addToBackStack) {
+                    addToBackStack(tag)
+                }
+                add(containerId, newFragment, tag)
             }
-            add(containerId, newFragment, tag)
-        }
-    }, animateType = animateType)
+        },
+        animateEnd = animateType
+    )
 }
 
 fun AppCompatActivity.startActivityAtRoot(

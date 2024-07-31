@@ -2,9 +2,11 @@ package boilerplate.data.local.repository.user
 
 import boilerplate.data.local.sharedPrefs.SharedPrefsApi
 import boilerplate.data.local.sharedPrefs.SharedPrefsKey
+import boilerplate.data.local.sharedPrefs.SharedPrefsKey.USER_CONVERSATION_CONFIG
 import boilerplate.data.remote.api.ApiRequest
 import boilerplate.data.remote.api.response.BaseResponse
 import boilerplate.data.remote.api.response.BaseResult
+import boilerplate.model.conversation.ConversationConfig
 import boilerplate.model.user.Company
 import boilerplate.model.user.Department
 import boilerplate.model.user.User
@@ -55,6 +57,10 @@ interface UserRepository {
     fun getCurrentDepartment(): Department
 
     fun getCompanyDepartment(id: String): Flowable<BaseResult<Department>>
+
+    fun saveConversationConfig(config: ConversationConfig)
+
+    fun getConversationConfig(): ConversationConfig
 }
 
 class UserRepositoryImpl(
@@ -97,6 +103,7 @@ class UserRepositoryImpl(
         share.clearKey(SharedPrefsKey.USER_DATA)
         share.clearKey(SharedPrefsKey.USER_COMPANY_DATA)
         share.clearKey(SharedPrefsKey.USER_ROLE_PERMISSION)
+        share.clearKey(SharedPrefsKey.USER_CONVERSATION_CONFIG)
         share.clearKey(SharedPrefsKey.SIZE)
         share.clearKey(SharedPrefsKey.SOUND)
     }
@@ -205,6 +212,14 @@ class UserRepositoryImpl(
 
     override fun getCompanyDepartment(id: String): Flowable<BaseResult<Department>> {
         return api.chat.getCompanyDepartment(id).checkInternet()
+    }
+
+    override fun saveConversationConfig(config: ConversationConfig) {
+        share.put(USER_CONVERSATION_CONFIG, gson.toJson(config))
+    }
+
+    override fun getConversationConfig(): ConversationConfig {
+        return share.get(USER_CONVERSATION_CONFIG, ConversationConfig::class.java)
     }
 
     override fun logout(): Flowable<BaseResponse<Boolean>> {

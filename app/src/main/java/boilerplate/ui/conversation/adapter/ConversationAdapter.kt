@@ -130,19 +130,16 @@ class ConversationAdapter(
         while (iterator.hasNext()) {
             val index = iterator.nextIndex()
             val ob = iterator.next()
-            if (ob is Conversation) {
-                val check = ob
-                if (check.conversationId == id) {
-                    for (user in check.conversationUsers) {
-                        if (user.user.id == AccountManager.getCurrentUserId()) {
-                            user.isImportant = isImportant
-                            break
-                        }
+            if (ob is Conversation && ob.conversationId.equals(id)) {
+                for (user in ob.conversationUsers) {
+                    if (user.user.id == AccountManager.getCurrentUserId()) {
+                        ob.isImportant = isImportant
+                        break
                     }
-                    iterator.set(check)
-                    notifyItemChanged(index, check)
-                    break
                 }
+                iterator.set(ob)
+                notifyItemChanged(index, ob)
+                break
             }
         }
     }
@@ -160,20 +157,17 @@ class ConversationAdapter(
         while (iterator.hasNext()) {
             val index = iterator.nextIndex()
             val ob = iterator.next()
-            if (ob is Conversation) {
-                val c = ob
-                if (conversation.conversationId == c.conversationId) {
-                    foundItem = true
-                    if (index == 0) {
-                        iterator.set(c)
-                        notifyItemChanged(index)
-                    } else {
-                        needReplace = true
-                        iterator.remove()
-                        notifyItemRemoved(index)
-                    }
-                    break
+            if (ob is Conversation && ob.conversationId.equals(conversation.conversationId)) {
+                foundItem = true
+                if (index == 0) {
+                    iterator.set(ob)
+                    notifyItemChanged(index)
+                } else {
+                    needReplace = true
+                    iterator.remove()
+                    notifyItemRemoved(index)
                 }
+                break
             }
         }
         if (needReplace || !foundItem) {
@@ -187,11 +181,9 @@ class ConversationAdapter(
         while (iterator.hasNext()) {
             val index = iterator.nextIndex()
             val ob = iterator.next()
-            if (ob is Conversation) {
-                if (ob.conversationId == conversation.conversationId) {
-                    iterator.remove()
-                    notifyItemRemoved(index)
-                }
+            if (ob is Conversation && ob.conversationId.equals(conversation.conversationId)) {
+                iterator.remove()
+                notifyItemRemoved(index)
             }
         }
     }
@@ -201,12 +193,10 @@ class ConversationAdapter(
         while (iterator.hasNext()) {
             val index = iterator.nextIndex()
             val ob = iterator.next()
-            if (ob is Conversation) {
-                if (ob.conversationId == conversationId) {
-                    iterator.remove()
-                    notifyItemRemoved(index)
-                    break
-                }
+            if (ob is Conversation && ob.conversationId.equals(conversationId)) {
+                iterator.remove()
+                notifyItemRemoved(index)
+                break
             }
         }
     }
@@ -216,15 +206,12 @@ class ConversationAdapter(
         while (iterator.hasNext()) {
             val index = iterator.nextIndex()
             val ob = iterator.next()
-            if (ob is Conversation) {
-                val c = ob
-                if (c.conversationId == conversationId) {
-                    c.totalMessage = c.totalMessage - 1
-                    c.lastMessage = null
-                    iterator.set(c)
-                    notifyItemChanged(index, c)
-                    return
-                }
+            if (ob is Conversation && ob.conversationId.equals(conversationId)) {
+                ob.totalMessage -= 1
+                ob.lastMessage = null
+                iterator.set(ob)
+                notifyItemChanged(index, ob)
+                return
             }
         }
     }
@@ -234,12 +221,10 @@ class ConversationAdapter(
         while (iterator.hasNext()) {
             val index = iterator.nextIndex()
             val ob = iterator.next()
-            if (ob is Conversation) {
-                if (ob.conversationId == value) {
-                    iterator.remove()
-                    notifyItemRemoved(index)
-                    return
-                }
+            if (ob is Conversation && ob.conversationId.equals(value)) {
+                iterator.remove()
+                notifyItemRemoved(index)
+                return
             }
         }
     }
@@ -251,27 +236,24 @@ class ConversationAdapter(
             while (iterator.hasNext()) {
                 val index = iterator.nextIndex()
                 val ob = iterator.next()
-                if (ob is Conversation) {
-                    val c = ob
-                    if (c.conversationId == conversationId) {
-                        if (isOnlyUnread) {
-                            iterator.remove()
-                            notifyItemRemoved(index)
-                        } else {
-                            val userIterator = c.conversationUsers.listIterator()
-                            while (userIterator.hasNext()) {
-                                val user = userIterator.next()
-                                if (user.user.id == id) {
-                                    user.readNumber = c.totalMessage
-                                    userIterator.set(user)
-                                    break
-                                }
+                if (ob is Conversation && ob.conversationId.equals(conversationId)) {
+                    if (isOnlyUnread) {
+                        iterator.remove()
+                        notifyItemRemoved(index)
+                    } else {
+                        val userIterator = ob.conversationUsers.listIterator()
+                        while (userIterator.hasNext()) {
+                            val user = userIterator.next()
+                            if (user.user.id.equals(id)) {
+                                user.readNumber = ob.totalMessage
+                                userIterator.set(user)
+                                break
                             }
-                            iterator.set(c)
-                            notifyItemChanged(index)
                         }
-                        return
+                        iterator.set(ob)
+                        notifyItemChanged(index)
                     }
+                    return
                 }
             }
         }
@@ -288,33 +270,30 @@ class ConversationAdapter(
             while (iterator.hasNext()) {
                 val index = iterator.nextIndex()
                 val ob = iterator.next()
-                if (ob is Conversation) {
-                    val c = ob
-                    if (message.getConversationId().equals(c.conversationId)) {
-                        if (isUpdate || message.getMessageId().equals(c.lastMessage.messageId)) {
-                            if (isMe) {
-                                for (user in c.conversationUsers) {
-                                    if (user.user.id == AccountManager.getCurrentUserId()) {
-                                        user.readNumber =
-                                            message.getConversation().getTotalMessage()
-                                    }
+                if (ob is Conversation && ob.conversationId.equals(message.getConversationId())) {
+                    if (isUpdate || message.getMessageId().equals(ob.lastMessage.messageId)) {
+                        if (isMe) {
+                            for (user in ob.conversationUsers) {
+                                if (user.user.id == AccountManager.getCurrentUserId()) {
+                                    user.readNumber =
+                                        message.conversation.totalMessage
                                 }
                             }
-                            c.lastActive = message.getConversation().getLastActive()
-                            c.lastMessage = message
-                            c.totalMessage = message.getConversation().getTotalMessage()
-                            foundConv = c
-                            if (isUpdate && index != 0) {
-                                isChangePos = true
-                                iterator.remove()
-                                notifyItemRemoved(index)
-                            } else {
-                                iterator.set(c)
-                                notifyItemChanged(index)
-                            }
                         }
-                        break
+                        ob.lastMessage = message
+                        ob.lastActive = message.conversation.lastActive
+                        ob.totalMessage = message.conversation.totalMessage
+                        foundConv = ob
+                        if (isUpdate && index != 0) {
+                            isChangePos = true
+                            iterator.remove()
+                            notifyItemRemoved(index)
+                        } else {
+                            iterator.set(ob)
+                            notifyItemChanged(index)
+                        }
                     }
+                    break
                 }
             }
             if (isChangePos) {
@@ -328,61 +307,43 @@ class ConversationAdapter(
     fun updateConversation(conversation: Conversation): Boolean {
         synchronized(_list) {
             var isFound = false
-            var foundIndex = 0
             val iterator = _list.listIterator()
             while (iterator.hasNext()) {
-                val index = iterator.nextIndex()
                 val ob = iterator.next()
-                if (ob is Conversation) {
-                    val c = ob
-                    if (c.conversationId == conversation.conversationId) {
-                        isFound = true
-                        c.setTotalUser(conversation.tongSoNhanVien)
-                        c.conversationAvatar = conversation.avatarId
-                        c.conversationName = conversation.conversationName
-                        c.conversationUsers.clear()
-                        c.conversationUsers.addAll(conversation.conversationUsers)
-                        if (index == 0) {
-                            iterator.set(c)
-                        } else {
-                            foundIndex = index
-                            iterator.remove()
-                            notifyItemRemoved(index)
-                        }
-                        break
-                    }
+                if (ob is Conversation && ob.conversationId.equals(conversation.conversationId)) {
+                    isFound = true
+                    ob.setTotalUser(conversation.tongSoNhanVien)
+                    ob.conversationAvatar = conversation.avatarId
+                    ob.conversationName = conversation.conversationName
+                    ob.conversationUsers = conversation.conversationUsers
+                    iterator.set(ob)
+                    break
                 }
-            }
-            if (foundIndex != 0) {
-                _list.add(0, conversation)
-                notifyItemMoved(foundIndex, 0)
             }
             return isFound
         }
     }
 
-    fun updateConversation(conversation: Conversation, newPosition: Int) {
-        var isRepalce = false
+    fun updatePosition(conversation: Conversation, newPosition: Int) {
+        var isReplace = false
         synchronized(_list) {
             val iterator = _list.listIterator()
             while (iterator.hasNext()) {
                 val removeIndex = iterator.nextIndex()
                 val ob = iterator.next()
-                if (ob is Conversation) {
-                    if (ob.conversationId == conversation.conversationId) {
-                        if (removeIndex == newPosition) {
-                            iterator.set(conversation)
-                            notifyItemChanged(removeIndex)
-                        } else {
-                            iterator.remove()
-                            notifyItemRemoved(removeIndex)
-                            isRepalce = true
-                        }
-                        break
+                if (ob is Conversation && ob.conversationId.equals(conversation.conversationId)) {
+                    if (removeIndex == newPosition) {
+                        iterator.set(conversation)
+                        notifyItemChanged(removeIndex)
+                    } else {
+                        iterator.remove()
+                        notifyItemRemoved(removeIndex)
+                        isReplace = true
                     }
+                    break
                 }
             }
-            if (isRepalce) {
+            if (isReplace) {
                 _list.add(newPosition, conversation)
                 notifyItemInserted(newPosition)
             }
@@ -395,20 +356,17 @@ class ConversationAdapter(
         while (iterator.hasNext()) {
             val index = iterator.nextIndex()
             val ob = iterator.next()
-            if (ob is Conversation) {
-                val c = ob
-                if (c.conversationId == id) {
-                    for (user in c.conversationUsers) {
-                        if (user.user.id == AccountManager.getCurrentUserId()) {
-                            user.isOffNotify = !user.isOffNotify
-                            isOffNotify = user.isOffNotify
-                            break
-                        }
+            if (ob is Conversation && ob.conversationId.equals(id)) {
+                for (user in ob.conversationUsers) {
+                    if (user.user.id == AccountManager.getCurrentUserId()) {
+                        user.isOffNotify = !user.isOffNotify
+                        isOffNotify = user.isOffNotify
+                        break
                     }
-                    iterator.set(c)
-                    notifyItemChanged(index)
-                    break
                 }
+                iterator.set(ob)
+                notifyItemChanged(index)
+                break
             }
         }
         return isOffNotify
@@ -430,13 +388,13 @@ class ConversationAdapter(
         while (iterator.hasNext()) {
             val index = iterator.nextIndex()
             val ob = iterator.next()
-            if (ob is Conversation) {
-                //Kiểm tra hội thoại pin có ngày hoạt động cuối nhỏ hơn thì mới add vào
-                if (!compareTwoDateWithFormat(conversation.lastActive, ob.lastActive)) {
-                    _list.add(index, conversation)
-                    notifyItemInserted(index)
-                    return
-                }
+            //Kiểm tra hội thoại pin có ngày hoạt động cuối nhỏ hơn thì mới add vào
+            if (ob is Conversation &&
+                !compareTwoDateWithFormat(conversation.lastActive, ob.lastActive)
+            ) {
+                _list.add(index, conversation)
+                notifyItemInserted(index)
+                return
             }
         }
     }
@@ -446,18 +404,16 @@ class ConversationAdapter(
         while (iterator.hasNext()) {
             val index = iterator.nextIndex()
             val ob = iterator.next()
-            if (ob is Conversation) {
-                if (ob.conversationId!! == id) {
-                    for (user in ob.conversationUsers) {
-                        if (user.user.id.equals(AccountManager.getCurrentUserId())) {
-                            user.isImportant = important
-                            break
-                        }
+            if (ob is Conversation && ob.conversationId.equals(id)) {
+                for (user in ob.conversationUsers) {
+                    if (user.user.id.equals(AccountManager.getCurrentUserId())) {
+                        user.isImportant = important
+                        break
                     }
-                    iterator.set(ob)
-                    notifyItemChanged(index, ob)
-                    return true
                 }
+                iterator.set(ob)
+                notifyItemChanged(index, ob)
+                return true
             }
         }
         return false
@@ -468,12 +424,10 @@ class ConversationAdapter(
         while (iterator.hasNext()) {
             val index = iterator.nextIndex()
             val ob = iterator.next()
-            if (ob is Conversation) {
-                if (conversation.conversationId.equals(ob.conversationId)) {
-                    iterator.set(ob)
-                    notifyItemChanged(index)
-                    return true
-                }
+            if (ob is Conversation && conversation.conversationId.equals(ob.conversationId)) {
+                iterator.set(ob)
+                notifyItemChanged(index)
+                return true
             }
         }
         return false
@@ -484,17 +438,86 @@ class ConversationAdapter(
         while (iterator.hasNext()) {
             val index = iterator.nextIndex()
             val ob = iterator.next()
-            if (ob is Conversation) {
-                if (message.conversationId.equals(ob.conversationId)) {
-                    if (isUpdate || message.messageId.equals(ob.lastMessage.messageId)) {
-                        ob.apply {
-                            if (isMe) {
-                                for (user in conversationUsers) {
-                                    if (user.user.id.equals(AccountManager.getCurrentUserId())) {
-                                        user.readNumber = message.conversation.totalMessage
-                                    }
+            if (ob is Conversation && message.conversationId.equals(ob.conversationId)) {
+                if (isUpdate || message.messageId.equals(ob.lastMessage.messageId)) {
+                    ob.apply {
+                        if (isMe) {
+                            for (user in conversationUsers) {
+                                if (user.user.id.equals(AccountManager.getCurrentUserId())) {
+                                    user.readNumber = message.conversation.totalMessage
                                 }
                             }
+                        }
+                        lastActive = message.conversation.lastActive
+                        lastMessage = message
+                        totalMessage = message.conversation.totalMessage
+                    }
+                    iterator.set(ob)
+                    notifyItemChanged(index)
+                }
+                return true
+            }
+        }
+        return false
+    }
+
+    fun removePinConversation(conversationId: String): Boolean {
+        val iterator: MutableListIterator<Any?> = _list.listIterator()
+        while (iterator.hasNext()) {
+            val index = iterator.nextIndex()
+            val ob = iterator.next()
+            if (ob is Conversation && ob.conversationId.equals(conversationId)) {
+                iterator.remove()
+                notifyItemRemoved(index)
+                return true
+            }
+        }
+        return false
+    }
+
+    fun leavePinConversation(conversationId: String): Boolean {
+        val iterator: MutableListIterator<Any?> = _list.listIterator()
+        while (iterator.hasNext()) {
+            val index = iterator.nextIndex()
+            val ob = iterator.next()
+            if (ob is Conversation && ob.conversationId.equals(conversationId)) {
+                iterator.remove()
+                notifyItemRemoved(index)
+                return true
+            }
+        }
+        return false
+    }
+
+    fun updatePinConversation(conversation: Conversation): Boolean {
+        val iterator: MutableListIterator<Any?> = _list.listIterator()
+        while (iterator.hasNext()) {
+            val removeIndex = iterator.nextIndex()
+            val ob = iterator.next()
+            if (ob is Conversation && ob.conversationId.equals(conversation.conversationId)) {
+                iterator.set(conversation)
+                notifyItemChanged(removeIndex)
+                return true
+            }
+        }
+        return false
+    }
+
+    fun newPinMessage(message: Message, isMe: Boolean, isUpdate: Boolean): Boolean {
+        val iterator: MutableListIterator<Any?> = _list.listIterator()
+        while (iterator.hasNext()) {
+            val index = iterator.nextIndex()
+            iterator.next().let { ob ->
+                if (ob is Conversation && ob.conversationId.equals(message.conversationId)) {
+                    if (isUpdate || message.messageId.equals(ob.lastMessage.messageId)) {
+                        if (isMe) {
+                            for (user in ob.conversationUsers) {
+                                if (user.user.id.equals(AccountManager.getCurrentUserId())) {
+                                    user.readNumber = message.conversation.totalMessage
+                                }
+                            }
+                        }
+                        ob.apply {
                             lastActive = message.conversation.lastActive
                             lastMessage = message
                             totalMessage = message.conversation.totalMessage
@@ -509,99 +532,17 @@ class ConversationAdapter(
         return false
     }
 
-    fun removePinConversation(conversationId: String?): Boolean {
-        val iterator: MutableListIterator<Any?> = _list.listIterator()
-        while (iterator.hasNext()) {
-            val index = iterator.nextIndex()
-            val ob = iterator.next()
-            if (ob is Conversation) {
-                if (ob.conversationId.equals(conversationId!!)) {
-                    iterator.remove()
-                    notifyItemRemoved(index)
-                    return true
-                }
-            }
-        }
-        return false
-    }
-
-    fun leavePinConversation(conversationId: String): Boolean {
-        val iterator: MutableListIterator<Any?> = _list.listIterator()
-        while (iterator.hasNext()) {
-            val index = iterator.nextIndex()
-            val ob = iterator.next()
-            if (ob is Conversation) {
-                if (ob.conversationId.equals(conversationId)) {
-                    iterator.remove()
-                    notifyItemRemoved(index)
-                    return true
-                }
-            }
-        }
-        return false
-    }
-
-    fun updatePinConversation(conversation: Conversation): Boolean {
-        val iterator: MutableListIterator<Any?> = _list.listIterator()
-        while (iterator.hasNext()) {
-            val removeIndex = iterator.nextIndex()
-            val ob = iterator.next()
-            if (ob is Conversation) {
-                if (ob.conversationId.equals(conversation.conversationId)) {
-                    iterator.set(conversation)
-                    notifyItemChanged(removeIndex)
-                    return false
-                }
-            }
-        }
-        return true
-    }
-
-    fun newPinMessage(message: Message, isMe: Boolean, isUpdate: Boolean): Boolean {
-        val iterator: MutableListIterator<Any?> = _list.listIterator()
-        while (iterator.hasNext()) {
-            val index = iterator.nextIndex()
-            iterator.next().let { ob ->
-                if (ob is Conversation) {
-                    if (message.conversationId.equals(ob.conversationId)) {
-                        if (isUpdate || message.messageId.equals(ob.lastMessage.messageId)) {
-                            if (isMe) {
-                                for (user in ob.conversationUsers) {
-                                    if (user.user.id.equals(AccountManager.getCurrentUserId())) {
-                                        user.readNumber = message.conversation.totalMessage
-                                    }
-                                }
-                            }
-                            ob.apply {
-                                lastActive = message.conversation.lastActive
-                                lastMessage = message
-                                totalMessage = message.conversation.totalMessage
-                            }
-                            iterator.set(ob)
-                            notifyItemChanged(index)
-                        }
-                        return true
-                    }
-                }
-            }
-        }
-        return false
-    }
-
     fun deletePinMessage(conversationId: String?): Boolean {
         val iterator: MutableListIterator<Any?> = _list.listIterator()
         while (iterator.hasNext()) {
             val index = iterator.nextIndex()
             val ob = iterator.next()
-            if (ob is Conversation) {
-                val c = ob
-                if (c.conversationId.equals(conversationId)) {
-                    c.totalMessage -= 1
-                    c.lastMessage = null
-                    iterator.set(c)
-                    notifyItemChanged(index, c)
-                    return true
-                }
+            if (ob is Conversation && ob.conversationId.equals(conversationId)) {
+                ob.totalMessage -= 1
+                ob.lastMessage = null
+                iterator.set(ob)
+                notifyItemChanged(index, ob)
+                return true
             }
         }
         return false
@@ -613,18 +554,15 @@ class ConversationAdapter(
         while (iterator.hasNext()) {
             val index = iterator.nextIndex()
             val ob = iterator.next()
-            if (ob is Conversation) {
-                val c = ob
-                if (c.conversationId.equals(conversationId)) {
-                    for (user in c.conversationUsers) {
-                        if (user.user.id.equals(id)) {
-                            user.readNumber = c.totalMessage
-                        }
+            if (ob is Conversation && ob.conversationId.equals(conversationId)) {
+                for (user in ob.conversationUsers) {
+                    if (user.user.id.equals(id)) {
+                        user.readNumber = ob.totalMessage
                     }
-                    iterator.set(c)
-                    notifyItemChanged(index)
-                    return true
                 }
+                iterator.set(ob)
+                notifyItemChanged(index)
+                return true
             }
         }
         return false

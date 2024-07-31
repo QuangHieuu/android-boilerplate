@@ -149,3 +149,17 @@ open class AttachedFile : ExpandModel() {
             }
     }
 }
+
+fun ArrayList<UploadFile>.convertFile(): ArrayList<AttachedFile.Conversation> {
+    val list = arrayListOf<AttachedFile.Conversation>()
+    for (upload in this) {
+        list.add(AttachedFile.Conversation().apply {
+            fileId = upload.id
+            fileName = upload.originalName
+            realName = upload.originalName
+            fileSize = upload.length
+            fileType = upload.type
+        })
+    }
+    return list
+}

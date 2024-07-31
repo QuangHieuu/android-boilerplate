@@ -28,17 +28,36 @@
         android:layout_marginTop="@dimen/dp_10"
         android:layout_marginBottom="@dimen/dp_10"
         android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="@id/barrier"
+        app:layout_constraintBottom_toTopOf="@id/sw_silent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_title" />
 
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/barrier"
+    <boilerplate.widget.customText.TextViewFont
+        android:id="@+id/tv_leave_group"
+        style="@style/StyleBold"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/leave_group_in_silent"
+        android:textSize="@dimen/dp_14"
+        app:layout_constraintBottom_toBottomOf="@id/sw_silent"
+        app:layout_constraintEnd_toStartOf="@id/sw_silent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/sw_silent" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/sw_silent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:barrierDirection="top"
-        app:constraint_referenced_ids="btn_cancel, btn_confirm" />
+        android:layout_marginBottom="@dimen/dp_10"
+        android:thumb="@drawable/bg_switch_button_thumb"
+        app:layout_constraintBottom_toTopOf="@id/btn_cancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintStart_toEndOf="@id/tv_title"
+        app:layout_constraintTop_toBottomOf="@id/tv_description"
+        app:track="@drawable/bg_switch_button_track_green"
+        app:useMaterialThemeColors="false" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_cancel"
@@ -54,7 +73,7 @@
         app:layout_constraintEnd_toStartOf="@id/btn_confirm"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/barrier" />
+        app:layout_constraintTop_toBottomOf="@id/sw_silent" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_confirm"
@@ -69,6 +88,6 @@
         app:layout_constraintBottom_toBottomOf="@id/btn_cancel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/btn_cancel"
-        app:layout_constraintTop_toTopOf="@id/barrier"
+        app:layout_constraintTop_toTopOf="@id/btn_cancel"
         tools:text="Giải tán" />
 </androidx.constraintlayout.widget.ConstraintLayout>

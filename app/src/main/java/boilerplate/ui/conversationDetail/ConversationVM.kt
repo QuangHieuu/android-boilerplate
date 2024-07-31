@@ -1,24 +1,29 @@
 package boilerplate.ui.conversationDetail
 
 import android.app.Application
+import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import boilerplate.base.BaseViewModel
 import boilerplate.data.local.repository.user.UserRepository
 import boilerplate.data.remote.api.response.BaseResult
 import boilerplate.data.remote.repository.conversation.ConversationRepository
 import boilerplate.model.conversation.Conversation
+import boilerplate.model.conversation.SignalBody
 import boilerplate.model.file.AttachedFile
+import boilerplate.model.file.convertFile
 import boilerplate.model.message.Message
 import boilerplate.model.user.User
 import boilerplate.service.signalr.SignalRManager
 import boilerplate.utils.DateTimeUtil
 import boilerplate.utils.FileUtils
 import boilerplate.utils.extension.BaseSchedulerProvider
+import boilerplate.utils.extension.ifEmpty
 import boilerplate.utils.extension.loading
 import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.result
 import boilerplate.utils.extension.withScheduler
 import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.rxjava3.core.Single
 import okhttp3.MultipartBody
 import java.util.Date
 import java.util.TreeMap
@@ -31,6 +36,7 @@ class ConversationVM(
 ) : BaseViewModel() {
 
     val user = userRepo.getUser()
+    val config = userRepo.getConversationConfig()
 
     private val _conversationError by lazy { MutableLiveData<Throwable>() }
     val conversationError = _conversationError
@@ -44,10 +50,23 @@ class ConversationVM(
     val messageError = _messageError
 
     private val _countReceiveMessage by lazy { MutableLiveData(0) }
-    var recevice = _countReceiveMessage
+    val receive = _countReceiveMessage
 
     private val _pinMessages by lazy { MutableLiveData<ArrayList<Message>>() }
-    var pinMessage = _pinMessages
+    val pinMessage = _pinMessages
+
+    private val _changeConfig by lazy { MutableLiveData<Conversation>() }
+    val changeConfig = _changeConfig
+
+    private val _fileImage by lazy { MutableLiveData<ArrayList<AttachedFile.Conversation>>() }
+    val fileImage = _fileImage
+    private val _fileAttach by lazy { MutableLiveData<ArrayList<AttachedFile.Conversation>>() }
+    val fileAttach = _fileAttach
+    private val _linkAttach by lazy { MutableLiveData<ArrayList<Message>>() }
+    val linkAttach = _linkAttach
+
+    var changeConversationAvatar: Uri? = null
+    var changeConversationName: String? = null
 
     var hasRead = 0
     var otherRead = 0
@@ -175,5 +194,80 @@ class ConversationVM(
 
     fun removePinMessage(messageId: String) {
 
+    }
+
+    fun getConversationFile() {
+        val image = conversationRepo.getConversationFile(conversationId, 0, 1, 6)
+            .doOnSuccess { _fileImage.postValue(it.result?.items.ifEmpty()) }
+            .doOnError { _fileImage.postValue(arrayListOf()) }
+        val file = conversationRepo.getConversationFile(conversationId, 1, 1, 3)
+            .doOnSuccess { _fileAttach.postValue(it.result?.items.ifEmpty()) }
+            .doOnError { _fileAttach.postValue(arrayListOf()) }
+        val link = conversationRepo.getConversationLink(conversationId, "", 4)
+            .doOnSuccess { _linkAttach.postValue(it.result?.items.ifEmpty()) }
+            .doOnError { _linkAttach.postValue(arrayListOf()) }
+
+        launchDisposable {
+            Single.concat(image, file, link)
+                .withScheduler(schedulerProvider)
+                .result()
+        }
+    }
+
+    fun cancelChangeConversationInform() {
+        changeConversationAvatar = null
+        changeConversationName = null
+    }
+
+    fun changeConversationInform() {
+        val file = changeConversationAvatar?.let { FileUtils.multiPartFile(application, it) } ?: ""
+
+        launchDisposable {
+            Flowable.just(file)
+                .flatMap { file ->
+                    if (file is String) {
+                        Flowable.just("")
+                    } else {
+                        conversationRepo.postFile(file as MultipartBody.Part)
+                            .map { res ->
+                                res.result?.convertFile()?.apply {
+                                    _conversation.value?.avatarId = get(0).id
+                                }.ifEmpty()
+                            }
+                    }
+                }
+                .onErrorResumeNext { Flowable.just("") }
+                .flatMap {
+                    changeConversationName.notNull {
+                        _conversation.value?.conversationName = it
+                    }
+                    conversationRepo.putConversation(postBody())
+                }
+                .withScheduler(schedulerProvider)
+                .loading(_loading)
+                .result({
+                    _changeConfig.postValue(_conversation.value)
+                }, {
+                    _changeConfig.postValue(null)
+                })
+        }
+    }
+
+    private fun postBody(): SignalBody {
+        return SignalBody().apply {
+            id = conversationId
+            creatorId = _conversation.value?.creatorId
+            groupName = _conversation.value?.conversationName
+            isChangeInform = _conversation.value?.isChangeInform ?: false
+            isAllowApproved = _conversation.value?.isAllowApproved ?: false
+            isAllowPinMessage = _conversation.value?.isAllowPinMessage ?: false
+            isAllowSendMessage = _conversation.value?.isAllowSendMessage ?: false
+            avatar = _conversation.value?.avatarId
+            val list = ArrayList<SignalBody.ConversationUser>()
+            for (user in _conversation.value?.conversationUsers.ifEmpty()) {
+                list.add(SignalBody.ConversationUser(user.user.id))
+            }
+            member = list
+        }
     }
 }

@@ -8,6 +8,7 @@ import boilerplate.data.local.repository.user.TokenRepository
 import boilerplate.data.local.repository.user.UserRepository
 import boilerplate.data.remote.api.ApiObservable
 import boilerplate.data.remote.repository.auth.LoginRepository
+import boilerplate.data.remote.repository.conversation.ConversationRepository
 import boilerplate.model.device.Device
 import boilerplate.model.user.User
 import boilerplate.utils.extension.BaseSchedulerProvider
@@ -23,7 +24,8 @@ class StartVM(
     private val tokenImpl: TokenRepository,
     private val userImpl: UserRepository,
     private val serverImpl: ServerRepository,
-    private val loginServer: LoginRepository
+    private val loginServer: LoginRepository,
+    private val conImpl: ConversationRepository
 ) : BaseViewModel() {
 
     companion object {
@@ -71,11 +73,12 @@ class StartVM(
     fun getMe() {
         val role = loginServer.getRolePermission()
         val contact = loginServer.getContact()
+        val config = conImpl.getConversationConfig()
 
         launchDisposable {
             loginServer.getMe()
                 .flatMap { res ->
-                    Single.concat(role, contact)
+                    Single.concat(role, contact, config)
                         .toList()
                         .toFlowable()
                         .flatMap { Flowable.just(res) }

@@ -2,10 +2,13 @@ package boilerplate.utils.extension
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
+import android.view.KeyEvent
 import androidx.annotation.IdRes
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
@@ -13,6 +16,20 @@ import androidx.viewbinding.ViewBinding
 import boilerplate.R
 import boilerplate.constant.Constants
 import kotlin.reflect.KClass
+
+fun Fragment.findOwner(tag: String): Fragment {
+    val fragment = requireActivity().supportFragmentManager.findFragmentByTag(tag)
+        ?: if (context == null) {
+            throw IllegalStateException(
+                "Fragment $this is not attached to any Fragment or host"
+            )
+        } else {
+            throw IllegalStateException(
+                "Fragment $this is not a child Fragment, it is directly attached to $context"
+            )
+        }
+    return fragment
+}
 
 fun Fragment.open(
     fragment: Fragment,
@@ -23,17 +40,26 @@ fun Fragment.open(
     tag: String = fragment::class.java.simpleName,
 ) {
     val fm = requireActivity().supportFragmentManager
-    fm.transact({
-        if (addToBackStack) {
-            addToBackStack(tag)
-        }
-        val isTablet = context?.isTablet()
-        if (isTablet == true && split) {
-            add(R.id.frame_tablet, fragment, tag)
-        } else {
-            add(containerId, fragment, tag)
-        }
-    }, animateType = animateType)
+    fm.transact(
+        begin = {
+            hide(this@open)
+        },
+        end = {
+            if (addToBackStack) {
+                addToBackStack(tag)
+            }
+            val isTablet = context?.isTablet()
+            if (isTablet == true && split) {
+                if (fm.isExistFragment(fragment)) {
+                    fm.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                }
+                add(R.id.frame_tablet, fragment, tag)
+            } else {
+                add(containerId, fragment, tag)
+            }
+        },
+        animateEnd = animateType
+    )
 }
 
 fun <T : Activity> Fragment.goTo(
@@ -69,12 +95,16 @@ fun Fragment.isCanPopBackStack(): Boolean {
  * Runs a FragmentTransaction, then calls commitAllowingStateLoss().
  */
 inline fun FragmentManager.transact(
-    action: FragmentTransaction.() -> Unit,
-    animateType: AnimateType = AnimateType.SLIDE_TO_LEFT
+    begin: FragmentTransaction.() -> Unit,
+    end: FragmentTransaction.() -> Unit,
+    animateBegin: AnimateType = AnimateType.SLIDE_TO_LEFT,
+    animateEnd: AnimateType = AnimateType.SLIDE_TO_LEFT,
 ) {
     beginTransaction().apply {
-        setCustomAnimations(this, animateType)
-        action()
+        setCustomAnimations(this, animateBegin)
+        begin()
+        setCustomAnimations(this, animateEnd)
+        end()
     }.commitAllowingStateLoss()
 }
 
@@ -119,12 +149,23 @@ fun setCustomAnimations(
 
 fun <VB : ViewBinding> Fragment.showDialog(
     binding: VB,
-    viewInit: (v: VB, dialog: AlertDialog) -> Unit
+    viewInit: (vb: VB, dialog: AlertDialog) -> Unit
 ) {
+    val drawable = ResourcesCompat.getDrawable(resources, R.drawable.bg_base_dialog, null)
     val dialogBuilder = AlertDialog.Builder(context)
         .apply { setCancelable(false) }
         .also { it.setView(binding.root) }
-    val dialog = dialogBuilder.create()
+    val dialog = dialogBuilder.create().apply {
+        window?.setBackgroundDrawable(drawable)
+        setOnKeyListener { v: DialogInterface?, keyCode: Int, event: KeyEvent ->
+            if ((keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP)) {
+                dismiss()
+                return@setOnKeyListener true
+            } else {
+                return@setOnKeyListener false
+            }
+        }
+    }
     viewInit(binding, dialog)
     dialog.show()
 }

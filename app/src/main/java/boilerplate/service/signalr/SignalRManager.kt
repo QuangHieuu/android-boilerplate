@@ -11,7 +11,7 @@ import android.os.IBinder
 import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import boilerplate.model.conversation.Conversation
-import boilerplate.model.conversation.ConversationUser
+import boilerplate.model.conversation.SignalBody
 import boilerplate.model.message.Message
 import boilerplate.service.signalr.SignalRService.Companion.TAG
 import boilerplate.utils.extension.notNull
@@ -105,6 +105,10 @@ object SignalRManager : ServiceConnection {
         return sub
     }
 
+    fun removeController(string: String) {
+        _subscriptions.remove(string)
+    }
+
     private fun handleData(intent: Intent) {
         val bundle: Bundle = intent.getBundleExtra(SIGNALR_BUNDLE) ?: Bundle()
         val key = bundle.getString(SIGNALR_KEY, "")
@@ -142,7 +146,7 @@ object SignalRManager : ServiceConnection {
         checkService { it.updateConversationSetting(conversation) }
     }
 
-    fun addMember(conversationId: String, member: ArrayList<ConversationUser.SignalrBody>) {
+    fun addMember(conversationId: String, member: ArrayList<SignalBody.ConversationUser>) {
         checkService { it.addMember(conversationId, member) }
     }
 
@@ -153,7 +157,7 @@ object SignalRManager : ServiceConnection {
     fun approveMemberOrNot(
         isApprove: Boolean,
         conversationId: String?,
-        list: ArrayList<ConversationUser.SignalrBody>
+        list: ArrayList<SignalBody.ConversationUser>
     ) {
         checkService { it.approveMemberOrNot(isApprove, conversationId, list) }
     }

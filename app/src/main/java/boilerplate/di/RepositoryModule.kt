@@ -22,7 +22,7 @@ val repositoryModule = module {
     single { provideTokenRepository(get()) }
     single { provideServerRepository(get()) }
     single { providerLoginRepository(get(), get()) }
-    single { providerConversationRepository(get()) }
+    single { providerConversationRepository(get(), get(), get()) }
     single { providerDashBoard(get()) }
 }
 
@@ -49,8 +49,12 @@ fun providerLoginRepository(
     return LoginRepositoryImpl(apiRequest, userRepository)
 }
 
-fun providerConversationRepository(apiRequest: ApiRequest): ConversationRepository {
-    return ConversationRepositoryImpl(apiRequest)
+fun providerConversationRepository(
+    apiRequest: ApiRequest,
+    userRepository: UserRepository,
+    tokenRepository: TokenRepository
+): ConversationRepository {
+    return ConversationRepositoryImpl(apiRequest, userRepository, tokenRepository)
 }
 
 fun providerDashBoard(apiRequest: ApiRequest): DashboardRepository {

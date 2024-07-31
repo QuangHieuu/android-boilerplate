@@ -118,30 +118,6 @@ public class ConversationUser {
         isOffNotify = offNotify;
     }
 
-    public static class SignalrBody {
-        @SerializedName("nguoi_nhan_id")
-        private String id;
-        @SerializedName("ten_nhan_vien")
-        private String name;
-
-        public SignalrBody(String id) {
-            this.id = id;
-        }
-
-        public SignalrBody(String id, String name) {
-            this.id = id;
-            this.name = name;
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public String getName() {
-            return name;
-        }
-    }
-
     public static class LeaveGroup {
         private final String conversationId;
         private final Conversation conversation;

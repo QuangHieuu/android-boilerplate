@@ -12,4 +12,10 @@
     <string name="warning_file_maximum">Dung lượng file bạn tải lên vượt quá 25 MB. Vui lòng chọn file khác.</string>
 
     <string name="warning_remove_pin">Anh/Chị có muốn bỏ ghim tin nhắn này không?</string>
+
+    <string name="warning_main_leave_conversation">Rời nhóm sẽ xóa hội thoại và toàn bộ tin nhắn của nhóm. Quyền quản lý sẽ được giao cho thành viên khác.\nAnh/Chị có muốn rời nhóm không?</string>
+    <string name="warning_member_leave_conversation">Rời nhóm sẽ xóa hội thoại và toàn bộ tin nhắn của nhóm.\nAnh/Chị có muốn rời nhóm không?</string>
+    <string name="warning_turn_off_notify">Toàn bộ thông báo tin nhắn của hội thoại sẽ được tắt cho đến khi được mở lại.</string>
+
+    <string name="warning_change_inform">Anh chị có chắc muốn đổi tên nhóm?\nKhi xác nhận tên nhóm mới sẽ hiển thị với tất cả thành viên</string>
 </resources>

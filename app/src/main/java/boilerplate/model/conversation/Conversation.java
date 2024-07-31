@@ -11,6 +11,7 @@ import boilerplate.data.remote.api.ApiUrl;
 import boilerplate.model.ExpandModel;
 import boilerplate.model.message.Message;
 import boilerplate.model.user.User;
+import boilerplate.utils.ImageUtil;
 
 public class Conversation extends ExpandModel {
     @SerializedName("hoi_thoai_id")
@@ -107,7 +108,7 @@ public class Conversation extends ExpandModel {
     }
 
 
-    public String getThumb(int size) {
+    public String getThumb() {
         if (conversationAvatar == null || conversationAvatar.isEmpty()) {
             return null;
         } else {
@@ -116,13 +117,17 @@ public class Conversation extends ExpandModel {
                 "%s%s?w=%d",
                 ApiUrl.HOST_FILE_PREVIEW,
                 conversationAvatar,
-                size
+                ImageUtil.IMAGE_THUMB_SIZE
             );
         }
     }
 
     public String getAvatarId() {
         return conversationAvatar;
+    }
+
+    public void setAvatarId(String avatarId) {
+        conversationAvatar = avatarId;
     }
 
     public String getCreatorId() {
@@ -319,163 +324,6 @@ public class Conversation extends ExpandModel {
 
         public ForwardBody(String conversationId) {
             this.conversationId = conversationId;
-        }
-    }
-
-    public static class SignalBody {
-        @SerializedName("hoi_thoai_id")
-        private String id;
-        @SerializedName("anh_dai_dien")
-        private String avatar;
-        @SerializedName("nguoi_tao_id")
-        private String creatorId;
-        @SerializedName("ten_hoi_thoai")
-        private String groupName;
-        @SerializedName("nhan_vien_hoi_thoai")
-        private ArrayList<ConversationUser.SignalrBody> member;
-
-        @SerializedName("ten_nhom_lien_lac")
-        private String regularName;
-        @SerializedName("nhan_viens")
-        private ArrayList<User> regularUser;
-
-        @SerializedName("ghim_tin_nhan")
-        private boolean isAllowPinMessage;
-        @SerializedName("phe_duyet_thanh_vien")
-        private boolean isAllowApproved;
-        @SerializedName("phan_hoi_tin_nhan")
-        private boolean isAllowSendMessage;
-        @SerializedName("thay_doi_thong_tin")
-        private boolean isChangeInform;
-        @SerializedName("check_exist")
-        private boolean checkExist;
-
-        @SerializedName("nhom_lien_lac_id")
-        private String regularGroupId;
-
-        public SignalBody() {
-            creatorId = "";
-            member = new ArrayList<>();
-            isAllowPinMessage = true;
-            isAllowApproved = false;
-            isAllowSendMessage = true;
-            isChangeInform = true;
-        }
-
-        public SignalBody(String id, String name, String avatarId) {
-            creatorId = "";
-            member = new ArrayList<>();
-            member.add(new ConversationUser.SignalrBody(id));
-            groupName = name;
-            avatar = avatarId;
-
-            isAllowPinMessage = true;
-            isAllowApproved = false;
-            isAllowSendMessage = true;
-            isChangeInform = true;
-        }
-
-        public void setCheckExist(boolean checkExist) {
-            this.checkExist = checkExist;
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public String getAvatar() {
-            return avatar;
-        }
-
-        public void setAvatar(String avatar) {
-            this.avatar = avatar;
-        }
-
-        public String getCreatorId() {
-            return creatorId;
-        }
-
-        public void setCreatorId(String creatorId) {
-            this.creatorId = creatorId;
-        }
-
-        public String getGroupName() {
-            return groupName;
-        }
-
-        public void setGroupName(String groupName) {
-            this.groupName = groupName;
-        }
-
-        public String getRegularName() {
-            if (regularName == null) return regularName = "";
-            return regularName;
-        }
-
-        public ArrayList<User> getRegularUser() {
-            if (regularUser == null) return regularUser = new ArrayList<>();
-            return regularUser;
-        }
-
-        public void setRegularUser(ArrayList<User> regularUser) {
-            this.regularUser = regularUser;
-        }
-
-        public String getRegularGroupId() {
-            return regularGroupId;
-        }
-
-        public void setRegularGroupId(String regularGroupId) {
-            this.regularGroupId = regularGroupId;
-        }
-
-        public void setRegularName(String regularName) {
-            this.regularName = regularName;
-        }
-
-        public ArrayList<ConversationUser.SignalrBody> getMember() {
-            return member;
-        }
-
-        public void setMember(ArrayList<ConversationUser.SignalrBody> list) {
-            member.clear();
-            member.addAll(list);
-        }
-
-        public boolean isAllowPinMessage() {
-            return isAllowPinMessage;
-        }
-
-        public void setAllowPinMessage(boolean allowPinMessage) {
-            isAllowPinMessage = allowPinMessage;
-        }
-
-        public boolean isAllowApproved() {
-            return isAllowApproved;
-        }
-
-        public void setAllowApproved(boolean allowApproved) {
-            isAllowApproved = allowApproved;
-        }
-
-        public boolean isAllowSendMessage() {
-            return isAllowSendMessage;
-        }
-
-        public void setAllowSendMessage(boolean allowSendMessage) {
-            isAllowSendMessage = allowSendMessage;
-        }
-
-        public boolean isChangeInform() {
-            return isChangeInform;
-        }
-
-        public void setChangeInform(boolean changeInform) {
-            isChangeInform = changeInform;
         }
     }
 

@@ -34,6 +34,7 @@ import boilerplate.service.signalr.SignalRManager
 import boilerplate.service.signalr.SignalRResult
 import boilerplate.ui.conversationDetail.adpater.MessageAdapter
 import boilerplate.ui.conversationDetail.adpater.SimpleMessageEvent
+import boilerplate.ui.conversationInform.ConversationInformFragment
 import boilerplate.utils.StringUtil
 import boilerplate.utils.SystemUtil
 import boilerplate.utils.extension.ANIMATION_DELAY
@@ -45,6 +46,7 @@ import boilerplate.utils.extension.isTablet
 import boilerplate.utils.extension.isVisible
 import boilerplate.utils.extension.launch
 import boilerplate.utils.extension.notNull
+import boilerplate.utils.extension.open
 import boilerplate.utils.extension.sendResult
 import boilerplate.utils.extension.show
 import boilerplate.utils.extension.showDialog
@@ -236,6 +238,9 @@ class ConversationDetailFragment :
                     dimBehind()
                 }
             }
+            imgMenu.click {
+                open(split = true, fragment = ConversationInformFragment.newInstance())
+            }
         }
     }
 
@@ -276,8 +281,6 @@ class ConversationDetailFragment :
                     }
                 }
                 if (isInGroup) {
-//                        mView.hideErrorConnect()
-//                        mView.pinMessageToScreen(conversation.getPinMessage())
                     setupChatBox(it)
                 } else {
                     val leaveGroup: ConversationUser.LeaveGroup = ConversationUser.LeaveGroup(
@@ -297,7 +300,7 @@ class ConversationDetailFragment :
                     insertLoadMore(pair.first, pair.second)
                 }
             }
-            recevice.observe(this@ConversationDetailFragment) { count ->
+            receive.observe(this@ConversationDetailFragment) { count ->
                 if (count > 0 && !_isOnTop) {
                     binding.tvCountNewMessage.apply {
                         text = getString(R.string.new_message_count, count)
@@ -354,6 +357,8 @@ class ConversationDetailFragment :
                     )
                     if (editRect.contains(_pointClickX, _pointClickY)) {
                         editBox.getEditMessage().showKeyboard()
+                    } else {
+                        return false
                     }
                 } else {
                     return false
@@ -493,7 +498,7 @@ class ConversationDetailFragment :
             if (conversation.value != null && (conversation.value!!.totalMessage > hasRead)) {
                 hasRead = conversation.value!!.totalMessage
                 SignalRManager.sendLastTimeRead(conversationId, Date(), hasRead, true)
-                recevice.postValue(0)
+                receive.postValue(0)
             }
         }
     }
@@ -504,30 +509,33 @@ class ConversationDetailFragment :
     }
 
     private fun showCountMessage() {
-        _viewModel.recevice.let { it.postValue(it.value?.plus(1) ?: 0) }
+        _viewModel.receive.let { it.postValue(it.value?.plus(1) ?: 0) }
     }
 
     private fun listenerToSignalR() {
         SignalRManager.addController(this.javaClass.simpleName)
             .setListener(object : SignalRImpl() {
                 override fun newMessage(message: Message) {
-                    _viewModel.conversation.value?.totalMessage = message.conversation.totalMessage
-                    if (_isGotoMessage) {
-                        showCountMessage()
-                    } else {
-                        _adapter.newMessage(message)
-                        if (_isOnTop) {
-                            snapScrollPosition(0)
-                            syncReadMessage()
-                        } else {
+                    checkCurrentConversation(message.conversationId) {
+                        _viewModel.conversation.value?.totalMessage =
+                            message.conversation.totalMessage
+                        if (_isGotoMessage) {
                             showCountMessage()
+                        } else {
+                            _adapter.newMessage(message)
+                            if (_isOnTop) {
+                                snapScrollPosition(0)
+                                syncReadMessage()
+                            } else {
+                                showCountMessage()
+                            }
                         }
                     }
                 }
 
                 override fun sendMessage(sendMessage: Message.SendMessageResult) {
                     sendMessage.entity.notNull {
-                        if (it.conversationId.equals(_viewModel.conversationId)) {
+                        checkCurrentConversation(it.conversationId) {
                             if (it.status == 1 || it.status == 0) {
                                 if (!_isGotoMessage) {
                                     _adapter.newMessage(it)
@@ -717,11 +725,7 @@ class ConversationDetailFragment :
                 newList.add(pin.attachedFiles[0])
                 pickerPin.apply {
                     show()
-                    addFile(
-                        pin.attachedFiles[0],
-                        sizeText = size,
-                        padding = 5
-                    ) {
+                    addFile(pin.attachedFiles[0], sizeText = size) {
                         root.performClick()
                     }
                 }

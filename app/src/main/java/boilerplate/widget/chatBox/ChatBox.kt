@@ -21,6 +21,7 @@ import boilerplate.model.message.Quote
 import boilerplate.model.user.User
 import boilerplate.utils.StringUtil
 import boilerplate.utils.SystemUtil
+import boilerplate.utils.extension.addListener
 import boilerplate.utils.extension.click
 import boilerplate.utils.extension.gone
 import boilerplate.utils.extension.hideKeyboard
@@ -83,14 +84,10 @@ class ChatBox @JvmOverloads constructor(
                     KeyboardReceiver()
                 )
                 textSize = SystemUtil.getFontSizeChat(context)
-                addTextChangedListener(BoxTextWatcher.watcher(
-                    change = {
-                        handleInputMention(it)
-                    },
-                    after = {
-                        checkSendButton(it.toString())
-                    }
-                ))
+                addListener(
+                    change = { handleInputMention(it) },
+                    after = { checkSendButton(it.toString()) }
+                )
                 setListener(object : EditTextFont.SimpleEvent() {
                     override fun onPaste() {
                         val clipboard =

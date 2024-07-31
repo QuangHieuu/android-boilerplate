@@ -22,7 +22,6 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Android Boilerplate"
-include(":permission")
 include(":signalr-client-sdk")
 include(":excel-to-pdf")
 include(":app")

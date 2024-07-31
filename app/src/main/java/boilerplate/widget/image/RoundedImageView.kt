@@ -33,7 +33,7 @@ class RoundedImageView @JvmOverloads constructor(
             context.obtainStyledAttributes(attrs, R.styleable.RoundedImageView, defStyleAttr, 0)
         this.adjustViewBounds = typedArray.getBoolean(
             R.styleable.RoundedImageView_android_adjustViewBounds,
-            true
+            false
         )
         val radius = typedArray.getDimension(R.styleable.RoundedImageView_radius, 0f)
         val topLeftRadius =

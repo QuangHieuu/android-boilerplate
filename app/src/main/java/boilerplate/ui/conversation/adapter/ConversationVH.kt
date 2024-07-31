@@ -14,7 +14,6 @@ import boilerplate.model.conversation.Conversation
 import boilerplate.model.conversation.ConversationUser
 import boilerplate.model.message.Message
 import boilerplate.utils.DateTimeUtil
-import boilerplate.utils.ImageUtil.IMAGE_THUMB_SIZE
 import boilerplate.utils.StringUtil
 import boilerplate.utils.SystemUtil.getFontSizeChat
 import boilerplate.utils.extension.click
@@ -93,7 +92,7 @@ class ConversationVH(
 
         setFontSize()
         val isGroup = con!!.isGroup()
-        val thumb = con.getThumb(IMAGE_THUMB_SIZE)
+        val thumb = con.getThumb()
         val size = con.tongSoNhanVien
         val userSize = con.conversationUsers.size
         val isOneUser = size == 1
@@ -121,7 +120,7 @@ class ConversationVH(
             if (isGroup) {
                 if (thumb != null) {
                     val image = addSingleAvatar()
-                    image.loadImage(con.getThumb(IMAGE_THUMB_SIZE))
+                    image.loadImage(con.getThumb())
                 } else {
                     if (size == 1) {
                         addAvatar(1, size, null)

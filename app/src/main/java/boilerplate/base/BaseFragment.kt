@@ -1,18 +1,23 @@
 package boilerplate.base
 
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.contains
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
-import boilerplate.R
+import boilerplate.utils.extension.Permission
 import boilerplate.utils.extension.addTo
+import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.removeSelf
 import boilerplate.widget.loading.LoadingScreen
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -30,12 +35,29 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
 
     protected abstract val _viewModel: VM
 
+    private lateinit var _request: ActivityResultLauncher<Array<String>>
+    private var _blockGrand: (() -> Unit)? = null
+    private val _listRequest: ArrayList<Permission> = arrayListOf()
+
     @Suppress("UNCHECKED_CAST")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        _request = registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { result ->
+            result.notNull {
+                for (entry in it.entries) {
+                    _listRequest.removeIf { per -> per.name == entry.key && entry.value }
+                }
+                if (_listRequest.isEmpty()) {
+                    _blockGrand.notNull { it() }
+                    _blockGrand = null
+                }
+            }
+        }
         return javaClass.genericSuperclass.let { it as ParameterizedType }.actualTypeArguments[0]
             .let { it as Class<*> }.getMethod(
                 "inflate",
@@ -50,11 +72,6 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        view.apply {
-            setBackgroundResource(R.color.colorAppBackground)
-            isClickable = true
-            isFocusable = true
-        }
 
         with(_viewModel) {
             loading.observe(viewLifecycleOwner) { show ->
@@ -78,6 +95,9 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
 
     override fun onDestroyView() {
         _binding = null
+        _blockGrand = null
+        _request.unregister()
+        _listRequest.clear()
         super.onDestroyView()
         clearAdjustSoftInput()
         _disposable.apply {
@@ -95,7 +115,7 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
     protected abstract fun callApi()
 
     protected fun popFragment() {
-        requireActivity().supportFragmentManager.popBackStack()
+        parentFragmentManager.popBackStack()
     }
 
     protected fun launchDisposable(vararg job: Disposable) {
@@ -137,5 +157,28 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
                 )
             }
         }
+    }
+
+    fun permission(permissions: Array<String>, grand: () -> Unit) {
+        _blockGrand = grand
+        for (permission in permissions) {
+            if (isGranted(permission)) {
+                continue
+            }
+            _listRequest.add(Permission(permission, false))
+        }
+        if (_listRequest.isEmpty()) {
+            _blockGrand.notNull { it() }
+            _blockGrand = null
+        } else {
+            _request.launch(_listRequest.map { it.name }.toTypedArray())
+        }
+    }
+
+    private fun isGranted(permission: String): Boolean {
+        return ContextCompat.checkSelfPermission(
+            requireActivity(),
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
     }
 }

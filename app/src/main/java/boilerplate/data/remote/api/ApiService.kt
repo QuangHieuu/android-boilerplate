@@ -2,10 +2,15 @@ package boilerplate.data.remote.api
 
 import boilerplate.data.remote.api.response.BaseResponse
 import boilerplate.data.remote.api.response.BaseResult
+import boilerplate.data.remote.api.response.BaseResults
 import boilerplate.model.conversation.Conversation
+import boilerplate.model.conversation.ConversationConfig
+import boilerplate.model.conversation.SignalBody
 import boilerplate.model.dashboard.Banner
 import boilerplate.model.dashboard.Dashboard
 import boilerplate.model.device.Device
+import boilerplate.model.file.AttachedFile
+import boilerplate.model.file.UploadFile
 import boilerplate.model.login.LoginRes
 import boilerplate.model.message.Message
 import boilerplate.model.user.Company
@@ -13,13 +18,17 @@ import boilerplate.model.user.Department
 import boilerplate.model.user.User
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Single
+import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Headers
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -97,6 +106,43 @@ interface ConversationService {
         @Query("tinnhanId") lastMessage: String,
         @Query("isDesc") isDesc: Boolean
     ): Flowable<BaseResult<Message>>
+
+    @GET("hoithoai/configuration")
+    fun getConversationConfig(): Single<ConversationConfig>
+
+    /**
+     * @param type Loại file (0: image, 1: files)
+     */
+    @GET("hoithoai/{id}/filedinhkem")
+    fun getConversationFile(
+        @Path("id") conversationId: String?,
+        @Query("type") type: Int,
+        @Query("page") page: Int,
+        @Query("limit") limit: Int
+    ): Single<BaseResult<AttachedFile.Conversation>>
+
+    @GET("tinnhan/link")
+    fun getConversationLink(
+        @Query("hoiThoaiId") conversationId: String?,
+        @Query("tinNhanId") page: String?,
+        @Query("limit") limit: Int
+    ): Single<BaseResult<Message>>
+
+    @PUT("hoithoai")
+    fun putUpdateGroup(
+        @Query("connectionId") id: String?,
+        @Body body: SignalBody
+    ): Flowable<BaseResult<Any>>
+
+    @Multipart
+    @POST("file/chat")
+    @Headers("api-version: 1")
+    fun postConversationFile(@Part files: List<MultipartBody.Part>): Flowable<BaseResults<UploadFile>>
+
+    @Multipart
+    @POST("file/chat")
+    @Headers("api-version: 1")
+    fun postConversationFile(@Part files: MultipartBody.Part): Flowable<BaseResults<UploadFile>>
 }
 
 interface ApiService :

@@ -6,7 +6,6 @@ import boilerplate.di.contextRequireModule
 import boilerplate.di.remoteModule
 import boilerplate.di.repositoryModule
 import boilerplate.di.viewModelModule
-import it.cpc.vn.permission.PermissionUtils
 import microsoft.aspnet.signalr.client.Logger
 import microsoft.aspnet.signalr.client.Platform
 import microsoft.aspnet.signalr.client.PlatformComponent
@@ -27,7 +26,6 @@ class BaseApp : Application() {
         super.onCreate()
         sInstance = this
 
-        PermissionUtils.initPermissionCheck()
         Platform.loadPlatformComponent(object : PlatformComponent {
             override fun createHttpConnection(logger: Logger): HttpConnection {
                 return JavaHttpConnection(logger)

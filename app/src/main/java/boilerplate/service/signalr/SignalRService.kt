@@ -10,6 +10,7 @@ import boilerplate.data.remote.api.ApiUrl
 import boilerplate.model.conversation.Conversation
 import boilerplate.model.conversation.ConversationUser
 import boilerplate.model.conversation.ConversationUser.JoinGroup
+import boilerplate.model.conversation.SignalBody
 import boilerplate.model.message.Message
 import boilerplate.utils.InternetManager
 import boilerplate.utils.StringUtil
@@ -119,7 +120,6 @@ class SignalRService : Service() {
             }
             _chatHub.notNull {
                 if (it.state == ConnectionState.Disconnected) {
-                    Log.d(TAG, "check: reconnect " + it.state)
                     reconnect()
                     return@doOnNext
                 }
@@ -162,8 +162,7 @@ class SignalRService : Service() {
                     bearerToken = token
                     start(_chatTransport)
                 }
-                val boolean = _disposable.add(_subscription.subscribe())
-                Log.d(TAG, "start: " + boolean)
+                _disposable.add(_subscription.subscribe())
             }
         }
     }
@@ -229,7 +228,7 @@ class SignalRService : Service() {
         }
     }
 
-    fun createConversation(conversation: Conversation.SignalBody) {
+    fun createConversation(conversation: SignalBody) {
         _chatProxy.notNull {
             it.invoke(SERVER_METHOD_CREATE_CONVERSATION, conversation)
                 .onError {
@@ -292,7 +291,7 @@ class SignalRService : Service() {
         }
     }
 
-    fun addMember(conversationId: String?, list: ArrayList<ConversationUser.SignalrBody>) {
+    fun addMember(conversationId: String?, list: ArrayList<SignalBody.ConversationUser>) {
         _chatProxy.notNull {
             it.invoke(SERVER_METHOD_ADD_MEMBER, conversationId, list)
                 .onError { sendResult(SignalRResult.ADD_MEMBER, SignalRResult.ERROR.key) }
@@ -303,7 +302,7 @@ class SignalRService : Service() {
     fun approveMemberOrNot(
         isApprove: Boolean,
         conversationId: String?,
-        list: ArrayList<ConversationUser.SignalrBody>
+        list: ArrayList<SignalBody.ConversationUser>
     ) {
         _chatProxy.notNull {
             it.invoke(SERVER_METHOD_APPROVE_MEMBER, conversationId, isApprove, list)

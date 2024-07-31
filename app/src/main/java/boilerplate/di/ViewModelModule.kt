@@ -10,7 +10,7 @@ import org.koin.dsl.module
 
 val viewModelModule = module {
     viewModel { MainVM(get(), get(), get(), get(), get()) }
-    viewModel { StartVM(get(), get(), get(), get(), get()) }
+    viewModel { StartVM(get(), get(), get(), get(), get(), get()) }
     viewModel { DashboardVM(get(), get()) }
     viewModel { ContactVM(get(), get()) }
     viewModel { ConversationVM(get(), get(), get(), get()) }
