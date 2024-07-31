@@ -1,12 +1,12 @@
 package boilerplate.ui.conversationDetail
 
-import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import boilerplate.base.BaseViewModel
 import boilerplate.data.local.repository.user.UserRepository
 import boilerplate.data.remote.api.response.BaseResult
 import boilerplate.data.remote.repository.conversation.ConversationRepository
+import boilerplate.data.remote.repository.file.FileRepository
 import boilerplate.model.conversation.Conversation
 import boilerplate.model.conversation.SignalBody
 import boilerplate.model.file.AttachedFile
@@ -29,9 +29,9 @@ import java.util.Date
 import java.util.TreeMap
 
 class ConversationVM(
-    private val application: Application,
     private val schedulerProvider: BaseSchedulerProvider,
     private val conversationRepo: ConversationRepository,
+    private val fileRepo: FileRepository,
     userRepo: UserRepository,
 ) : BaseViewModel() {
 
@@ -64,6 +64,9 @@ class ConversationVM(
     val fileAttach = _fileAttach
     private val _linkAttach by lazy { MutableLiveData<ArrayList<Message>>() }
     val linkAttach = _linkAttach
+
+    private val _checkMember by lazy { MutableLiveData<Boolean>() }
+    val checkMember = _checkMember
 
     var changeConversationAvatar: Uri? = null
     var changeConversationName: String? = null
@@ -197,10 +200,10 @@ class ConversationVM(
     }
 
     fun getConversationFile() {
-        val image = conversationRepo.getConversationFile(conversationId, 0, 1, 6)
+        val image = fileRepo.getConversationFile(conversationId, 0, 1, 6)
             .doOnSuccess { _fileImage.postValue(it.result?.items.ifEmpty()) }
             .doOnError { _fileImage.postValue(arrayListOf()) }
-        val file = conversationRepo.getConversationFile(conversationId, 1, 1, 3)
+        val file = fileRepo.getConversationFile(conversationId, 1, 1, 3)
             .doOnSuccess { _fileAttach.postValue(it.result?.items.ifEmpty()) }
             .doOnError { _fileAttach.postValue(arrayListOf()) }
         val link = conversationRepo.getConversationLink(conversationId, "", 4)
@@ -228,9 +231,9 @@ class ConversationVM(
                     if (file is String) {
                         Flowable.just("")
                     } else {
-                        conversationRepo.postFile(file as MultipartBody.Part)
+                        fileRepo.postFile(file as MultipartBody.Part)
                             .map { res ->
-                                res.result?.convertFile()?.apply {
+                                res.result.convertFile().apply {
                                     _conversation.value?.avatarId = get(0).id
                                 }.ifEmpty()
                             }
@@ -268,6 +271,18 @@ class ConversationVM(
                 list.add(SignalBody.ConversationUser(user.user.id))
             }
             member = list
+        }
+    }
+
+    fun getMember() {
+        launchDisposable {
+            conversationRepo.getMemberConversation(conversationId, 1, null, false, 1200)
+                .withScheduler(schedulerProvider)
+                .loading(_loading)
+                .result(
+                    { _checkMember.postValue(it.result?.let { it.total > 0 }) },
+                    { _checkMember.postValue(null) }
+                )
         }
     }
 }

@@ -27,6 +27,7 @@ import boilerplate.service.signalr.SignalRImpl
 import boilerplate.service.signalr.SignalRManager
 import boilerplate.ui.conversationDetail.ConversationDetailFragment
 import boilerplate.ui.conversationDetail.ConversationVM
+import boilerplate.ui.conversationSetting.ConversationSettingFragment
 import boilerplate.utils.ClickUtil
 import boilerplate.utils.ImageUtil
 import boilerplate.utils.extension.PERMISSION_STORAGE
@@ -38,6 +39,7 @@ import boilerplate.utils.extension.findOwner
 import boilerplate.utils.extension.gone
 import boilerplate.utils.extension.loadImage
 import boilerplate.utils.extension.notNull
+import boilerplate.utils.extension.open
 import boilerplate.utils.extension.show
 import boilerplate.utils.extension.showDialog
 import boilerplate.utils.extension.showSnackBarFail
@@ -60,7 +62,7 @@ class ConversationInformFragment :
         }
     }
 
-    override val _viewModel: ConversationVM by viewModel(ownerProducer = {
+    override val viewModel: ConversationVM by viewModel(ownerProducer = {
         findOwner(ConversationDetailFragment::class.java.simpleName)
     })
 
@@ -96,7 +98,7 @@ class ConversationInformFragment :
 
     override fun onSubscribeObserver() {
         listenerToSignalR()
-        with(_viewModel) {
+        with(viewModel) {
             conversation.observe(this@ConversationInformFragment) {
                 if (it.isGroup()) {
                     validate(it)
@@ -164,7 +166,7 @@ class ConversationInformFragment :
             }
             changeConfig.observe(this@ConversationInformFragment) {
                 if (it != null) {
-                    _viewModel.conversation.postValue(it)
+                    viewModel.conversation.postValue(it)
                     binding.root.showSnackBarSuccess(R.string.success_update)
                 }
             }
@@ -192,7 +194,7 @@ class ConversationInformFragment :
                 imgFileImageDrop.rotation = (if (frameContentImage.isShown()) 270 else 0).toFloat()
                 frameContentImage.show(!frameContentImage.isShown())
                 tvMoreImage.show(
-                    (_viewModel.fileImage.value?.size ?: 0) > 1 && frameContentImage.isShown()
+                    (viewModel.fileImage.value?.size ?: 0) > 1 && frameContentImage.isShown()
                 )
             }
             imgFileDrop.setOnClickListener { tvFile.performClick() }
@@ -200,7 +202,7 @@ class ConversationInformFragment :
                 imgFileImageDrop.rotation = (if (frameContentFile.isShown()) 270 else 0).toFloat()
                 frameContentFile.show(!frameContentFile.isShown())
                 tvMoreFile.show(
-                    (_viewModel.fileAttach.value?.size ?: 0) > 1 && frameContentFile.isShown()
+                    (viewModel.fileAttach.value?.size ?: 0) > 1 && frameContentFile.isShown()
                 )
             }
             imgLinkDrop.setOnClickListener { tvLink.performClick() }
@@ -208,7 +210,7 @@ class ConversationInformFragment :
                 imgLinkDrop.rotation = (if (frameContentLink.isShown()) 270 else 0).toFloat()
                 frameContentLink.show(!frameContentLink.isShown())
                 tvMoreLink.show(
-                    (_viewModel.linkAttach.value?.size ?: 0) > 1 && frameContentLink.isShown()
+                    (viewModel.linkAttach.value?.size ?: 0) > 1 && frameContentLink.isShown()
                 )
             }
 
@@ -217,7 +219,7 @@ class ConversationInformFragment :
     }
 
     override fun callApi() {
-        _viewModel.getConversationFile()
+        viewModel.getConversationFile()
     }
 
     private fun validate(conversation: Conversation) {
@@ -226,7 +228,7 @@ class ConversationInformFragment :
         } else {
             var isAllowChangeInform = true
             for (item in conversation.getConversationUsers()) {
-                if (item.user.id == _viewModel.user.id) {
+                if (item.user.id == viewModel.user.id) {
                     val role: Int = item.getVaiTro()
                     if (ConversationRole.fromType(role) === ConversationRole.MEMBER) {
                         isAllowChangeInform = item.isAllowSendMessage
@@ -302,7 +304,7 @@ class ConversationInformFragment :
                             }
                         }
                     } else {
-                        if (userSize > 0 && !user.user.id.equals(_viewModel.user.id)
+                        if (userSize > 0 && !user.user.id.equals(viewModel.user.id)
                         ) {
                             onlyContainMe = false
                             builder.append(user.user.name)
@@ -312,8 +314,8 @@ class ConversationInformFragment :
                     }
                 }
                 if (onlyContainMe) {
-                    addSingleAvatar().loadImage(_viewModel.user.avatar)
-                    builder.append(_viewModel.user.name)
+                    addSingleAvatar().loadImage(viewModel.user.avatar)
+                    builder.append(viewModel.user.name)
                     frameUserOnline.gone()
                 }
                 tvConversationName.text = builder
@@ -415,10 +417,12 @@ class ConversationInformFragment :
                 ))
                 lnInform.addView(initRowInform(
                     R.drawable.ic_inform_setting,
-                    getString(R.string.group_setting),
+                    getString(R.string.conversation_setting),
                     R.color.colorBlack,
                     R.drawable.bg_circle,
-                    ClickUtil.onClick { }
+                    ClickUtil.onClick {
+                        open(split = true, fragment = ConversationSettingFragment.newInstance())
+                    }
                 ))
             }
             lnInform.addView(initRowInform(
@@ -442,7 +446,7 @@ class ConversationInformFragment :
                 lnSetting.removeAllViews()
 
                 for (item in conversation.conversationUsers) {
-                    if (item.user.id.equals(_viewModel.user.id)) {
+                    if (item.user.id.equals(viewModel.user.id)) {
                         val notifyString = getString(
                             if (item.isOffNotify) R.string.turn_on_notify
                             else R.string.turn_off_notify
@@ -469,7 +473,7 @@ class ConversationInformFragment :
 //            R.drawable.bg_circle_red_opacity,
 //            v -> mListener.onDeleteAllMessage()
 //        ));
-                if (conversation.isGroup() && _viewModel.config.isAllowLeftGroup) {
+                if (conversation.isGroup() && viewModel.config.isAllowLeftGroup) {
                     lnSetting.addView(initRowInform(
                         R.drawable.ic_leave,
                         getString(R.string.leave_group),
@@ -518,11 +522,11 @@ class ConversationInformFragment :
 
     private fun handleNotifyOnOff(conversationId: String) {
         checkCurrentConversation(conversationId) {
-            _viewModel.conversation.value?.apply {
+            viewModel.conversation.value?.apply {
                 val listIterator = conversationUsers.listIterator()
                 while (listIterator.hasNext()) {
                     val user = listIterator.next()
-                    if (user.user.id.equals(_viewModel.user.id)) {
+                    if (user.user.id.equals(viewModel.user.id)) {
                         user.isOffNotify = !user.isOffNotify
 
                         val notifyString = getString(
@@ -551,7 +555,7 @@ class ConversationInformFragment :
     }
 
     private fun checkCurrentConversation(id: String, block: () -> Unit) {
-        if (_viewModel.conversationId == id) {
+        if (viewModel.conversationId == id) {
             block()
         }
     }
@@ -560,7 +564,7 @@ class ConversationInformFragment :
         _leaveInSilent = false
         var isMain = false
         for (item in conversation.conversationUsers) {
-            if (item.user.id.equals(_viewModel.user.id)) {
+            if (item.user.id.equals(viewModel.user.id)) {
                 val role = item.getVaiTro()
                 isMain = ConversationRole.fromType(role).type == ConversationRole.MAIN.type
                 break
@@ -583,8 +587,8 @@ class ConversationInformFragment :
                 btnConfirm.apply {
                     setText(R.string.leave_group)
                     click {
-                        _viewModel.setLoading(true)
-                        SignalRManager.leaveGroup(_viewModel.conversationId, /*_leaveInSilent*/true)
+                        viewModel.setLoading(true)
+                        SignalRManager.leaveGroup(viewModel.conversationId, /*_leaveInSilent*/true)
                     }
                 }
 
@@ -594,7 +598,7 @@ class ConversationInformFragment :
 
     private fun changeNotify(offNotify: Boolean) {
         if (offNotify) {
-            SignalRManager.turnNotifyConversation(_viewModel.conversationId, true)
+            SignalRManager.turnNotifyConversation(viewModel.conversationId, true)
         } else {
             showDialog(DialogBaseBinding.inflate(layoutInflater)) { vb, dialog ->
                 with(vb) {
@@ -609,7 +613,7 @@ class ConversationInformFragment :
                         click {
                             dialog.dismiss()
                             SignalRManager.turnNotifyConversation(
-                                _viewModel.conversationId,
+                                viewModel.conversationId,
                                 false
                             )
                         }
@@ -631,7 +635,7 @@ class ConversationInformFragment :
                         picker.launch(intentOpenOthers)
                     }
                 }
-                if (!_viewModel.conversation.value?.conversationAvatar.isNullOrEmpty()) {
+                if (!viewModel.conversation.value?.conversationAvatar.isNullOrEmpty()) {
                     val size = resources.getDimension(R.dimen.dp_21).toInt()
                     val padding = resources.getDimension(R.dimen.dp_5).toInt()
                     (imgPick.layoutParams as FrameLayout.LayoutParams).let { pick ->
@@ -642,20 +646,20 @@ class ConversationInformFragment :
                         imgPick.layoutParams = pick
                     }
                     imgPick.setPadding(padding, padding, padding, padding)
-                    imgAvatar.loadImage(_viewModel.conversation.value?.thumb)
+                    imgAvatar.loadImage(viewModel.conversation.value?.thumb)
                 }
 
                 edtName.apply {
-                    setText(_viewModel.conversation.value?.conversationName)
-                    addListener(change = { _viewModel.changeConversationName = it.toString() })
+                    setText(viewModel.conversation.value?.conversationName)
+                    addListener(change = { viewModel.changeConversationName = it.toString() })
                 }
                 btnCancel.click {
-                    _viewModel.cancelChangeConversationInform()
+                    viewModel.cancelChangeConversationInform()
                     dialog.dismiss()
                 }
                 btnConfirm.click {
                     dialog.dismiss()
-                    _viewModel.changeConversationInform()
+                    viewModel.changeConversationInform()
                 }
             }
         }
@@ -667,7 +671,7 @@ class ConversationInformFragment :
                 val uri = result.data
                 if (uri != null) {
                     try {
-                        _viewModel.changeConversationAvatar = uri
+                        viewModel.changeConversationAvatar = uri
 
                         val size = resources.getDimension(R.dimen.dp_21).toInt()
                         val padding = resources.getDimension(R.dimen.dp_5).toInt()

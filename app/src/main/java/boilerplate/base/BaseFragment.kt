@@ -19,6 +19,7 @@ import boilerplate.utils.extension.Permission
 import boilerplate.utils.extension.addTo
 import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.removeSelf
+import boilerplate.utils.extension.showSnackBarFail
 import boilerplate.widget.loading.LoadingScreen
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -33,7 +34,7 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
     private val _loadingScreen: LoadingScreen by lazy { LoadingScreen(requireActivity()) }
     private val _disposable: CompositeDisposable by lazy { CompositeDisposable() }
 
-    protected abstract val _viewModel: VM
+    protected abstract val viewModel: VM
 
     private lateinit var _request: ActivityResultLauncher<Array<String>>
     private var _blockGrand: (() -> Unit)? = null
@@ -73,7 +74,7 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        with(_viewModel) {
+        with(viewModel) {
             loading.observe(viewLifecycleOwner) { show ->
                 if (view is ViewGroup) {
                     if (show && isVisible) {
@@ -84,6 +85,9 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
                         _loadingScreen.removeSelf()
                     }
                 }
+            }
+            error.observe(viewLifecycleOwner) {
+                binding.root.showSnackBarFail(it)
             }
         }
 

@@ -21,7 +21,7 @@ class ContactFragment : BaseFragment<FragmentContactBinding, MainVM>() {
         }
     }
 
-    override val _viewModel: MainVM by activityViewModels()
+    override val viewModel: MainVM by activityViewModels()
 
     private lateinit var _adapter: HomePagerAdapter
 

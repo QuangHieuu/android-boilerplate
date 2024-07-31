@@ -1,9 +1,12 @@
 package boilerplate.base
 
-import android.content.res.Resources
+import android.app.Application
+import android.content.Intent
+import android.os.Bundle
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import boilerplate.R
 import boilerplate.data.remote.api.ApiObservable
 import boilerplate.data.remote.api.OnApiCallBack
@@ -17,20 +20,18 @@ import kotlinx.coroutines.Job
 import org.koin.java.KoinJavaComponent
 
 abstract class BaseViewModel() : ViewModel() {
-    init {
-        val gson: Gson by KoinJavaComponent.inject(Gson::class.java)
-        setApiCallback(gson)
+    val gson: Gson by KoinJavaComponent.inject<Gson>(Gson::class.java).also {
+        setApiCallback(it.value)
+
     }
+
+    val application: Application by KoinJavaComponent.inject(Application::class.java)
 
     val limit: Int by KoinJavaComponent.inject(Int::class.java)
 
     protected val _loading by lazy { MutableLiveData<Boolean>() }
     val loading: LiveData<Boolean> = _loading
 
-    protected val _inValidLogin by lazy { MutableLiveData<Boolean>() }
-    val inValidaLogin: LiveData<Boolean> = _inValidLogin
-    protected val _inValidToken by lazy { MutableLiveData<Boolean>() }
-    val inValidaToken: LiveData<Boolean> = _inValidToken
     protected val _error by lazy { MutableLiveData<String>() }
     val error = _error
 
@@ -56,25 +57,31 @@ abstract class BaseViewModel() : ViewModel() {
     private fun setApiCallback(gson: Gson) {
         ApiObservable.setServerResponseListener(object : OnApiCallBack {
             override fun notInternet() {
-                _error.postValue(Resources.getSystem().getString(R.string.error_no_connection))
+                _error.postValue(application.getString(R.string.error_no_connection))
             }
 
             override fun invalidLogin() {
-                _inValidLogin.postValue(true)
+                _error.postValue(application.getString(R.string.error_auth_wrong))
             }
 
             override fun invalidToken() {
-                _inValidToken.postValue(true)
+                Intent(BaseApp.APP_FILTER_INVALID)
+                    .apply {
+                        putExtra(BaseApp.APP_FILTER_INVALID, Bundle().apply {
+                            putExtra(BaseApp.APP_FILTER_INVALID, true)
+                        })
+                    }
+                    .let { LocalBroadcastManager.getInstance(application).sendBroadcast(it) }
             }
 
             override fun onServerError(errorCode: Int, api: String, showError: Boolean) {
                 if (errorCode >= 500) {
-                    _error.postValue(Resources.getSystem().getString(R.string.error_general))
+                    _error.postValue(application.getString(R.string.error_general))
 //                    Firebase.reportServerError(this, api, AccountManager.getUsername(this))
                     return
                 }
                 if (showError && InternetManager.isConnected()) {
-                    _error.postValue(Resources.getSystem().getString(R.string.error_general))
+                    _error.postValue(application.getString(R.string.error_general))
                 }
             }
         }, gson)

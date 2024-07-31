@@ -36,7 +36,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding, MainVM>() {
         }
     }
 
-    override val _viewModel: MainVM by activityViewModels()
+    override val viewModel: MainVM by activityViewModels()
 
     private var _margin by Delegates.notNull<Int>()
     private val _buttonIDs = intArrayOf(0, 0, 0, 0)
@@ -90,7 +90,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding, MainVM>() {
     }
 
     override fun onSubscribeObserver() {
-        with(_viewModel) {
+        with(viewModel) {
             user.observe(this@SettingFragment) {
                 val avatar: RoundedImageView = binding.root.findViewById(R.id.img_avatar)
                 val name: TextViewFont = binding.root.findViewById(R.id.tv_name)
@@ -154,7 +154,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding, MainVM>() {
                         btnCancel.click { dialog.dismiss() }
                         btnConfirm.click {
                             dialog.dismiss()
-                            _viewModel.logout()
+                            viewModel.logout()
                         }
                     }
                 }

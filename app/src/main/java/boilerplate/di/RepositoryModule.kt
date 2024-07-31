@@ -14,6 +14,8 @@ import boilerplate.data.remote.repository.conversation.ConversationRepository
 import boilerplate.data.remote.repository.conversation.ConversationRepositoryImpl
 import boilerplate.data.remote.repository.dashboard.DashboardImpl
 import boilerplate.data.remote.repository.dashboard.DashboardRepository
+import boilerplate.data.remote.repository.file.FileImpl
+import boilerplate.data.remote.repository.file.FileRepository
 import com.google.gson.Gson
 import org.koin.dsl.module
 
@@ -24,6 +26,7 @@ val repositoryModule = module {
     single { providerLoginRepository(get(), get()) }
     single { providerConversationRepository(get(), get(), get()) }
     single { providerDashBoard(get()) }
+    single { providerFile(get()) }
 }
 
 fun provideUserRepository(
@@ -59,4 +62,8 @@ fun providerConversationRepository(
 
 fun providerDashBoard(apiRequest: ApiRequest): DashboardRepository {
     return DashboardImpl(apiRequest)
+}
+
+fun providerFile(apiRequest: ApiRequest): FileRepository {
+    return FileImpl(apiRequest)
 }

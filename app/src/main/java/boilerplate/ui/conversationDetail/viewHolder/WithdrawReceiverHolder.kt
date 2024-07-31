@@ -22,7 +22,7 @@ class WithdrawReceiverHolder(
         changeSize()
         _tvContent.apply {
             show()
-            setText(R.string.text_message_is_already_withdraw)
+            setText(R.string.message_is_already_withdraw)
             setTextColor(ContextCompat.getColor(_binding.root.context, R.color.color_081C36))
             setAlpha(0.64f)
         }

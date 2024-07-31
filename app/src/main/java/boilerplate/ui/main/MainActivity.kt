@@ -122,6 +122,10 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
     override fun callApi() {
     }
 
+    override fun handleLogout() {
+        _viewModel.logout()
+    }
+
     private fun initHomepage() {
         with(binding) {
             if (isTablet()) {

@@ -20,6 +20,7 @@ class BaseApp : Application() {
 
     companion object {
         lateinit var sInstance: BaseApp
+        const val APP_FILTER_INVALID = "APP_FILTER_INVALID"
     }
 
     override fun onCreate() {

@@ -115,28 +115,21 @@ fun setCustomAnimations(
     when (animateType) {
         AnimateType.FADE -> {
             transaction.setCustomAnimations(
-                R.anim.fade_in, R.anim.stay,
-                R.anim.stay, R.anim.fade_out
+                R.anim.fade_in, R.anim.fade_out,
+                R.anim.fade_out, R.anim.fade_in
             )
         }
 
         AnimateType.SLIDE_TO_RIGHT -> {
             transaction.setCustomAnimations(
-                R.anim.enter_from_left, R.anim.stay,
-                R.anim.stay, R.anim.exit_to_left
-            )
-        }
-
-        AnimateType.BOTTOM_UP -> {
-            transaction.setCustomAnimations(
-                R.anim.fade_in, R.anim.stay,
-                R.anim.stay, R.anim.fade_out
+                R.anim.enter_from_left, R.anim.fade_out,
+                R.anim.fade_in, R.anim.exit_to_left
             )
         }
 
         AnimateType.SLIDE_TO_LEFT -> {
             transaction.setCustomAnimations(
-                R.anim.enter_from_right, R.anim.stay,
+                R.anim.enter_from_right, R.anim.fade_out,
                 R.anim.stay, R.anim.exit_to_right
             )
         }

@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:ignore="HardcodedText,SpUsage">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar_setting"
+        style="@style/AppToolbar"
+        android:layout_width="match_parent"
+        android:background="@color/colorPrimary"
+        app:layout_constraintBottom_toTopOf="@id/btn_disable"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_arrow_previous_white"
+        app:title="@string/conversation_setting" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_disable"
+        style="@style/StyleRegular"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/transparent"
+        android:enabled="false"
+        android:gravity="center"
+        android:padding="@dimen/dp_5"
+        android:text="Tính năng chỉ dành cho quản trị viên"
+        android:textSize="@dimen/dp_12"
+        android:visibility="gone"
+        app:icon="@drawable/ic_lock"
+        app:iconGravity="textStart"
+        app:iconPadding="@dimen/dp_10"
+        app:layout_constraintBottom_toTopOf="@id/ctl_setting_1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_setting" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/ctl_setting_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorWhite"
+        android:orientation="vertical"
+        android:padding="@dimen/dp_15"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_disable">
+
+        <boilerplate.widget.customText.TextViewFont
+            android:id="@+id/tv_title_setting_1"
+            style="@style/StyleBold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/conversation_title_setting_1"
+            android:textSize="@dimen/dp_14"
+            app:layout_constraintBottom_toTopOf="@id/tv_allow_change_name"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <boilerplate.widget.customText.TextViewFont
+            android:id="@+id/tv_allow_change_name"
+            style="@style/StyleRegular"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_18"
+            android:text="@string/conversation_setting_1"
+            android:textSize="@dimen/dp_14"
+            app:layout_constraintBottom_toTopOf="@id/tv_allow_pin_message"
+            app:layout_constraintEnd_toStartOf="@id/check_allow_change_name"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_title_setting_1" />
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/check_allow_change_name"
+            android:layout_width="@dimen/dp_18"
+            android:layout_height="0dp"
+            android:background="@drawable/state_checkbox_square"
+            android:button="@null"
+            android:paddingVertical="@dimen/dp_10"
+            app:layout_constraintBottom_toBottomOf="@id/tv_allow_change_name"
+            app:layout_constraintDimensionRatio="1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tv_allow_change_name"
+            app:layout_constraintTop_toTopOf="@id/tv_allow_change_name" />
+
+        <boilerplate.widget.customText.TextViewFont
+            android:id="@+id/tv_allow_pin_message"
+            style="@style/StyleRegular"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_18"
+            android:text="@string/conversation_setting_2"
+            android:textSize="@dimen/dp_14"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/check_allow_pin_message"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_allow_change_name" />
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/check_allow_pin_message"
+            android:layout_width="@dimen/dp_18"
+            android:layout_height="0dp"
+            android:background="@drawable/state_checkbox_square"
+            android:button="@null"
+            android:paddingVertical="@dimen/dp_10"
+            app:layout_constraintBottom_toBottomOf="@id/tv_allow_pin_message"
+            app:layout_constraintDimensionRatio="1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tv_allow_pin_message"
+            app:layout_constraintTop_toTopOf="@id/tv_allow_pin_message" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/crl_setting_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_6"
+        android:background="@color/colorWhite"
+        android:padding="@dimen/dp_15"
+        app:layout_constraintBottom_toTopOf="@id/ln_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ctl_setting_1">
+
+        <boilerplate.widget.customText.TextViewFont
+            android:id="@+id/tv_allow_approved"
+            style="@style/StyleRegular"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/conversation_setting_3"
+            android:textSize="@dimen/dp_14"
+            app:layout_constraintBottom_toTopOf="@id/tv_allow_send_message"
+            app:layout_constraintEnd_toStartOf="@id/sw_allow_approved"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/sw_allow_approved"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:thumb="@drawable/bg_switch_button_thumb"
+            app:layout_constraintBottom_toBottomOf="@id/tv_allow_approved"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tv_allow_approved"
+            app:layout_constraintTop_toTopOf="@id/tv_allow_approved"
+            app:track="@drawable/bg_switch_button_track"
+            app:useMaterialThemeColors="false" />
+
+        <boilerplate.widget.customText.TextViewFont
+            android:id="@+id/tv_allow_send_message"
+            style="@style/StyleRegular"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_18"
+            android:text="@string/conversation_setting_4"
+            android:textSize="@dimen/dp_14"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/sw_allow_send_message"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_allow_approved" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/sw_allow_send_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:thumb="@drawable/bg_switch_button_thumb"
+            app:layout_constraintBottom_toBottomOf="@id/tv_allow_send_message"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tv_allow_send_message"
+            app:layout_constraintTop_toTopOf="@id/tv_allow_send_message"
+            app:track="@drawable/bg_switch_button_track"
+            app:useMaterialThemeColors="false" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/ln_btn"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/dp_6"
+        android:background="@color/colorWhite"
+        android:orientation="vertical"
+        android:padding="@dimen/dp_15"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/crl_setting_2">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_leave"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_36"
+            android:background="@drawable/bg_corner_trans_red"
+            android:gravity="center"
+            android:text="@string/leave_group"
+            android:textColor="@color/color_E80808"
+            android:textSize="@dimen/dp_14"
+            android:textStyle="normal" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_delete"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_36"
+            android:layout_marginTop="@dimen/dp_15"
+            android:background="@drawable/bg_corner_trans_red"
+            android:gravity="center"
+            android:text="@string/dismiss_conversation"
+            android:textColor="@color/color_E80808"
+            android:textSize="@dimen/dp_14"
+            android:textStyle="normal" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/view_disable"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#A6FFFFFF"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/ln_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_disable" />
+</androidx.constraintlayout.widget.ConstraintLayout>

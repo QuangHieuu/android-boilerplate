@@ -1,14 +1,14 @@
 package boilerplate.data.remote.api.response
 
-open class BaseResult<T> {
-    val result: Result<T>? = null
-}
+data class BaseResult<T>(
+    var result: Result<T>? = null,
+)
 
-open class BaseResults<T> {
-    val result: ArrayList<T>? = null
-}
+data class BaseResults<T>(
+    var result: ArrayList<T> = arrayListOf()
+)
 
-class Result<T> {
-    val items: ArrayList<T> = arrayListOf()
-        get() = field
-}
+data class Result<T>(
+    var items: ArrayList<T> = arrayListOf(),
+    var total: Int = 0
+)

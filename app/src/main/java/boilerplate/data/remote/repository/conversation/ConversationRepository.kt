@@ -5,17 +5,14 @@ import boilerplate.data.local.repository.user.UserRepository
 import boilerplate.data.remote.api.ApiRequest
 import boilerplate.data.remote.api.response.BaseResponse
 import boilerplate.data.remote.api.response.BaseResult
-import boilerplate.data.remote.api.response.BaseResults
 import boilerplate.model.conversation.Conversation
 import boilerplate.model.conversation.ConversationConfig
 import boilerplate.model.conversation.SignalBody
-import boilerplate.model.file.AttachedFile
-import boilerplate.model.file.UploadFile
 import boilerplate.model.message.Message
+import boilerplate.model.user.User
 import boilerplate.utils.extension.checkInternet
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Single
-import okhttp3.MultipartBody
 
 interface ConversationRepository {
 
@@ -46,24 +43,21 @@ interface ConversationRepository {
 
     fun getConversationConfig(): Single<ConversationConfig>
 
-    fun getConversationFile(
-        conversationId: String?,
-        type: Int,
-        page: Int,
-        limit: Int
-    ): Single<BaseResult<AttachedFile.Conversation>>
-
     fun getConversationLink(
         conversationId: String?,
         page: String?,
         limit: Int
     ): Single<BaseResult<Message>>
 
-    fun postFile(files: List<MultipartBody.Part>): Flowable<BaseResults<UploadFile>>
-
-    fun postFile(file: MultipartBody.Part): Flowable<BaseResults<UploadFile>>
-
     fun putConversation(body: SignalBody): Flowable<BaseResult<Any>>
+
+    fun getMemberConversation(
+        conversationId: String?,
+        page: Int?,
+        name: String?,
+        isApproved: Boolean?,
+        limit: Int
+    ): Flowable<BaseResult<User>>
 }
 
 class ConversationRepositoryImpl(
@@ -78,7 +72,7 @@ class ConversationRepositoryImpl(
         isImportant: Boolean?,
         name: String?
     ): Flowable<BaseResult<Conversation>> {
-        return apiRequest.chat.getConversations(
+        return apiRequest.eOffice.getConversations(
             id, limit, isUnread, isImportant, name
         ).checkInternet()
     }
@@ -115,16 +109,6 @@ class ConversationRepositoryImpl(
             .doOnSuccess { userImpl.saveConversationConfig(it) }
     }
 
-    override fun getConversationFile(
-        conversationId: String?,
-        type: Int,
-        page: Int,
-        limit: Int
-    ): Single<BaseResult<AttachedFile.Conversation>> {
-        return apiRequest.chat.getConversationFile(conversationId, type, page, limit)
-            .checkInternet()
-    }
-
     override fun getConversationLink(
         conversationId: String?,
         page: String?,
@@ -133,16 +117,19 @@ class ConversationRepositoryImpl(
         return apiRequest.chat.getConversationLink(conversationId, page, limit).checkInternet()
     }
 
-    override fun postFile(files: List<MultipartBody.Part>): Flowable<BaseResults<UploadFile>> {
-        return apiRequest.chat.postConversationFile(files).checkInternet()
-    }
-
-    override fun postFile(file: MultipartBody.Part): Flowable<BaseResults<UploadFile>> {
-        return apiRequest.chat.postConversationFile(file).checkInternet()
-    }
-
     override fun putConversation(body: SignalBody): Flowable<BaseResult<Any>> {
         val id = tokenImpl.getConnectedId()
         return apiRequest.chat.putUpdateGroup(id, body).checkInternet()
+    }
+
+    override fun getMemberConversation(
+        conversationId: String?,
+        page: Int?,
+        name: String?,
+        isApproved: Boolean?,
+        limit: Int
+    ): Flowable<BaseResult<User>> {
+        return apiRequest.chat.getMemberConversation(conversationId, page, name, isApproved, limit)
+            .checkInternet()
     }
 }

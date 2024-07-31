@@ -23,7 +23,7 @@ class ContactTabFragment : BaseFragment<FragmentContactTabBinding, ContactVM>() 
         }
     }
 
-    override val _viewModel: ContactVM by viewModel(ownerProducer = { requireParentFragment() })
+    override val viewModel: ContactVM by viewModel(ownerProducer = { requireParentFragment() })
 
     private lateinit var _screen: String
     private lateinit var _adapter: ContactTabAdapter
@@ -61,7 +61,7 @@ class ContactTabFragment : BaseFragment<FragmentContactTabBinding, ContactVM>() 
     }
 
     override fun onSubscribeObserver() {
-        with(_viewModel) {
+        with(viewModel) {
             if (_screen == ContactTab.TYPE_TAB_DEPARTMENT.type) {
                 contact.observe(this@ContactTabFragment) {
                     _adapter.insertData(it)
@@ -76,7 +76,7 @@ class ContactTabFragment : BaseFragment<FragmentContactTabBinding, ContactVM>() 
     override fun callApi() {
         when (ContactTab.fromType(_screen)) {
             ContactTab.TYPE_TAB_DEPARTMENT -> {
-                _viewModel.getCurrentCompany()
+                viewModel.getCurrentCompany()
             }
 
             ContactTab.TYPE_TAB_COMPANY -> {}

@@ -23,6 +23,7 @@
     <string name="off">Tắt</string>
     <string name="home">Trang chủ</string>
     <string name="today">Hôm nay</string>
+    <string name="close">Đóng</string>
 
     <string name="cancel">Hủy</string>
     <string name="update">Cập nhật</string>
@@ -55,19 +56,30 @@
     <string name="text_unread_message_count">9+</string>
     <string name="conversation_name">Nhóm:\u0020</string>
     <string name="member_count">%d thành viên</string>
-    <string name="group_setting">Cấu hình nhóm</string>
+    <string name="conversation_setting">Cấu hình nhóm</string>
     <string name="important_message">Tin nhắn quan trọng</string>
 
     <string name="leave_group">Rời nhóm</string>
     <string name="leave_and_delete">Rời nhóm và xóa trò chuyện?</string>
     <string name="leave_group_in_silent">Rời nhóm trong im lặng</string>
 
-    <string name="text_message_is_already_withdraw">Tin nhắn đã được thu hồi</string>
-    <string name="text_message_is_withdraw">Đã thu hồi tin nhắn</string>
-    <string name="text_message_send_breakfast_file">Đã gửi Phiếu điểm tâm</string>
-    <string name="text_message_send_survey_file">Đã gửi Phiếu khảo sát</string>
-    <string name="text_message_quote">Đã chuyển tiếp tin nhắn</string>
-    <string name="text_message_send_file">Đã gửi file đính kèm</string>
+    <string name="dismiss_conversation">Giải tán nhóm</string>
+    <string name="dismiss">Giải tán</string>
+
+    <string name="conversation_title_setting_1">Cho phép thành viên trong nhóm</string>
+    <string name="conversation_setting_1">Thay đổi tên và ảnh đại diện</string>
+    <string name="conversation_setting_2">Ghim tin nhắn</string>
+    <string name="conversation_setting_3">Chế độ phê duyệt thành viên mới</string>
+    <string name="conversation_setting_4">Cho phép thành viên gửi tin</string>
+    <string name="conversation_setting_5">Chế độ phê duyệt thành viên mới</string>
+    <string name="conversation_setting_6">Cho phép thành viên gửi tin</string>
+
+    <string name="message_is_already_withdraw">Tin nhắn đã được thu hồi</string>
+    <string name="message_is_withdraw">Đã thu hồi tin nhắn</string>
+    <string name="message_send_breakfast_file">Đã gửi Phiếu điểm tâm</string>
+    <string name="message_send_survey_file">Đã gửi Phiếu khảo sát</string>
+    <string name="message_quote">Đã chuyển tiếp tin nhắn</string>
+    <string name="message_send_file">Đã gửi file đính kèm</string>
 
     <string name="logout_description">Anh/Chị sẽ thoát khỏi phiên hiện tại.</string>
     <string name="title_tablet">Module Title</string>
@@ -116,4 +128,7 @@
     <string name="no_file_conversation">Chưa có tập tin được chia sẻ\ntrong hội thoại này</string>
     <string name="no_link_conversation">Chưa có link được chia sẻ\ntrong hội thoại này</string>
     <string name="other_setting">Cài đặt khác</string>
+
+
+    <string name="approve_member">Phê duyệt thành viên</string>
 </resources>

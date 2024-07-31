@@ -167,10 +167,10 @@ object StringUtil {
                     String.format(
                         "%s: %s",
                         senderName,
-                        context.getString(R.string.text_message_is_withdraw)
+                        context.getString(R.string.message_is_withdraw)
                     )
                 } else {
-                    context.getString(R.string.text_message_is_withdraw)
+                    context.getString(R.string.message_is_withdraw)
                 }
             } else {
                 val hasQuote: Boolean = message.getForwardMessage().isNotEmpty()
@@ -188,8 +188,8 @@ object StringUtil {
                     val isBreakFastFile: Boolean = message.getSurveyFiles()[0].isSurveyBreakfast
                     val text = context.getString(
                         if (isBreakFastFile
-                        ) R.string.text_message_send_breakfast_file
-                        else R.string.text_message_send_survey_file
+                        ) R.string.message_send_breakfast_file
+                        else R.string.message_send_survey_file
                     )
                     return if (isShowSender) {
                         String.format("%s: %s", senderName, text)
@@ -198,7 +198,7 @@ object StringUtil {
                     }
                 }
                 if (hasFile) {
-                    val text = context.getString(R.string.text_message_send_file)
+                    val text = context.getString(R.string.message_send_file)
                     return if (isShowSender) {
                         String.format("%s: %s", senderName, text)
                     } else {
@@ -206,7 +206,7 @@ object StringUtil {
                     }
                 }
                 if (hasQuote) {
-                    val text = context.getString(R.string.text_message_quote)
+                    val text = context.getString(R.string.message_quote)
                     return if (isShowSender) {
                         String.format("%s: %s", senderName, text)
                     } else {

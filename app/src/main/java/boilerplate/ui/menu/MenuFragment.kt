@@ -14,7 +14,7 @@ class MenuFragment : BaseFragment<FragmentMenuBinding, MainVM>() {
         }
     }
 
-    override val _viewModel: MainVM by activityViewModels()
+    override val viewModel: MainVM by activityViewModels()
 
     override fun initialize() {
     }
@@ -25,7 +25,7 @@ class MenuFragment : BaseFragment<FragmentMenuBinding, MainVM>() {
     override fun registerEvent() {
         with(binding) {
             btnBackToDashboard.click {
-                _viewModel.currentSelected.value = HomeTabIndex.POSITION_HOME_DASHBOARD
+                viewModel.currentSelected.value = HomeTabIndex.POSITION_HOME_DASHBOARD
             }
         }
     }

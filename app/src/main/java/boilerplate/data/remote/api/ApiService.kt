@@ -143,6 +143,20 @@ interface ConversationService {
     @POST("file/chat")
     @Headers("api-version: 1")
     fun postConversationFile(@Part files: MultipartBody.Part): Flowable<BaseResults<UploadFile>>
+
+    /**
+     * @param isApproved - isDaDuyet = null: lấy tất cả, chưa duyệt và đã duyệt,
+     * - isDaDuyet = true: đã duyệt,
+     * - isDaDuyet  = false: chưa duyệt
+     */
+    @GET("hoithoai/{id}/nhanvien/timkiem")
+    fun getMemberConversation(
+        @Path("id") conversationId: String?,
+        @Query("page") page: Int?,
+        @Query("tenNhanVien") name: String?,
+        @Query("isDaDuyet") isApproved: Boolean?,
+        @Query("limit") limit: Int
+    ): Flowable<BaseResult<User>>
 }
 
 interface ApiService :

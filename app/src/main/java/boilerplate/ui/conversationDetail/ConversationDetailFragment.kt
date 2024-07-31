@@ -83,7 +83,7 @@ class ConversationDetailFragment :
         }
     }
 
-    override val _viewModel: ConversationVM by viewModel()
+    override val viewModel: ConversationVM by viewModel()
 
     private lateinit var _layoutManager: LinearLayoutManager
     private lateinit var _endlessListener: EndlessListener
@@ -117,7 +117,7 @@ class ConversationDetailFragment :
                     isSms: Boolean,
                     isEmail: Boolean
                 ) {
-                    _viewModel.sendMessage(
+                    viewModel.sendMessage(
                         content,
                         uploadFile,
                         currentFile,
@@ -164,12 +164,12 @@ class ConversationDetailFragment :
             _layoutManager = rcvMessage.layoutManager as LinearLayoutManager
             _endlessListener = object : EndlessListener(_layoutManager) {
                 override fun onLoadMore(page: Int, totalItemsCount: Int) {
-                    if (_currentCount == _viewModel.limit && !_isLoadMore) {
+                    if (_currentCount == viewModel.limit && !_isLoadMore) {
                         _isLoadMore = true
                         val id: String = _adapter.getLastMessageId()
                         run {
                             _adapter.loadMoreNext()
-                            _viewModel.apiGetMoreMessage(id)
+                            viewModel.apiGetMoreMessage(id)
                         }
                     }
                 }
@@ -186,13 +186,13 @@ class ConversationDetailFragment :
                     if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
                         _adapter.removeFocus()
                     }
-                    if (_isOnTop && !_adapter.checkIsLoadPrevious() && !_isLoadMore && _previousCount == _viewModel.limit) {
+                    if (_isOnTop && !_adapter.checkIsLoadPrevious() && !_isLoadMore && _previousCount == viewModel.limit) {
                         _isLoadMore = true
                         val id: String = _adapter.getFirstMessageId()
                         binding.rcvMessage.post {
                             _adapter.loadMorePre()
                             snapScrollPosition(0)
-                            _viewModel.apiGetPreviousMessage(id)
+                            viewModel.apiGetPreviousMessage(id)
                         }
                     }
                 }
@@ -224,8 +224,8 @@ class ConversationDetailFragment :
             tvCountNewMessage.click {
                 _isGotoMessage = false
                 syncReadMessage()
-                if (_previousCount == _viewModel.limit) {
-                    _viewModel.apiGetMoreMessage("")
+                if (_previousCount == viewModel.limit) {
+                    viewModel.apiGetMoreMessage("")
                 } else {
                     snapScrollPosition(0)
                 }
@@ -245,7 +245,7 @@ class ConversationDetailFragment :
     }
 
     override fun onSubscribeObserver() {
-        with(_viewModel) {
+        with(viewModel) {
             messageError.observe(this@ConversationDetailFragment) {
                 _isLoadMore = false
                 _adapter.cancelLoadMore()
@@ -275,7 +275,7 @@ class ConversationDetailFragment :
 
                 var isInGroup = false
                 for (user in it.conversationUsers) {
-                    if (user.user.id.equals(_viewModel.user.id)) {
+                    if (user.user.id.equals(viewModel.user.id)) {
                         isInGroup = true
                         break
                     }
@@ -285,7 +285,7 @@ class ConversationDetailFragment :
                 } else {
                     val leaveGroup: ConversationUser.LeaveGroup = ConversationUser.LeaveGroup(
                         conversationId,
-                        _viewModel.user.id
+                        viewModel.user.id
                     )
                     context?.sendResult(
                         SignalRResult.UPDATE_CONVERSATION_DELETE_MEMBER,
@@ -372,7 +372,7 @@ class ConversationDetailFragment :
         arguments.notNull {
             val messageId = it.getString(KEY_MESSAGE_ID, "")
             val conversationId = it.getString(KEY_CONVERSATION, "")
-            _viewModel.apiGetDetail(conversationId, messageId)
+            viewModel.apiGetDetail(conversationId, messageId)
             val content = it.getString(KEY_MESSAGE, "")
             if (content.isNotEmpty()) {
                 binding.chatBox.setContentKeyboard(content)
@@ -393,7 +393,7 @@ class ConversationDetailFragment :
                 chatBox.enableChat(true)
                 tvTitle.setText(R.string.my_cloud)
                 tvSubTitle.gone()
-                _viewModel.hasRead = con.totalMessage
+                viewModel.hasRead = con.totalMessage
                 return
             }
             if (con.isGroup()) {
@@ -428,8 +428,8 @@ class ConversationDetailFragment :
                                 builder.append(it.user.name)
                             }
                         }
-                        if (it.user.id.equals(_viewModel.user.id)) {
-                            _viewModel.hasRead = it.readNumber
+                        if (it.user.id.equals(viewModel.user.id)) {
+                            viewModel.hasRead = it.readNumber
                             if (!isAllowSend) {
                                 isAllowSend = when (ConversationRole.fromType(it.getVaiTro())) {
                                     MAIN, SUB, ALLOW_MEMBER -> true
@@ -447,10 +447,10 @@ class ConversationDetailFragment :
                 _adapter.setAnswerable(true)
                 chatBox.enableChat(true)
                 for (user in con.conversationUsers) {
-                    if (!user.user.id.equals(_viewModel.user.id)) {
+                    if (!user.user.id.equals(viewModel.user.id)) {
                         user.let {
-                            _viewModel.hasRead = it.readNumber
-                            _viewModel.otherRead = it.readNumber
+                            viewModel.hasRead = it.readNumber
+                            viewModel.otherRead = it.readNumber
 
                             it.user.apply {
                                 tvTitle.text = name
@@ -461,9 +461,9 @@ class ConversationDetailFragment :
                     }
                 }
                 if (onlyContainMe) {
-                    tvTitle.text = _viewModel.user.name
+                    tvTitle.text = viewModel.user.name
                     tvSubTitle.gone()
-                    _viewModel.hasRead = con.totalMessage
+                    viewModel.hasRead = con.totalMessage
                 }
             }
         }
@@ -484,7 +484,7 @@ class ConversationDetailFragment :
 
     private fun insertLoadMore(size: Int, list: Map<String, List<Message>>) {
         _isLoadMore = false
-        _currentCount = max(size, _viewModel.limit)
+        _currentCount = max(size, viewModel.limit)
         val arrayList = ArrayList<Any>()
         for ((key, value) in list) {
             arrayList.addAll(value)
@@ -494,7 +494,7 @@ class ConversationDetailFragment :
     }
 
     private fun syncReadMessage() {
-        with(_viewModel) {
+        with(viewModel) {
             if (conversation.value != null && (conversation.value!!.totalMessage > hasRead)) {
                 hasRead = conversation.value!!.totalMessage
                 SignalRManager.sendLastTimeRead(conversationId, Date(), hasRead, true)
@@ -509,7 +509,7 @@ class ConversationDetailFragment :
     }
 
     private fun showCountMessage() {
-        _viewModel.receive.let { it.postValue(it.value?.plus(1) ?: 0) }
+        viewModel.receive.let { it.postValue(it.value?.plus(1) ?: 0) }
     }
 
     private fun listenerToSignalR() {
@@ -517,7 +517,7 @@ class ConversationDetailFragment :
             .setListener(object : SignalRImpl() {
                 override fun newMessage(message: Message) {
                     checkCurrentConversation(message.conversationId) {
-                        _viewModel.conversation.value?.totalMessage =
+                        viewModel.conversation.value?.totalMessage =
                             message.conversation.totalMessage
                         if (_isGotoMessage) {
                             showCountMessage()
@@ -600,52 +600,52 @@ class ConversationDetailFragment :
 
                 override fun updateConversation(conversation: Conversation) {
                     checkCurrentConversation(conversation.conversationId) {
-                        _viewModel.conversation.postValue(conversation)
+                        viewModel.conversation.postValue(conversation)
                     }
                 }
 
                 override fun updateConversationSetting(setting: Conversation.Setting) {
                     checkCurrentConversation(setting.conversationId) {
-                        _viewModel.conversation.value?.apply {
+                        viewModel.conversation.value?.apply {
                             isChangeInform = setting.isChangeInform
                             isAllowPinMessage = setting.isAllowPinMessage
                             isAllowApproved = setting.isAllowApproved
                             isAllowSendMessage = setting.isAllowSendMessage
-                        }.let { _viewModel.conversation.postValue(it) }
+                        }.let { viewModel.conversation.postValue(it) }
                     }
                 }
 
                 override fun updateRole(updateRole: ConversationUser.UpdateRole) {
                     checkCurrentConversation(updateRole.conversationId) {
-                        if (updateRole.userId == _viewModel.user.id) {
-                            _viewModel.conversation.value?.apply {
+                        if (updateRole.userId == viewModel.user.id) {
+                            viewModel.conversation.value?.apply {
                                 for (member in conversationUsers) {
-                                    if (member.user.id == _viewModel.user.id) {
+                                    if (member.user.id == viewModel.user.id) {
                                         member.setVaiTro(updateRole.role)
                                         break
                                     }
                                 }
-                            }.let { _viewModel.conversation.postValue(it) }
+                            }.let { viewModel.conversation.postValue(it) }
                         }
                     }
                 }
 
                 override fun addMember(addMember: Conversation.AddMember) {
                     checkCurrentConversation(addMember.conversationId) {
-                        _viewModel.conversation.value?.apply {
+                        viewModel.conversation.value?.apply {
                             conversationUsers.addAll(addMember.addMember)
-                        }.let { _viewModel.conversation.postValue(it) }
+                        }.let { viewModel.conversation.postValue(it) }
                     }
                 }
 
                 override fun deleteMember(leaveGroup: ConversationUser.LeaveGroup) {
                     checkCurrentConversation(leaveGroup.conversationId) {
-                        if (_viewModel.user.id == leaveGroup.conversationId) {
+                        if (viewModel.user.id == leaveGroup.conversationId) {
                             _isLeaveGroup = true
                             binding.root.showSnackBarWarning(R.string.warning_remove_out_of_group)
                             popFragment()
                         } else {
-                            _viewModel.conversation.postValue(leaveGroup.conversation)
+                            viewModel.conversation.postValue(leaveGroup.conversation)
                         }
                     }
                 }
@@ -657,7 +657,7 @@ class ConversationDetailFragment :
     }
 
     private fun checkCurrentConversation(id: String, block: () -> Unit) {
-        if (_viewModel.conversationId == id) {
+        if (viewModel.conversationId == id) {
             block()
         }
     }
@@ -710,7 +710,7 @@ class ConversationDetailFragment :
                                     btnConfirm.setText(R.string.remove_pin)
 
                                     btnConfirm.click {
-                                        _viewModel.removePinMessage(pin.messageId)
+                                        viewModel.removePinMessage(pin.messageId)
                                         dialog.dismiss()
                                     }
                                 }
@@ -784,7 +784,7 @@ class ConversationDetailFragment :
             }
             tvCollapse.click { popupWindow.dismiss() }
             lnPin.removeAllViews()
-            for (pin in _viewModel.pinMessage.value.orEmpty()) {
+            for (pin in viewModel.pinMessage.value.orEmpty()) {
                 lnPin.addView(addViewPinMessage(pin, true, popupWindow))
             }
 

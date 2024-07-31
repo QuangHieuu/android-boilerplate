@@ -59,7 +59,7 @@ class ConversationFragment : BaseFragment<FragmentConversationBinding, MainVM>()
     private val _isImportant = false
     private val _currentFilter = 0
 
-    override val _viewModel: MainVM by viewModel()
+    override val viewModel: MainVM by viewModel()
 
     override fun initialize() {
         val simpleEvent = object : ConversationAdapter.SimpleEvent() {
@@ -163,7 +163,7 @@ class ConversationFragment : BaseFragment<FragmentConversationBinding, MainVM>()
     }
 
     override fun onSubscribeObserver() {
-        with(_viewModel) {
+        with(viewModel) {
             conversations.observe(this@ConversationFragment) { pair ->
                 binding.root.launch {
                     if (pair.second.isEmpty() && pair.first.isEmpty()) {
@@ -212,7 +212,7 @@ class ConversationFragment : BaseFragment<FragmentConversationBinding, MainVM>()
     }
 
     private fun loadMore(last: String) {
-        _viewModel.apiGetConversation(last, _isUnRead, _isImportant, null)
+        viewModel.apiGetConversation(last, _isUnRead, _isImportant, null)
     }
 
     private fun disableLoading() {
@@ -309,7 +309,7 @@ class ConversationFragment : BaseFragment<FragmentConversationBinding, MainVM>()
                 }
 
                 override fun newMessage(message: Message) {
-                    val userId = _viewModel.user.value?.id
+                    val userId = viewModel.user.value?.id
                     val isPlaySound = AccountManager.isPlaySound()
                     if (message.personSend != null) {
                         for (user in message.receiverNotifies) {
@@ -320,7 +320,7 @@ class ConversationFragment : BaseFragment<FragmentConversationBinding, MainVM>()
                         val isSelf: Boolean =
                             message.personSend.id.equals(AccountManager.getCurrentUserId())
                         if (newMessage(message, isSelf)) {
-                            _viewModel.apiGetConversationDetail(message)
+                            viewModel.apiGetConversationDetail(message)
                         }
                     }
                 }
@@ -328,13 +328,13 @@ class ConversationFragment : BaseFragment<FragmentConversationBinding, MainVM>()
                 override fun sendMessage(sendMessage: Message.SendMessageResult) {
                     if ((sendMessage.status == 1 || sendMessage.status == 0) && sendMessage.entity != null) {
                         if (newMessage(sendMessage.entity, true)) {
-                            _viewModel.apiGetConversationDetail(sendMessage.getEntity())
+                            viewModel.apiGetConversationDetail(sendMessage.getEntity())
                         }
                     }
                 }
 
                 override fun updateConversation(conversation: Conversation) {
-                    _viewModel.conversationUpdate.postValue(conversation)
+                    viewModel.conversationUpdate.postValue(conversation)
                 }
 
                 override fun leaveGroup(leaveGroup: ConversationUser.LeaveGroup) {
@@ -344,12 +344,12 @@ class ConversationFragment : BaseFragment<FragmentConversationBinding, MainVM>()
                 }
 
                 override fun deleteMember(leaveGroup: ConversationUser.LeaveGroup) {
-                    if (leaveGroup.userId.equals(_viewModel.user.value?.id)) {
+                    if (leaveGroup.userId.equals(viewModel.user.value?.id)) {
                         if (!_adapterPin.leavePinConversation(leaveGroup.conversationId)) {
                             _adapter.leaveConversation(leaveGroup.conversationId)
                         }
                     } else {
-                        _viewModel.conversationUpdate.postValue(leaveGroup.conversation)
+                        viewModel.conversationUpdate.postValue(leaveGroup.conversation)
                     }
                 }
 

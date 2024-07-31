@@ -1,5 +1,9 @@
 package boilerplate.base
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,12 +12,15 @@ import android.view.View
 import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.viewbinding.ViewBinding
 import boilerplate.R
+import boilerplate.service.signalr.SignalRManager.INTENT_FILTER_SIGNALR
 import boilerplate.ui.conversationDetail.ConversationDetailFragment
 import boilerplate.utils.extension.findFragmentByTag
 import boilerplate.utils.extension.hideKeyboard
 import boilerplate.utils.extension.isTablet
+import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.showSnackBarFail
 import boilerplate.widget.customText.EditTextFont
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -68,6 +75,8 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
         onSubscribeObserver()
         registerOnClick()
 
+        LocalBroadcastManager.getInstance(application)
+            .registerReceiver(invalidTokeReceiver, IntentFilter(INTENT_FILTER_SIGNALR))
     }
 
     override fun onDestroy() {
@@ -76,6 +85,7 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
             clear()
             dispose()
         }
+        LocalBroadcastManager.getInstance(application).unregisterReceiver(invalidTokeReceiver)
     }
 
     protected abstract fun initialize()
@@ -135,11 +145,6 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 
     private fun baseObserver() {
         with(_viewModel) {
-            inValidaLogin.observe(this@BaseActivity) {
-                if (it) {
-                    binding.root.showSnackBarFail(getString(R.string.error_auth_wrong))
-                }
-            }
             error.observe(this@BaseActivity) {
                 binding.root.showSnackBarFail(it)
             }
@@ -152,5 +157,21 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
         } else {
             supportFragmentManager.popBackStack()
         }
+    }
+
+    private val invalidTokeReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            intent.notNull {
+                val bundle: Bundle = it.getBundleExtra(BaseApp.APP_FILTER_INVALID) ?: Bundle()
+                val data = bundle.getBoolean(BaseApp.APP_FILTER_INVALID, false)
+                if (data) {
+                    handleLogout()
+                }
+            }
+        }
+    }
+
+    protected open fun handleLogout() {
+
     }
 }

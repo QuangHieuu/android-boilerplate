@@ -18,4 +18,11 @@
     <string name="warning_turn_off_notify">Toàn bộ thông báo tin nhắn của hội thoại sẽ được tắt cho đến khi được mở lại.</string>
 
     <string name="warning_change_inform">Anh chị có chắc muốn đổi tên nhóm?\nKhi xác nhận tên nhóm mới sẽ hiển thị với tất cả thành viên</string>
+
+    <string name="warning_dismiss_conversation">
+        Tất cả thành viên sẽ bị mời ra khỏi nhóm và xóa toàn bộ tin nhắn. Nhóm giải tán sẽ KHÔNG THỂ khôi phục.\n
+        Anh/Chị có muốn giải tán nhóm không?
+    </string>
+
+    <string name="warning_allow_approved_description">Tồn tại thành viên trong danh sách chờ duyệt, cần thực hiện xử lý trước khi tắt tính năng này</string>
 </resources>

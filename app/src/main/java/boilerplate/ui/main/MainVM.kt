@@ -1,7 +1,6 @@
 package boilerplate.ui.main
 
 import android.annotation.SuppressLint
-import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import boilerplate.base.BaseViewModel
 import boilerplate.data.local.repository.user.TokenRepository
@@ -21,7 +20,6 @@ import boilerplate.utils.extension.withScheduler
 import io.reactivex.rxjava3.core.Flowable
 
 class MainVM(
-    private val application: Application,
     private val schedulerProvider: BaseSchedulerProvider,
     private val userRepo: UserRepository,
     private val tokenRepo: TokenRepository,

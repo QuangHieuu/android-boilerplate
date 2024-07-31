@@ -48,7 +48,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardVM>() 
         fun onDesktop(desktop: Desktop)
     }
 
-    override val _viewModel: DashboardVM by viewModel()
+    override val viewModel: DashboardVM by viewModel()
     private val _activityVM: MainVM by activityViewModel()
 
     private lateinit var _slider: BlockBannerAdapter
@@ -113,7 +113,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardVM>() 
                 }
             }
         }
-        with(_viewModel) {
+        with(viewModel) {
             banners.observe(this@DashboardFragment) { list ->
                 with(binding) {
                     root.run { _slider.setBanners(list.orEmpty()) }
@@ -162,7 +162,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardVM>() 
         with(binding) {
             swipeRefreshDashboard.setOnRefreshListener {
                 swipeRefreshDashboard.isRefreshing = false
-                _viewModel.getDashboard()
+                viewModel.getDashboard()
             }
         }
         with(_activityVM) {
@@ -191,7 +191,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardVM>() 
     }
 
     override fun callApi() {
-        _viewModel.getDashboard()
+        viewModel.getDashboard()
     }
 
     private fun handleMenu(page: HomeFeature.HomePage) {

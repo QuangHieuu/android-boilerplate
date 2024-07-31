@@ -12,7 +12,7 @@ class EmptyFragment : BaseFragment<ActivityEmptyBinding, MainVM>() {
         }
     }
 
-    override val _viewModel: MainVM by activityViewModel()
+    override val viewModel: MainVM by activityViewModel()
 
     override fun initialize() {
     }
