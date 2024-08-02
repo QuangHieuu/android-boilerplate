@@ -27,6 +27,7 @@ import boilerplate.utils.extension.gone
 import boilerplate.utils.extension.hide
 import boilerplate.utils.extension.isTablet
 import boilerplate.utils.extension.launch
+import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.open
 import boilerplate.utils.extension.show
 import boilerplate.utils.extension.showDialog
@@ -35,7 +36,7 @@ import boilerplate.utils.extension.showSnackBarSuccess
 import boilerplate.widget.recyclerview.EndlessListener
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class ConversationFragment : BaseFragment<FragmentConversationBinding, MainVM>() {
     companion object {
@@ -59,18 +60,13 @@ class ConversationFragment : BaseFragment<FragmentConversationBinding, MainVM>()
     private val _isImportant = false
     private val _currentFilter = 0
 
-    override val viewModel: MainVM by viewModel()
+    override val viewModel: MainVM by activityViewModel()
 
     override fun initialize() {
         val simpleEvent = object : ConversationAdapter.SimpleEvent() {
             override fun onItemClick(con: Conversation) {
                 _adapter.closeAll()
-                open(
-                    split = true,
-                    fragment = ConversationDetailFragment.newInstance(con.getConversationId()),
-                    animateType = if (context?.isTablet() == true) AnimateType.FADE
-                    else AnimateType.SLIDE_TO_LEFT
-                )
+                viewModel.conversationDetail.postValue(con)
             }
 
             override fun onMarkAsImportant(conversation: Conversation) {
@@ -191,6 +187,18 @@ class ConversationFragment : BaseFragment<FragmentConversationBinding, MainVM>()
             pinConversations.observe(this@ConversationFragment) {
                 binding.root.launch {
                     _adapterPin.insertData(it)
+                }
+            }
+            conversationDetail.observe(this@ConversationFragment) { con ->
+                con.notNull {
+                    _adapterPin.selected(con)
+                    _adapter.selected(con)
+                    open(
+                        split = true,
+                        fragment = ConversationDetailFragment.newInstance(it.conversationId),
+                        animateType = if (context?.isTablet() == true) AnimateType.STAY
+                        else AnimateType.SLIDE_TO_LEFT
+                    )
                 }
             }
         }

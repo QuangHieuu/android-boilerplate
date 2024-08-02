@@ -19,6 +19,7 @@ enum class AnimateType {
     FADE,
     SLIDE_TO_RIGHT,
     SLIDE_TO_LEFT,
+    STAY
 }
 
 const val ANIMATION_DELAY: Long = 200
@@ -40,18 +41,12 @@ fun AppCompatActivity.replaceFragmentInActivity(
     tag: String = fragment::class.java.simpleName,
     animateType: AnimateType = AnimateType.SLIDE_TO_LEFT
 ) {
-    supportFragmentManager.transact(
-        begin = {
-
-        },
-        end = {
-            if (addToBackStack) {
-                addToBackStack(tag)
-            }
-            replace(containerId, fragment, tag)
-        },
-        animateEnd = animateType
-    )
+    supportFragmentManager.transact({
+        if (addToBackStack) {
+            addToBackStack(tag)
+        }
+        replace(containerId, fragment, tag)
+    }, animateType)
 }
 
 fun AppCompatActivity.clearAllFragment() {
@@ -81,23 +76,17 @@ fun AppCompatActivity.switchFragment(
     animateType: AnimateType = AnimateType.SLIDE_TO_LEFT
 ) {
     val fm = supportFragmentManager
-    fm.transact(
-        begin = {
-
-        },
-        end = {
-            if (fm.isExistFragment(newFragment)) {
-                hide(currentFragment).show(newFragment)
-            } else {
-                hide(currentFragment)
-                if (addToBackStack) {
-                    addToBackStack(tag)
-                }
-                add(containerId, newFragment, tag)
+    fm.transact({
+        if (fm.isExistFragment(newFragment)) {
+            hide(currentFragment).show(newFragment)
+        } else {
+            hide(currentFragment)
+            if (addToBackStack) {
+                addToBackStack(tag)
             }
-        },
-        animateEnd = animateType
-    )
+            add(containerId, newFragment, tag)
+        }
+    }, animateType)
 }
 
 fun AppCompatActivity.startActivityAtRoot(

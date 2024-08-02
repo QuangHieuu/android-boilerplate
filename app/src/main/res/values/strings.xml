@@ -24,7 +24,20 @@
     <string name="home">Trang chủ</string>
     <string name="today">Hôm nay</string>
     <string name="close">Đóng</string>
+    <string name="edit_information">Chỉnh sửa thông tin</string>
+    <string name="birthday">Ngày sinh</string>
+    <string name="state">Trạng thái</string>
+    <string name="sms">sms</string>
+    <string name="email">Email</string>
+    <string name="different_number">Số điện thoại khác</string>
+    <string name="phone_number">Số điện thoại</string>
 
+    <string name="select_user">Chọn nhân viên</string>
+    <string name="employee">Nhân viên</string>
+    <string name="position">Vị trí</string>
+    <string name="department">Phòng ban</string>
+    <string name="company">Đơn vị</string>
+    <string name="all_company">Tất cả đơn vị</string>
     <string name="cancel">Hủy</string>
     <string name="update">Cập nhật</string>
 
@@ -129,6 +142,6 @@
     <string name="no_link_conversation">Chưa có link được chia sẻ\ntrong hội thoại này</string>
     <string name="other_setting">Cài đặt khác</string>
 
-
     <string name="approve_member">Phê duyệt thành viên</string>
+
 </resources>

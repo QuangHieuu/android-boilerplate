@@ -27,6 +27,7 @@ import boilerplate.service.signalr.SignalRImpl
 import boilerplate.service.signalr.SignalRManager
 import boilerplate.ui.conversationDetail.ConversationDetailFragment
 import boilerplate.ui.conversationDetail.ConversationVM
+import boilerplate.ui.conversationMessage.ConversationMessageFragment
 import boilerplate.ui.conversationSetting.ConversationSettingFragment
 import boilerplate.utils.ClickUtil
 import boilerplate.utils.ImageUtil
@@ -430,14 +431,21 @@ class ConversationInformFragment :
                 getString(R.string.pin_message),
                 R.color.colorBlack,
                 R.drawable.bg_circle,
-                ClickUtil.onClick { }
+                ClickUtil.onClick {
+                    open(split = true, fragment = ConversationMessageFragment.messagePin())
+                }
             ))
             lnInform.addView(initRowInform(
                 R.drawable.ic_inform_favorite,
                 getString(R.string.important_message),
                 R.color.colorBlack,
                 R.drawable.bg_circle,
-                ClickUtil.onClick { }
+                ClickUtil.onClick {
+                    open(
+                        split = true,
+                        fragment = ConversationMessageFragment.messageImportant()
+                    )
+                }
             ))
             if (conversation.isMyCloud) {
                 lnSetting.gone()

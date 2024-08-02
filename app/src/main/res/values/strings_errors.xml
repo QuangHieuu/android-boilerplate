@@ -6,4 +6,6 @@
 
     <string name="error_delete_conversation">Xóa hội thoại không thành công</string>
     <string name="error_unacceptable_file">File không hợp lệ</string>
+
+    <string name="error_no_phone_number">Không có số điện thoại</string>
 </resources>

@@ -107,7 +107,7 @@ open class TextViewExpand @JvmOverloads constructor(
                 hyphenationFrequency = Layout.HYPHENATION_FREQUENCY_NORMAL
             }
             movementMethod = InternalLinkMovementMethod.newInstance()
-                .setOnLinkClickListener(object : InternalLinkMovementMethod.OnLinkListener {
+                .setClick(object : InternalLinkMovementMethod.OnLinkListener {
                     override fun onLinkClicked(textView: TextView, link: String): Boolean {
                         mListener?.let {
                             if (link.contains(KEY_MENTION_USER_ID) && !link.contains(KEY_MENTION_ALL)) {

@@ -3,65 +3,36 @@ package boilerplate.model.user
 import boilerplate.model.ExpandModel
 import com.google.gson.annotations.SerializedName
 
-class Company : ExpandModel {
+data class Company(
     @SerializedName("don_vi_id")
-    var id: String? = null
-        get() = if (field == null) "".also { field = it } else field
-
+    var id: String = "",
     @SerializedName("ten_don_vi")
-    var name: String? = null
-        get() = if (field == null) "".also { field = it } else field
-
+    var name: String = "",
     @SerializedName("ten_viet_tat")
-    var shortName: String? = null
-        get() = if (field == null) "".also { field = it } else field
-
+    var shortName: String = "",
     @SerializedName("ds_phong_ban")
-    var departments: ArrayList<Department> = arrayListOf()
-
+    var departments: ArrayList<Department> = arrayListOf(),
     @SerializedName("ds_don_vi_con")
-    var childCompanies: ArrayList<Company> = arrayListOf()
-
+    var childCompanies: ArrayList<Company> = arrayListOf(),
     @SerializedName("phong_ban")
-    var department: Department? = null
-    val level = 0
-
+    var department: Department = Department(),
+    val level: Int = 0,
     @SerializedName("gui_don_vi_lien_thong")
-    val isSend = false
-
+    val isSend: Boolean = false,
     @SerializedName("gui_don_vi_lien_thong_evn")
-    val isSendEvn = false
-
+    val isSendEvn: Boolean = false,
     @SerializedName("gui_don_vi_truc_thuoc")
-    val isSendCompany = false
-
+    val isSendCompany: Boolean = false,
     @SerializedName("gui_don_vi_khac")
-    val isSendOtherCompany = false
-
+    val isSendOtherCompany: Boolean = false,
     @SerializedName("dong_y_khong_can_ky_so")
-    val isAcceptSign = false
-
+    val isAcceptSign: Boolean = false,
     @SerializedName("don_vi_cha")
-    var parentCompany: String? = null
-        get() = if (field == null) "".also { field = it } else field
-        set
-
+    var parentCompany: String = "",
     @SerializedName("nguoi_ky")
-    var signer: User? = null
-
+    var signer: User = User(),
     @SerializedName("trang_thai")
-    var status = 0
-
+    var status: Int = 0,
     @SerializedName("thoi_gian_duyet")
-    var approveTime: String? = null
-        get() = if (field == null) "".also { field = it } else field
-        set
-
-    constructor()
-
-    constructor(ten: String?) {
-        name = ten
-        shortName = ten
-        id = ""
-    }
-}
+    var approveTime: String = "",
+) : ExpandModel()

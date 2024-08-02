@@ -35,6 +35,7 @@ import boilerplate.service.signalr.SignalRResult
 import boilerplate.ui.conversationDetail.adpater.MessageAdapter
 import boilerplate.ui.conversationDetail.adpater.SimpleMessageEvent
 import boilerplate.ui.conversationInform.ConversationInformFragment
+import boilerplate.ui.main.MainVM
 import boilerplate.utils.StringUtil
 import boilerplate.utils.SystemUtil
 import boilerplate.utils.extension.ANIMATION_DELAY
@@ -57,6 +58,7 @@ import boilerplate.utils.extension.showSnackBarWarning
 import boilerplate.widget.chatBox.SimpleBoxListener
 import boilerplate.widget.recyclerview.EndlessListener
 import com.google.gson.Gson
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Date
 import java.util.Locale
@@ -84,6 +86,7 @@ class ConversationDetailFragment :
     }
 
     override val viewModel: ConversationVM by viewModel()
+    private val _activityVM: MainVM by activityViewModel()
 
     private lateinit var _layoutManager: LinearLayoutManager
     private lateinit var _endlessListener: EndlessListener
@@ -454,7 +457,7 @@ class ConversationDetailFragment :
 
                             it.user.apply {
                                 tvTitle.text = name
-                                tvSubTitle.text = mainDepartment?.name
+                                tvSubTitle.text = mainDepartment.name
                             }
                         }
                         onlyContainMe = false

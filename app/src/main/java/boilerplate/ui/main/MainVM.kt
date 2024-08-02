@@ -6,10 +6,13 @@ import boilerplate.base.BaseViewModel
 import boilerplate.data.local.repository.user.TokenRepository
 import boilerplate.data.local.repository.user.UserRepository
 import boilerplate.data.remote.api.ApiObservable
-import boilerplate.data.remote.api.response.BaseResult
+import boilerplate.data.remote.api.response.ResponseItems
+import boilerplate.data.remote.repository.auth.LoginRepository
 import boilerplate.data.remote.repository.conversation.ConversationRepository
 import boilerplate.model.conversation.Conversation
+import boilerplate.model.conversation.SignalBody
 import boilerplate.model.message.Message
+import boilerplate.model.user.User
 import boilerplate.ui.main.tab.HomeTabIndex
 import boilerplate.utils.SystemUtil
 import boilerplate.utils.extension.BaseSchedulerProvider
@@ -23,7 +26,8 @@ class MainVM(
     private val schedulerProvider: BaseSchedulerProvider,
     private val userRepo: UserRepository,
     private val tokenRepo: TokenRepository,
-    private val conversationRepo: ConversationRepository
+    private val conversationRepo: ConversationRepository,
+    private val loginRepo: LoginRepository,
 ) : BaseViewModel() {
 
     val currentFullName = userRepo.getCurrentRoleFullName()
@@ -37,8 +41,8 @@ class MainVM(
     private val _currentTabSelected by lazy { MutableLiveData(HomeTabIndex.POSITION_HOME_DASHBOARD) }
     val currentSelected = _currentTabSelected
 
-    private val _user by lazy { MutableLiveData(userRepo.getUser()) }
-    val user = _user
+    private val _currentUser by lazy { MutableLiveData(userRepo.getUser()) }
+    val user = _currentUser
 
     private val _conversations by lazy { MutableLiveData<Pair<String, ArrayList<Conversation>>>() }
     val conversations = _conversations
@@ -47,6 +51,9 @@ class MainVM(
 
     private val _conversationUpdate by lazy { MutableLiveData<Conversation>() }
     val conversationUpdate = _conversationUpdate
+
+    private val _conversationDetail by lazy { MutableLiveData<Conversation>() }
+    val conversationDetail = _conversationDetail
 
     fun logout() {
         launchDisposable {
@@ -70,7 +77,7 @@ class MainVM(
         isImportant: Boolean,
         search: String?
     ) {
-        val list: ArrayList<Flowable<BaseResult<Conversation>>> = arrayListOf()
+        val list: ArrayList<Flowable<ResponseItems<Conversation>>> = arrayListOf()
         val conversation = conversationRepo.getConversations(
             last,
             limit,
@@ -125,6 +132,22 @@ class MainVM(
                 .withScheduler(schedulerProvider)
                 .result({
                     _conversationUpdate.postValue(it.result)
+                })
+        }
+    }
+
+    fun postPersonConversation(user: User) {
+        val chatBody = SignalBody(
+            user.id,
+            user.name,
+            user.avatarId
+        )
+        launchDisposable {
+            conversationRepo.postPersonConversation(chatBody)
+                .loading(_loading)
+                .withScheduler(schedulerProvider)
+                .result({
+                    _conversationDetail.postValue(it.result)
                 })
         }
     }

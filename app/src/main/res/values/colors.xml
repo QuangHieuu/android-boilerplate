@@ -35,6 +35,7 @@
 
     <color name="color_conversation_unread">#ECF6FA</color>
     <color name="color_conversation_quote">#F1F1F1</color>
+    <color name="color_conversation_selected">#ECF6FA</color>
 
     <color name="color_4a4a4a">#4a4a4a</color>
     <color name="color_e6e6e6">#e6e6e6</color>

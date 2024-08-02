@@ -37,6 +37,7 @@ class ConversationAdapter(
     private val _swipeManager = SwipeItemRecyclerMangerImpl(this)
 
     private var _isShowPin = true
+    private var _lastSelected: Int = -1
 
     override fun getSwipeLayoutResourceId(position: Int): Int {
         return R.id.swipe_layout
@@ -566,6 +567,33 @@ class ConversationAdapter(
             }
         }
         return false
+    }
+
+    fun selected(conversation: Conversation?) {
+        if (_lastSelected != -1) {
+            val con = _list[_lastSelected]
+            if (con is Conversation) {
+                con.isSelected = false
+                notifyItemChanged(_lastSelected, con)
+            }
+        }
+        if (conversation != null) {
+            val listIterator = _list.listIterator()
+            while (listIterator.hasNext()) {
+                val index = listIterator.nextIndex()
+                (listIterator.next() as Conversation).let {
+                    if (it.conversationId.equals(conversation.conversationId)) {
+                        _lastSelected = index
+                        it.isSelected = true
+                        listIterator.set(it)
+                        notifyItemChanged(index, it)
+                        return
+                    }
+                }
+            }
+        } else {
+            _lastSelected = -1
+        }
     }
 
     val topConversation: ArrayList<Any?>

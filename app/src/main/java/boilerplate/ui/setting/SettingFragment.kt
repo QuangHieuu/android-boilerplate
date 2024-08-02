@@ -12,6 +12,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.fragment.app.activityViewModels
 import boilerplate.R
 import boilerplate.base.BaseFragment
+import boilerplate.constant.AccountManager
 import boilerplate.databinding.DialogBaseBinding
 import boilerplate.databinding.FragmentSettingBinding
 import boilerplate.databinding.ItemSettingProfileBinding
@@ -24,7 +25,6 @@ import boilerplate.utils.extension.click
 import boilerplate.utils.extension.loadImage
 import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.showDialog
-import boilerplate.utils.extension.showSnackBarSuccess
 import boilerplate.widget.customText.TextViewFont
 import boilerplate.widget.image.RoundedImageView
 import kotlin.properties.Delegates
@@ -141,7 +141,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding, MainVM>() {
     private fun handleMenu(menu: SettingMenu) {
         when (SettingMenu.fromType(menu.index)) {
             PROFILE -> {
-                binding.root.showSnackBarSuccess("asdf")
+
             }
 
             LOG_OUT -> {

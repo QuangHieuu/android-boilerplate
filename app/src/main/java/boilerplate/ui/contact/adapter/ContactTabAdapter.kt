@@ -12,6 +12,7 @@ import boilerplate.model.user.User
 import boilerplate.ui.contact.listener.SimpleListener
 import boilerplate.ui.contact.viewholder.CompanyHolder
 import boilerplate.ui.contact.viewholder.UserHolder
+import boilerplate.utils.extension.notNull
 import boilerplate.widget.holder.LoadingVH
 
 class ContactTabAdapter(
@@ -122,6 +123,25 @@ class ContactTabAdapter(
                 }
                 _list.addAll(index + 1, list)
                 notifyItemRangeInserted(index + 1, childSize)
+            }
+        }
+    }
+
+    fun updateContact(value: User?) {
+        value.notNull {
+            val listIterator = _list.listIterator()
+            while (listIterator.hasNext()) {
+                val index = listIterator.nextIndex()
+                val ob = listIterator.next()
+                if (ob is User && ob.id == it.id) {
+                    ob.apply {
+                        mood = it.mood
+                        phoneNumber = it.phoneNumber
+                        diffPhoneNumber = it.diffPhoneNumber
+                    }
+                    listIterator.set(ob)
+                    notifyItemChanged(index)
+                }
             }
         }
     }

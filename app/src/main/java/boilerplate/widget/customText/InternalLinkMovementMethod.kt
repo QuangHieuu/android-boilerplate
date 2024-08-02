@@ -123,7 +123,7 @@ open class InternalLinkMovementMethod : LinkMovementMethod() {
         }
     }
 
-    fun setOnLinkClickListener(clickListener: OnLinkListener): InternalLinkMovementMethod {
+    fun setClick(clickListener: OnLinkListener): InternalLinkMovementMethod {
         mListener = clickListener
         return this
     }

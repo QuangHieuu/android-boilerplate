@@ -15,6 +15,7 @@ import androidx.core.view.contains
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
+import boilerplate.R
 import boilerplate.utils.extension.Permission
 import boilerplate.utils.extension.addTo
 import boilerplate.utils.extension.notNull
@@ -68,7 +69,9 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
             )
             .invoke(null, layoutInflater, container, false)
             .let { it as AC }
-            .apply { _binding = this }.root
+            .apply { _binding = this }.root.apply {
+                setBackgroundColor(ContextCompat.getColor(context, R.color.colorAppBackground))
+            }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -118,7 +121,7 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
 
     protected abstract fun callApi()
 
-    protected fun popFragment() {
+    protected open fun popFragment() {
         parentFragmentManager.popBackStack()
     }
 
@@ -130,10 +133,7 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
         lifecycleScope.launch {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 requireActivity().window?.let {
-                    WindowCompat.setDecorFitsSystemWindows(
-                        it,
-                        false
-                    )
+                    WindowCompat.setDecorFitsSystemWindows(it, false)
                 }
             } else {
                 @Suppress("DEPRECATION")
@@ -150,10 +150,7 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
         lifecycleScope.launch {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 requireActivity().window?.let {
-                    WindowCompat.setDecorFitsSystemWindows(
-                        it,
-                        true
-                    )
+                    WindowCompat.setDecorFitsSystemWindows(it, true)
                 }
             } else {
                 requireActivity().window.setSoftInputMode(

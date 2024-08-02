@@ -4,7 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import boilerplate.base.BaseViewModel
 import boilerplate.data.local.repository.user.UserRepository
-import boilerplate.data.remote.api.response.BaseResult
+import boilerplate.data.remote.api.response.ResponseItems
 import boilerplate.data.remote.repository.conversation.ConversationRepository
 import boilerplate.data.remote.repository.file.FileRepository
 import boilerplate.model.conversation.Conversation
@@ -68,6 +68,9 @@ class ConversationVM(
     private val _checkMember by lazy { MutableLiveData<Boolean>() }
     val checkMember = _checkMember
 
+    private val _conversationMessage by lazy { MutableLiveData<ArrayList<Message>>() }
+    val conversationMessage = _conversationMessage
+
     var changeConversationAvatar: Uri? = null
     var changeConversationName: String? = null
 
@@ -102,7 +105,7 @@ class ConversationVM(
         conversationId = id
         goToMessageId = goTo
 
-        val message: Flowable<BaseResult<Message>>
+        val message: Flowable<ResponseItems<Message>>
 //        if (goTo.isEmpty()) {
         message = conversationRepo.getMessages(id, limit, null)
 //        } else {
@@ -182,10 +185,7 @@ class ConversationVM(
     }
 
     private fun createSendMessage(sendSms: Boolean, sendEmail: Boolean): Message {
-        val user = User().apply {
-            id = user.id
-        }
-
+        val user = User(user.id)
         return Message().apply {
             conversationId = this@ConversationVM.conversationId
             isSendSms = sendSms
@@ -282,6 +282,30 @@ class ConversationVM(
                 .result(
                     { _checkMember.postValue(it.result?.let { it.total > 0 }) },
                     { _checkMember.postValue(null) }
+                )
+        }
+    }
+
+    fun getPinMessage(page: Int) {
+        launchDisposable {
+            conversationRepo.getPinMessage(conversationId, page, limit)
+                .withScheduler(schedulerProvider)
+                .apply { if (page == 1) loading(_loading) }
+                .result(
+                    { _conversationMessage.postValue(it.result?.items.ifEmpty()) },
+                    { _conversationMessage.postValue(arrayListOf()) }
+                )
+        }
+    }
+
+    fun getImportantMessage(page: Int) {
+        launchDisposable {
+            conversationRepo.getImportantMessage(conversationId, page, limit)
+                .withScheduler(schedulerProvider)
+                .apply { if (page == 1) loading(_loading) }
+                .result(
+                    { _conversationMessage.postValue(it.result?.items.ifEmpty()) },
+                    { _conversationMessage.postValue(arrayListOf()) }
                 )
         }
     }

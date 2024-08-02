@@ -1,17 +1,18 @@
 package boilerplate.data.remote.api.response
 
-import com.google.gson.annotations.SerializedName
+data class Response<T>(
+    var result: T? = null
+)
 
-open class BaseResponse<T> {
-    val result: T? = null
-    val items: T? = null
-    val requests: T? = null
-    val request: T? = null
-    val attachments: T? = null
+data class Responses<T>(
+    var result: ArrayList<T> = arrayListOf()
+)
 
-    var code: Int = 0
-    var message: String = ""
+data class ResponseItems<T>(
+    var result: Items<T>? = null,
+)
 
-    @SerializedName("error")
-    val error: Int = 0
-}
+data class Items<T>(
+    var items: ArrayList<T> = arrayListOf(),
+    var total: Int = 0
+)

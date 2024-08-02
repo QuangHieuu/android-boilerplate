@@ -4,11 +4,13 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.KeyEvent
 import androidx.annotation.IdRes
 import androidx.core.content.res.ResourcesCompat
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
@@ -31,6 +33,26 @@ fun Fragment.findOwner(tag: String): Fragment {
     return fragment
 }
 
+fun Fragment.openDialog(
+    fragment: DialogFragment,
+    asDialog: Boolean = context?.isTablet() ?: false,
+    addToBackStack: Boolean = true,
+    animateType: AnimateType = AnimateType.SLIDE_TO_LEFT,
+    @IdRes containerId: Int = R.id.app_container,
+    tag: String = fragment::class.java.simpleName,
+) {
+    if (asDialog) {
+        val fm = requireActivity().supportFragmentManager
+        if (fm.isExistFragment(fragment)) {
+            fm.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        }
+        fragment.show(fm, tag)
+    } else {
+        fragment.showsDialog = false
+        open(fragment, false, addToBackStack, animateType, containerId, tag)
+    }
+}
+
 fun Fragment.open(
     fragment: Fragment,
     split: Boolean = false,
@@ -40,26 +62,21 @@ fun Fragment.open(
     tag: String = fragment::class.java.simpleName,
 ) {
     val fm = requireActivity().supportFragmentManager
-    fm.transact(
-        begin = {
-            hide(this@open)
-        },
-        end = {
-            if (addToBackStack) {
-                addToBackStack(tag)
+    fm.transact({
+        hide(this@open)
+        if (addToBackStack) {
+            addToBackStack(tag)
+        }
+        val isTablet = context?.isTablet()
+        if (isTablet == true && split) {
+            if (fm.isExistFragment(fragment)) {
+                fm.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE)
             }
-            val isTablet = context?.isTablet()
-            if (isTablet == true && split) {
-                if (fm.isExistFragment(fragment)) {
-                    fm.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-                }
-                add(R.id.frame_tablet, fragment, tag)
-            } else {
-                add(containerId, fragment, tag)
-            }
-        },
-        animateEnd = animateType
-    )
+            add(R.id.frame_tablet, fragment, tag)
+        } else {
+            add(containerId, fragment, tag)
+        }
+    }, animateType)
 }
 
 fun <T : Activity> Fragment.goTo(
@@ -95,16 +112,12 @@ fun Fragment.isCanPopBackStack(): Boolean {
  * Runs a FragmentTransaction, then calls commitAllowingStateLoss().
  */
 inline fun FragmentManager.transact(
-    begin: FragmentTransaction.() -> Unit,
-    end: FragmentTransaction.() -> Unit,
-    animateBegin: AnimateType = AnimateType.SLIDE_TO_LEFT,
-    animateEnd: AnimateType = AnimateType.SLIDE_TO_LEFT,
+    action: FragmentTransaction.() -> Unit,
+    animate: AnimateType = AnimateType.SLIDE_TO_LEFT,
 ) {
     beginTransaction().apply {
-        setCustomAnimations(this, animateBegin)
-        begin()
-        setCustomAnimations(this, animateEnd)
-        end()
+        setCustomAnimations(this, animate)
+        action()
     }.commitAllowingStateLoss()
 }
 
@@ -123,19 +136,22 @@ fun setCustomAnimations(
         AnimateType.SLIDE_TO_RIGHT -> {
             transaction.setCustomAnimations(
                 R.anim.enter_from_left, R.anim.fade_out,
-                R.anim.fade_in, R.anim.exit_to_left
+                R.anim.stay, R.anim.exit_to_left
             )
         }
 
         AnimateType.SLIDE_TO_LEFT -> {
             transaction.setCustomAnimations(
-                R.anim.enter_from_right, R.anim.fade_out,
-                R.anim.stay, R.anim.exit_to_right
+                R.anim.enter_from_right, R.anim.exit_to_left,
+                R.anim.enter_from_left, R.anim.exit_to_right
             )
         }
 
         else -> {
-
+            transaction.setCustomAnimations(
+                R.anim.stay, R.anim.stay,
+                R.anim.stay, R.anim.stay
+            )
         }
     }
 }
@@ -161,4 +177,32 @@ fun <VB : ViewBinding> Fragment.showDialog(
     }
     viewInit(binding, dialog)
     dialog.show()
+}
+
+fun Fragment.callPhone(phone: String?) {
+    try {
+        startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phone")))
+    } catch (_: NullPointerException) {
+        view?.showSnackBarFail(R.string.error_no_phone_number)
+    }
+}
+
+fun Fragment.sendSms(phone: String?) {
+    try {
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("sms:$phone")).apply {
+            putExtra("sms_body", "")
+        })
+    } catch (_: NullPointerException) {
+        view?.showSnackBarFail(R.string.error_no_phone_number)
+    }
+}
+
+fun Fragment.sendEmail(email: String?) {
+    if (!email.isNullOrEmpty()) {
+        Intent(Intent.ACTION_SEND)
+            .apply { setType("text/html") }
+            .let { startActivity(Intent.createChooser(it, "Send Email")) }
+    } else {
+        view?.showSnackBarFail(R.string.error_no_phone_number)
+    }
 }

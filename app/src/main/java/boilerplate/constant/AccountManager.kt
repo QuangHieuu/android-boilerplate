@@ -21,11 +21,11 @@ object AccountManager {
 
     @JvmStatic
     fun getMainCompany(): Company {
-        return userImpl.getUser().mainCompany ?: Company()
+        return userImpl.getUser().mainCompany
     }
 
     @JvmStatic
-    fun getCurrentUserId(): String? {
+    fun getCurrentUserId(): String {
         return userImpl.getUser().id
     }
 

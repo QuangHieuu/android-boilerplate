@@ -141,7 +141,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
             viewPagerHome.apply {
                 setAdapter(_homeAdapter)
                 setUserInputEnabled(false)
-                setOffscreenPageLimit(5)
+                setOffscreenPageLimit(4)
             }
 
             HomeTabIndex.setupFragment(isTablet()).let {
@@ -152,7 +152,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
             TabLayoutMediator(
                 tabLayoutHome,
                 viewPagerHome,
-                false,
+                true,
                 false
             ) { tab: TabLayout.Tab, position: Int ->
                 tab.setCustomView(

@@ -8,9 +8,12 @@ import boilerplate.model.user.User
 import boilerplate.ui.contact.ContactVM
 import boilerplate.ui.contact.adapter.ContactTabAdapter
 import boilerplate.ui.contact.listener.SimpleListener
-import boilerplate.ui.empty.EmptyFragment
+import boilerplate.ui.contactDetail.ContactDetailFragment
+import boilerplate.ui.main.MainVM
+import boilerplate.utils.extension.callPhone
 import boilerplate.utils.extension.notNull
-import boilerplate.utils.extension.open
+import boilerplate.utils.extension.openDialog
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ContactTabFragment : BaseFragment<FragmentContactTabBinding, ContactVM>() {
@@ -24,6 +27,7 @@ class ContactTabFragment : BaseFragment<FragmentContactTabBinding, ContactVM>() 
     }
 
     override val viewModel: ContactVM by viewModel(ownerProducer = { requireParentFragment() })
+    private val _activityVM: MainVM by activityViewModel()
 
     private lateinit var _screen: String
     private lateinit var _adapter: ContactTabAdapter
@@ -41,15 +45,15 @@ class ContactTabFragment : BaseFragment<FragmentContactTabBinding, ContactVM>() 
                 }
 
                 override fun onOpenInform(user: User) {
-                    open(split = true, fragment = EmptyFragment.newInstance())
+                    openDialog(ContactDetailFragment.newInstance(user.id))
                 }
 
                 override fun onChatWith(item: User) {
-
+                    _activityVM.postPersonConversation(item)
                 }
 
                 override fun onPhone(phoneNumber: String) {
-
+                    callPhone(phoneNumber)
                 }
             })
 
@@ -68,9 +72,22 @@ class ContactTabFragment : BaseFragment<FragmentContactTabBinding, ContactVM>() 
                 }
             }
         }
+        with(_activityVM) {
+            if (_screen == ContactTab.TYPE_TAB_DEPARTMENT.type) {
+                user.observe(this@ContactTabFragment) {
+                    _adapter.updateContact(it)
+                }
+            }
+        }
     }
 
     override fun registerEvent() {
+        with(binding) {
+            swipeLayout.setOnRefreshListener {
+                swipeLayout.isRefreshing = false
+                callApi()
+            }
+        }
     }
 
     override fun callApi() {

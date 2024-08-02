@@ -2,13 +2,14 @@ package boilerplate.data.local.repository.user
 
 import boilerplate.data.local.sharedPrefs.SharedPrefsApi
 import boilerplate.data.local.sharedPrefs.SharedPrefsKey
-import boilerplate.data.local.sharedPrefs.SharedPrefsKey.USER_CONVERSATION_CONFIG
 import boilerplate.data.remote.api.ApiRequest
-import boilerplate.data.remote.api.response.BaseResponse
-import boilerplate.data.remote.api.response.BaseResult
+import boilerplate.data.remote.api.response.Response
+import boilerplate.data.remote.api.response.ResponseItems
 import boilerplate.model.conversation.ConversationConfig
 import boilerplate.model.user.Company
 import boilerplate.model.user.Department
+import boilerplate.model.user.Role
+import boilerplate.model.user.UpdateBody
 import boilerplate.model.user.User
 import boilerplate.utils.extension.checkInternet
 import com.google.gson.Gson
@@ -16,7 +17,7 @@ import com.google.gson.reflect.TypeToken
 import io.reactivex.rxjava3.core.Flowable
 
 interface UserRepository {
-    fun logout(): Flowable<BaseResponse<Boolean>>
+    fun logout(): Flowable<Response<Boolean>>
 
     fun getUser(): User
 
@@ -44,7 +45,7 @@ interface UserRepository {
 
     fun getCurrentRoleFullName(): String
 
-    fun saveRolePermission(r: ArrayList<User.Role>)
+    fun saveRolePermission(r: ArrayList<Role>)
 
     fun getRolePermission(): ArrayList<String>
 
@@ -56,11 +57,13 @@ interface UserRepository {
 
     fun getCurrentDepartment(): Department
 
-    fun getCompanyDepartment(id: String): Flowable<BaseResult<Department>>
+    fun getCompanyDepartment(id: String): Flowable<ResponseItems<Department>>
 
     fun saveConversationConfig(config: ConversationConfig)
 
     fun getConversationConfig(): ConversationConfig
+
+    fun patchUser(body: UpdateBody): Flowable<Response<Any>>
 }
 
 class UserRepositoryImpl(
@@ -87,11 +90,11 @@ class UserRepositoryImpl(
     override fun saveUser(user: User) {
         for (title in user.titles) {
             if (title.isMain) {
-                if (title.company?.id.isNullOrEmpty()) {
-                    title.company?.id = title.companyId
+                if (title.company.id.isEmpty()) {
+                    title.company.id = title.companyId
                 }
-                if (title.department?.id.isNullOrEmpty()) {
-                    title.department?.id = title.departmentId
+                if (title.department.id.isNullOrEmpty()) {
+                    title.department.id = title.departmentId
                 }
             }
         }
@@ -101,6 +104,7 @@ class UserRepositoryImpl(
 
     override fun wipeUserData() {
         share.clearKey(SharedPrefsKey.USER_DATA)
+        share.clearKey(SharedPrefsKey.USER_ROLE)
         share.clearKey(SharedPrefsKey.USER_COMPANY_DATA)
         share.clearKey(SharedPrefsKey.USER_ROLE_PERMISSION)
         share.clearKey(SharedPrefsKey.USER_CONVERSATION_CONFIG)
@@ -139,13 +143,13 @@ class UserRepositoryImpl(
         var name = ""
         for (title in user.titles) {
             if (title.id.equals(role)) {
-                name = "${title.position?.ten_chuc_vu} ${title.department?.shortName}"
+                name = "${title.position.name} ${title.department.shortName}"
             }
         }
         return name
     }
 
-    override fun saveRolePermission(r: ArrayList<User.Role>) {
+    override fun saveRolePermission(r: ArrayList<Role>) {
         val list = arrayListOf<String>()
         for (role in r) {
             if (role.isActive) list.add(role.codeId)
@@ -210,19 +214,23 @@ class UserRepositoryImpl(
         return department ?: Department()
     }
 
-    override fun getCompanyDepartment(id: String): Flowable<BaseResult<Department>> {
+    override fun getCompanyDepartment(id: String): Flowable<ResponseItems<Department>> {
         return api.chat.getCompanyDepartment(id).checkInternet()
     }
 
     override fun saveConversationConfig(config: ConversationConfig) {
-        share.put(USER_CONVERSATION_CONFIG, gson.toJson(config))
+        share.put(SharedPrefsKey.USER_CONVERSATION_CONFIG, gson.toJson(config))
     }
 
     override fun getConversationConfig(): ConversationConfig {
-        return share.get(USER_CONVERSATION_CONFIG, ConversationConfig::class.java)
+        return share.get(SharedPrefsKey.USER_CONVERSATION_CONFIG, ConversationConfig::class.java)
     }
 
-    override fun logout(): Flowable<BaseResponse<Boolean>> {
+    override fun patchUser(body: UpdateBody): Flowable<Response<Any>> {
+        return api.eOffice.patchUser(body).checkInternet()
+    }
+
+    override fun logout(): Flowable<Response<Boolean>> {
         return api.notify.deleteDevice(share.get(SharedPrefsKey.DEVICE_ID, String::class.java))
             .checkInternet()
     }

@@ -2,9 +2,9 @@ package boilerplate.utils.extension
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Resources
+import android.graphics.Rect
 import android.graphics.drawable.Drawable
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -22,11 +22,12 @@ import android.widget.ProgressBar
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable
+import androidx.fragment.app.DialogFragment
 import boilerplate.R
 import boilerplate.constant.AccountManager
 import boilerplate.constant.Constants.KEY_AUTH
 import boilerplate.databinding.ItemFileBinding
+import boilerplate.databinding.ItemFileSurveyBinding
 import boilerplate.databinding.ItemLinkBinding
 import boilerplate.databinding.ViewToastBinding
 import boilerplate.model.file.AttachedFile
@@ -186,83 +187,56 @@ fun ImageView.loadImage(
     if (url.isNullOrEmpty()) {
         return
     }
+    launch {
+        val isGif = ExtensionType.isFileGIF(type)
 
-    val loading: CircularProgressDrawable = CircularProgressDrawable(context).apply {
-        setColorSchemeColors(ContextCompat.getColor(context, R.color.color_1552DC))
-        setCenterRadius(25f)
-        setStrokeWidth(5f)
-    }
+        val context = context
+        val glideUrl = GlideUrl(url, accessToken?.let {
+            LazyHeaders.Builder()
+                .addHeader(KEY_AUTH, it)
+                .build()
+        } ?: Headers.DEFAULT)
 
-    val isGif = ExtensionType.isFileGIF(type)
+        val request = (requestOptions ?: RequestOptions().error(R.drawable.ic_avatar))
 
-    val context = context
-    val glideUrl = GlideUrl(url, accessToken?.let {
-        LazyHeaders.Builder()
-            .addHeader(KEY_AUTH, it)
-            .build()
-    } ?: Headers.DEFAULT)
+        if (isGif) {
+            Glide
+                .with(context)
+                .asGif()
+                .load(glideUrl)
+                .apply(request)
+                .into(object : CustomTarget<GifDrawable>() {
+                    override fun onResourceReady(
+                        resource: GifDrawable,
+                        transition: Transition<in GifDrawable>?
+                    ) {
+                        setImageDrawable(resource)
+                        resource.start()
+                    }
 
-    val request = (requestOptions ?: RequestOptions().error(R.drawable.ic_avatar))
-        .placeholder(loading)
-
-    if (isGif) {
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                        setImageResource(R.color.colorWhite)
+                    }
+                })
+        }
         Glide
             .with(context)
-            .asGif()
+            .asDrawable()
             .load(glideUrl)
             .apply(request)
-            .into(object : CustomTarget<GifDrawable>() {
-                override fun onLoadStarted(placeholder: Drawable?) {
-                    setImageDrawable(placeholder)
-                    loading.start()
-                }
-
+            .into(object : CustomTarget<Drawable>() {
                 override fun onResourceReady(
-                    resource: GifDrawable,
-                    transition: Transition<in GifDrawable>?
+                    resource: Drawable,
+                    transition: Transition<in Drawable>?
                 ) {
                     setImageDrawable(resource)
-                    resource.start()
-                    loading.stop()
                 }
 
                 override fun onLoadCleared(placeholder: Drawable?) {
-                    setImageResource(R.color.colorWhite)
-                    loading.stop()
-                }
-
-                override fun onLoadFailed(errorDrawable: Drawable?) {
-                    setImageDrawable(errorDrawable)
-                    loading.stop()
+                    setImageDrawable(placeholder)
                 }
             })
     }
-    Glide
-        .with(context)
-        .asDrawable()
-        .load(glideUrl)
-        .apply(request)
-        .into(object : CustomTarget<Drawable>() {
-            override fun onLoadStarted(placeholder: Drawable?) {
-                setImageDrawable(placeholder)
-                loading.start()
-            }
-
-            override fun onLoadFailed(errorDrawable: Drawable?) {
-                setImageDrawable(errorDrawable)
-                loading.stop()
-            }
-
-            override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
-                setImageDrawable(resource)
-                loading.stop()
-            }
-
-            override fun onLoadCleared(placeholder: Drawable?) {
-                setImageDrawable(placeholder)
-                loading.stop()
-            }
-        })
 }
 
 fun View.click(block: ((v: View) -> Unit)?) {
@@ -319,38 +293,47 @@ fun View.addTo(parent: ViewGroup?) {
 }
 
 inline fun View.launch(delay: Long = 0, crossinline r: () -> Unit) {
-    synchronized(this) {
-        Handler(Looper.getMainLooper()).postDelayed({ r() }, delay)
-    }
+    postDelayed({ r() }, delay)
 }
 
+fun LinearLayout.addSurvey(
+    file: AttachedFile.SurveyFile,
+    sizeText: Float = 0f,
+    openFile: (file: AttachedFile.SurveyFile) -> Unit
+) {
+    val binding =
+        ItemFileSurveyBinding.inflate(LayoutInflater.from(context), rootView as ViewGroup, false)
+    with(binding) {
+        root.setBackgroundResource(R.drawable.bg_message_survey)
 
-//private fun addViewSurvey(file: AttachedFile.SurveyFile): View {
-//    val layoutInflater = LayoutInflater.from(itemView.context)
-//    val binding =
-//        ItemFileSurveyBinding.inflate(layoutInflater, itemView.rootView as ViewGroup, false)
-//
-//    with(binding) {
-//        root.setBackgroundResource(R.drawable.bg_message_survey)
-//
-//        tvFileName.apply {
-//            textSize = _mainSize
-//            text = file.displayTitle
-//        }
-//
-//        tvTitle.textSize = _mainSize
-//        if (file.isSurveyBreakfast) {
-//            tvTitle.text = itemView.context.getString(R.string.breakfast_file)
-//            tvTitle.setTextColor(ContextCompat.getColor(itemView.context, R.color.color_FF951A))
-//            imgIcon.setImageResource(R.drawable.ic_breakfast)
-//        } else {
-//            tvTitle.text = itemView.context.getString(R.string.survey_file)
-//            tvTitle.setTextColor(ContextCompat.getColor(itemView.context, R.color.colorPrimary))
-//            imgIcon.setImageResource(R.drawable.ic_survey_file)
-//        }
-//    }
-//    return binding.root.apply { click { _listener.openSurvey(file) } }
-//}
+        tvFileName.apply {
+            if (sizeText != 0f) {
+                textSize = sizeText
+            }
+            text = file.displayTitle
+        }
+
+        tvTitle.apply {
+            if (sizeText != 0f) {
+                textSize = sizeText
+            }
+        }
+
+        if (file.isSurveyBreakfast) {
+            tvTitle.text = context.getString(R.string.breakfast_file)
+            tvTitle.setTextColor(ContextCompat.getColor(context, R.color.color_FF951A))
+            imgIcon.setImageResource(R.drawable.ic_breakfast)
+        } else {
+            tvTitle.text = context.getString(R.string.survey_file)
+            tvTitle.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary))
+            imgIcon.setImageResource(R.drawable.ic_survey_file)
+        }
+    }
+    binding.root.apply {
+        click { openFile(file) }
+    }.let { this.addView(it) }
+}
+
 fun LinearLayout.addFile(
     file: AttachedFile,
     showClear: Boolean = false,
@@ -430,4 +413,17 @@ fun EditText.addListener(
             after.notNull { it(s) }
         }
     })
+}
+
+fun DialogFragment.setWidthPercent(
+    widthPercent: Int = 60,
+    heightPercent: Int = 60
+) {
+    val w = widthPercent.toFloat() / 100
+    val h = heightPercent.toFloat() / 100
+    val dm = Resources.getSystem().displayMetrics
+    val rect = dm.run { Rect(0, 0, widthPixels, heightPixels) }
+    val width = rect.width() * w
+    val height = rect.height() * h
+    dialog?.window?.setLayout(width.toInt(), height.toInt())
 }

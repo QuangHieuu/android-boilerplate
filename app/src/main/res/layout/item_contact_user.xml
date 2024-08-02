@@ -63,10 +63,17 @@
         android:textColor="@color/color_212121"
         android:textSize="@dimen/dp_14"
         app:layout_constrainedWidth="true"
-        app:layout_constraintBottom_toTopOf="@id/ln_role"
+        app:layout_constraintBottom_toBottomOf="@id/barrier"
         app:layout_constraintEnd_toStartOf="@id/img_phone"
         app:layout_constraintStart_toEndOf="@id/img_avatar"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top"
+        app:constraint_referenced_ids="tv_status, ln_role" />
 
     <boilerplate.widget.customText.TextViewFont
         android:id="@+id/tv_status"
@@ -74,10 +81,11 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textColor="@color/color_828282"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/tv_name"
         app:layout_constraintStart_toStartOf="@id/tv_name"
-        app:layout_constraintTop_toBottomOf="@id/tv_name" />
+        app:layout_constraintTop_toBottomOf="@id/barrier" />
 
     <LinearLayout
         android:id="@+id/ln_role"
@@ -88,7 +96,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/tv_name"
         app:layout_constraintStart_toStartOf="@id/tv_name"
-        app:layout_constraintTop_toBottomOf="@id/tv_name">
+        app:layout_constraintTop_toBottomOf="@id/barrier">
 
         <boilerplate.widget.customText.TextViewFont
             android:id="@+id/tv_company"

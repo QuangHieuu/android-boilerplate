@@ -77,7 +77,7 @@ object HomeTabIndex {
         } else {
             fragments.add(Pair(ID_HOME_DASHBOARD, DashboardFragment.newInstance()))
             tabIcon.add(R.drawable.state_ic_tab_home)
-            tabTitle.add("Lịch họp")
+            tabTitle.add("Trang chủ")
             tabPosition.add(POSITION_HOME_DASHBOARD)
         }
 

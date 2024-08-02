@@ -2,34 +2,20 @@ package boilerplate.model.user
 
 import com.google.gson.annotations.SerializedName
 
-class Title {
-    var id: String? = null
-        get() = field ?: "".also { field = it }
-
+data class Title(
+    var id: String = "",
     @SerializedName("phong_ban_chinh")
-    val isMain = false
-
+    val isMain: Boolean = false,
     @SerializedName("don_vi")
-    var company: Company? = null
-        get() = field ?: Company().also { field = it }
-
+    var company: Company = Company(),
     @SerializedName("phong_ban")
-    var department: Department? = null
-        get() = field ?: Department().also { field = it }
-
+    var department: Department = Department(),
     @SerializedName("chuc_vu")
-    var position: Position? = null
-        get() = field ?: Position().also { field = it }
-
+    var position: Position = Position(),
     @SerializedName("doi_tuong")
-    var personObject: PersonObject? = null
-        get() = field ?: PersonObject().also { field = it }
-
+    var personObject: PersonObject? = null,
     @SerializedName("don_vi_id")
-    var companyId: String? = null
-        get() = field ?: "".also { field = it }
-
+    var companyId: String = "",
     @SerializedName("phong_ban_id")
-    var departmentId: String? = null
-        get() = field ?: "".also { field = it }
-}
+    var departmentId: String = "",
+)

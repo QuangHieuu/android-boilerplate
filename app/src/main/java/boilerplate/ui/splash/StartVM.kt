@@ -71,13 +71,12 @@ class StartVM(
     }
 
     fun getMe() {
-        val role = loginServer.getRolePermission()
-        val contact = loginServer.getContact()
-        val config = conImpl.getConversationConfig()
-
         launchDisposable {
             loginServer.getMe()
                 .flatMap { res ->
+                    val role = loginServer.getRolePermission()
+                    val contact = loginServer.getContact()
+                    val config = conImpl.getConversationConfig()
                     Single.concat(role, contact, config)
                         .toList()
                         .toFlowable()

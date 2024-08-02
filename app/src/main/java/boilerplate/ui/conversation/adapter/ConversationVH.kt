@@ -19,6 +19,7 @@ import boilerplate.utils.SystemUtil.getFontSizeChat
 import boilerplate.utils.extension.click
 import boilerplate.utils.extension.gone
 import boilerplate.utils.extension.hide
+import boilerplate.utils.extension.isTablet
 import boilerplate.utils.extension.loadImage
 import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.show
@@ -42,6 +43,7 @@ class ConversationVH(
     private val _unReadColor: Int
     private val _readBackground: Int
     private val _unReadBackground: Int
+    private val _selectedBackground: Int
 
     private var _conversation: Conversation? = null
     private var _isUserNotify = false
@@ -62,6 +64,7 @@ class ConversationVH(
         _unReadColor = ContextCompat.getColor(_context, R.color.colorBlack)
         _readBackground = ContextCompat.getColor(_context, R.color.colorWhite)
         _unReadBackground = ContextCompat.getColor(_context, R.color.color_conversation_unread)
+        _selectedBackground = ContextCompat.getColor(_context, R.color.color_conversation_selected)
 
         with(_binding) {
             tvPin.setText(if (pin) R.string.un_pin else R.string.pin)
@@ -190,7 +193,10 @@ class ConversationVH(
                 tvConversationName.setFontRegular()
                 tvContent.setTextColor(_readColor)
                 tvUnread.gone()
-                rlConversationItem.setBackgroundColor(_readBackground)
+                rlConversationItem.setBackgroundColor(
+                    if (con.isSelected && _context.isTablet()) _selectedBackground
+                    else _readBackground
+                )
             } else {
                 tvUnread.apply {
                     visibility = View.VISIBLE

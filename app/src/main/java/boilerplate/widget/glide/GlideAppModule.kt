@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
+import androidx.core.content.ContextCompat
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import boilerplate.R
 import com.bumptech.glide.Glide
 import com.bumptech.glide.GlideBuilder
@@ -25,13 +27,19 @@ import javax.net.ssl.X509TrustManager
 @GlideModule
 class GlideAppModule : AppGlideModule() {
     override fun applyOptions(context: Context, builder: GlideBuilder) {
+        val loading = CircularProgressDrawable(context).apply {
+            setColorSchemeColors(ContextCompat.getColor(context, R.color.color_1552DC))
+            setCenterRadius(25f)
+            setStrokeWidth(5f)
+        }.apply { start() }
+
         with(builder) {
             setLogLevel(Log.ERROR)
             setDefaultRequestOptions(
                 RequestOptions()
                     .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .error(R.drawable.bg_error)
-                    .placeholder(R.drawable.bg_corner_white)
+                    .placeholder(loading)
                     .encodeFormat(Bitmap.CompressFormat.PNG)
             )
         }
