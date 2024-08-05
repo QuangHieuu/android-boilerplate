@@ -7,7 +7,7 @@ import boilerplate.ui.conversationDetail.adpater.SimpleMessageEvent
 import boilerplate.utils.extension.click
 import boilerplate.utils.extension.gone
 import boilerplate.utils.extension.hide
-import boilerplate.utils.extension.loadImage
+import boilerplate.utils.extension.loadAvatar
 import boilerplate.utils.extension.show
 
 open class ReceiverHolder(
@@ -34,12 +34,12 @@ open class ReceiverHolder(
 
                 val role = String.format(
                     "%s - %s",
-                    message.personSend.mainDepartment?.shortName,
-                    message.personSend.mainCompany?.shortName
+                    message.personSend.mainDepartment.shortName,
+                    message.personSend.mainCompany.shortName
                 )
                 tvRole.text = role
                 tvUserSend.text = message.personSend.name
-                imgAvatar.loadImage(message.personSend.avatar)
+                imgAvatar.loadAvatar(message.personSend.avatar)
 
                 imgOnline.apply { if (message.personSend.isOnline()) show() else gone() }
 

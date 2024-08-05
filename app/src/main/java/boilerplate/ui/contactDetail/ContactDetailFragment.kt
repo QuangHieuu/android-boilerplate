@@ -18,7 +18,7 @@ import boilerplate.utils.extension.callPhone
 import boilerplate.utils.extension.click
 import boilerplate.utils.extension.gone
 import boilerplate.utils.extension.isTablet
-import boilerplate.utils.extension.loadImage
+import boilerplate.utils.extension.loadAvatar
 import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.openDialog
 import boilerplate.utils.extension.sendEmail
@@ -31,7 +31,7 @@ class ContactDetailFragment : BaseDialogFragment<FragmentContactDetailBinding, C
     companion object {
         const val KEY_USER_ID = ""
 
-        fun newInstance(id: String): ContactDetailFragment {
+        fun newInstance(id: String = ""): ContactDetailFragment {
             return Bundle().apply {
                 putString(KEY_USER_ID, id)
             }.let { ContactDetailFragment().apply { arguments = it } }
@@ -93,7 +93,7 @@ class ContactDetailFragment : BaseDialogFragment<FragmentContactDetailBinding, C
     private fun handleUserDetail(user: User) {
         user.notNull {
             with(binding) {
-                imgAvatar.loadImage(user.avatar)
+                imgAvatar.loadAvatar(user.avatar)
                 tvName.text = user.name
                 tvDepartment.text = user.mainDepartment.name ?: ""
 

@@ -8,7 +8,7 @@ import boilerplate.ui.contact.listener.OnContactListener
 import boilerplate.utils.extension.click
 import boilerplate.utils.extension.gone
 import boilerplate.utils.extension.isVisible
-import boilerplate.utils.extension.loadImage
+import boilerplate.utils.extension.loadAvatar
 import boilerplate.utils.extension.show
 
 class UserHolder(
@@ -24,7 +24,7 @@ class UserHolder(
         check(any is User).apply {
             with(_binding) {
                 tvName.text = any.name
-                imgAvatar.loadImage(any.avatar)
+                imgAvatar.loadAvatar(any.avatar)
                 frameUserOnline.apply {
                     show()
                     isEnabled = any.isOnline()

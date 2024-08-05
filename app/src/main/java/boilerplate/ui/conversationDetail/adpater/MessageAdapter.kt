@@ -69,7 +69,7 @@ class MessageAdapter(
                     ItemMessageReceiveBinding.inflate(layoutInflater, parent, false),
                     _listener,
                     viewType,
-                    _isDisable
+                    this._isDisable
                 )
             }
 
@@ -178,7 +178,7 @@ class MessageAdapter(
     fun loadMoreData(items: ArrayList<Any>) {
         var size: Int = _list.size
         if (size > 0) {
-            val last: Any? = _list[size - 1]
+            val last: Any? = _list.last()
             if (last == null) {
                 _list.remove(null)
                 notifyItemRemoved(size - 1)
@@ -210,7 +210,7 @@ class MessageAdapter(
     fun cancelLoadMore() {
         val size: Int = _list.size
         if (size > 0) {
-            val last: Any? = _list[size - 1]
+            val last: Any? = _list.last()
             if (last == null) {
                 _list.remove(null)
                 notifyItemRemoved(size - 1)
@@ -327,14 +327,14 @@ class MessageAdapter(
     }
 
     fun updateMessage(input: Message) {
-        for (ob in _list) {
-            val index: Int = _list.indexOf(ob)
-            if (ob is Message) {
-                if (ob.messageId.equals(input.messageId)) {
-                    _list[index] = input
-                    notifyItemChanged(index, input)
-                    break
-                }
+        val listIterator = _list.listIterator();
+        while (listIterator.hasNext()) {
+            val index = listIterator.nextIndex()
+            val ob = listIterator.next()
+            if (ob is Message && ob.messageId.equals(input.messageId)) {
+                listIterator.set(input)
+                notifyItemChanged(index, input)
+                break
             }
         }
     }
@@ -365,20 +365,19 @@ class MessageAdapter(
     }
 
     fun updateReaction(message: Message) {
-        for (ob in _list) {
-            if (ob is Message) {
-                val index: Int = _list.indexOf(ob)
-                if (ob.messageId.equals(message.messageId)) {
-                    ob.reactions.clear()
-                    ob.reactions.addAll(message.reactions)
-                    _list.set(index, ob)
-                    notifyItemChanged(index, ob)
-                    break
-                }
+        val listIterator = _list.listIterator();
+        while (listIterator.hasNext()) {
+            val index = listIterator.nextIndex()
+            val ob = listIterator.next()
+            if (ob is Message && ob.messageId.equals(message.messageId)) {
+                ob.reactions.clear()
+                ob.reactions.addAll(message.reactions)
+                listIterator.set(ob)
+                notifyItemChanged(index, ob)
+                break
             }
         }
     }
-
 
     fun removeAllMessage() {
         val size: Int = _list.size
@@ -387,14 +386,15 @@ class MessageAdapter(
     }
 
     fun markAllUnimportant() {
-        for (ob in _list) {
+        val listIterator = _list.listIterator();
+        while (listIterator.hasNext()) {
+            val ob = listIterator.next()
             if (ob is Message) {
-                val index: Int = _list.indexOf(ob)
-                ob.isImportant = false
-                _list.set(index, ob)
-                notifyItemChanged(index, ob)
+                ob.isImportant = true
+                listIterator.set(ob)
             }
         }
+        notifyItemRangeChanged(0, _list.size)
     }
 
     fun focusMessage(message: Message?) {
@@ -403,5 +403,37 @@ class MessageAdapter(
         notifyItemRemoved(size)
         _list.add(message)
         notifyItemInserted(0)
+    }
+
+    fun hideMessage(messageId: String?, isHide: Boolean) {
+        val listIterator = _list.listIterator()
+        while (listIterator.hasNext()) {
+            val index = listIterator.nextIndex()
+            val ob = listIterator.next()
+            if (ob is Message && ob.messageId.equals(messageId)) {
+                ob.isHide = isHide
+                listIterator.set(ob)
+                notifyItemChanged(index, ob)
+                break
+            }
+        }
+    }
+
+    fun disableSwipe() {
+        this._isDisable = true
+    }
+
+    fun markImportant(messageId: String) {
+        val listIterator = _list.listIterator()
+        while (listIterator.hasNext()) {
+            val index = listIterator.nextIndex()
+            val ob = listIterator.next()
+            if (ob is Message && ob.messageId.equals(messageId)) {
+                ob.isImportant = !ob.isImportant
+                listIterator.set(ob)
+                notifyItemChanged(index, ob)
+                break
+            }
+        }
     }
 }

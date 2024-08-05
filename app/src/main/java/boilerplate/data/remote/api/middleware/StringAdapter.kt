@@ -9,7 +9,7 @@ import java.io.IOException
 class StringAdapter : TypeAdapter<String>() {
     @Throws(IOException::class)
     override fun write(out: JsonWriter, value: String?) {
-        out.value(value ?: "")
+        out.value(value)
     }
 
     @Throws(IOException::class)

@@ -97,4 +97,9 @@
         <item name="android:layout_marginBottom">@dimen/dp_50</item>
         //custom bottom margin
     </style>
+
+    <style name="PopupWindowAnimation" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/fade_in</item>
+        <item name="android:windowExitAnimation">@anim/fade_out</item>
+    </style>
 </resources>

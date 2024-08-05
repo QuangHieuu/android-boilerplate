@@ -18,7 +18,7 @@ import boilerplate.utils.extension.addFile
 import boilerplate.utils.extension.addSurvey
 import boilerplate.utils.extension.click
 import boilerplate.utils.extension.gone
-import boilerplate.utils.extension.loadImage
+import boilerplate.utils.extension.loadAvatar
 import boilerplate.utils.extension.show
 import boilerplate.widget.customText.InternalLinkMovementMethod
 import boilerplate.widget.holder.LoadingVH
@@ -158,7 +158,7 @@ class MessageHolder(
         )
 
         with(binding) {
-            imgAvatar.loadImage(person.avatar)
+            imgAvatar.loadAvatar(person.avatar)
             imgAvatar.click { listener.onAvatar(person) }
 
             imgAction.click {

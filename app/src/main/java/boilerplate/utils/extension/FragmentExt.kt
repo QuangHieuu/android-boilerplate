@@ -19,17 +19,18 @@ import boilerplate.R
 import boilerplate.constant.Constants
 import kotlin.reflect.KClass
 
-fun Fragment.findOwner(tag: String): Fragment {
-    val fragment = requireActivity().supportFragmentManager.findFragmentByTag(tag)
-        ?: if (context == null) {
-            throw IllegalStateException(
-                "Fragment $this is not attached to any Fragment or host"
-            )
-        } else {
-            throw IllegalStateException(
-                "Fragment $this is not a child Fragment, it is directly attached to $context"
-            )
-        }
+fun <T : Fragment> Fragment.findOwner(tag: KClass<T>): Fragment {
+    val fragment =
+        requireActivity().supportFragmentManager.findFragmentByTag(tag.java.simpleName)
+            ?: if (context == null) {
+                throw IllegalStateException(
+                    "Fragment $this is not attached to any Fragment or host"
+                )
+            } else {
+                throw IllegalStateException(
+                    "Fragment $this is not a child Fragment, it is directly attached to $context"
+                )
+            }
     return fragment
 }
 

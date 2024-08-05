@@ -1,12 +1,17 @@
 package boilerplate.ui.conversationDetail
 
+import android.content.res.Resources
 import android.graphics.Rect
 import android.os.Bundle
+import android.util.DisplayMetrics
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.LinearLayout
 import android.widget.PopupWindow
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -18,8 +23,10 @@ import boilerplate.R
 import boilerplate.base.BaseFragment
 import boilerplate.databinding.DialogBaseBinding
 import boilerplate.databinding.FragmentConversationDetailBinding
+import boilerplate.databinding.ItemMessageMenuBinding
 import boilerplate.databinding.ItemPinOnScreenBinding
 import boilerplate.databinding.PopupMessagePinBinding
+import boilerplate.databinding.ViewMessageMenuBinding
 import boilerplate.model.conversation.Conversation
 import boilerplate.model.conversation.ConversationRole
 import boilerplate.model.conversation.ConversationRole.ALLOW_MEMBER
@@ -29,6 +36,7 @@ import boilerplate.model.conversation.ConversationRole.SUB
 import boilerplate.model.conversation.ConversationUser
 import boilerplate.model.file.AttachedFile
 import boilerplate.model.message.Message
+import boilerplate.model.message.MessageAction
 import boilerplate.service.signalr.SignalRImpl
 import boilerplate.service.signalr.SignalRManager
 import boilerplate.service.signalr.SignalRResult
@@ -36,6 +44,7 @@ import boilerplate.ui.conversationDetail.adpater.MessageAdapter
 import boilerplate.ui.conversationDetail.adpater.SimpleMessageEvent
 import boilerplate.ui.conversationInform.ConversationInformFragment
 import boilerplate.ui.main.MainVM
+import boilerplate.utils.InternetManager
 import boilerplate.utils.StringUtil
 import boilerplate.utils.SystemUtil
 import boilerplate.utils.extension.ANIMATION_DELAY
@@ -88,13 +97,15 @@ class ConversationDetailFragment :
     override val viewModel: ConversationVM by viewModel()
     private val _activityVM: MainVM by activityViewModel()
 
+    private lateinit var fadeIn: Animation
+    private lateinit var slideDown: Animation
+    private lateinit var metrics: DisplayMetrics
+
     private lateinit var _layoutManager: LinearLayoutManager
     private lateinit var _endlessListener: EndlessListener
     private lateinit var _smoothScroller: SmoothScroller
 
-    private val _adapter = MessageAdapter(object : SimpleMessageEvent() {
-
-    })
+    private lateinit var _adapter: MessageAdapter
 
     private var _isOnTop = true
     private var _previousCount = 0
@@ -108,6 +119,17 @@ class ConversationDetailFragment :
     private var _pointClickY = 0
 
     override fun initialize() {
+        metrics = Resources.getSystem().displayMetrics
+
+        fadeIn = AnimationUtils.loadAnimation(context, R.anim.fade_in)
+        slideDown = AnimationUtils.loadAnimation(context, R.anim.enter_from_top)
+
+        _adapter = MessageAdapter(object : SimpleMessageEvent() {
+            override fun longClick(message: Message, view: View, viewType: Int) {
+                _adapter.hideMessage(message.messageId, true)
+                createMessageMenu(message, view)
+            }
+        })
         with(binding) {
             imgBack.apply { if (requireActivity().isTablet()) gone() else show() }
             chatBox.setupForChat()
@@ -312,6 +334,9 @@ class ConversationDetailFragment :
                 } else {
                     binding.tvCountNewMessage.gone()
                 }
+            }
+            markImportant.observe(this@ConversationDetailFragment) {
+                _adapter.markImportant(it)
             }
         }
     }
@@ -770,7 +795,7 @@ class ConversationDetailFragment :
             PopupMessagePinBinding.inflate(layoutInflater, binding.root as ViewGroup, false)
         val popupWindow = PopupWindow(
             bind.root,
-            ViewGroup.LayoutParams.MATCH_PARENT,
+            if (context?.isTablet() == true) metrics.widthPixels / 2 else ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
 
@@ -804,5 +829,197 @@ class ConversationDetailFragment :
         popupWindow.inputMethodMode = PopupWindow.INPUT_METHOD_NEEDED
         popupWindow.isOutsideTouchable = true
         return popupWindow
+    }
+
+    private fun createMessageMenu(message: Message, view: View) {
+        val location = IntArray(2)
+        view.getLocationOnScreen(location)
+        val x = if (context?.isTablet() == true) metrics.widthPixels / 2 else location[0]
+        var y = location[1]
+
+        with(createMenuPopup(message)) {
+            val child: View = contentView.findViewById(R.id.ln_menu)
+            child.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+
+            val listHeight = child.measuredHeight
+            val half = listHeight + view.height
+
+            if (y + half > metrics.heightPixels) {
+                val offSetY = metrics.heightPixels - half
+                showAtLocation(view, Gravity.NO_GRAVITY, x, max(offSetY, 0))
+            } else {
+                val tv = TypedValue()
+                requireContext().theme.resolveAttribute(android.R.attr.actionBarSize, tv, true)
+                val actionBarHeight = resources.getDimensionPixelSize(tv.resourceId)
+                if (y < actionBarHeight) {
+                    y = (actionBarHeight + resources.getDimension(R.dimen.dp_52)).toInt()
+                }
+                showAtLocation(view, Gravity.NO_GRAVITY, x, y)
+            }
+            dimBehind()
+        }
+    }
+
+    private fun createMenuPopup(message: Message): PopupWindow {
+        val view = ViewMessageMenuBinding.inflate(layoutInflater, binding.root, false)
+
+        val popupWindow = PopupWindow(
+            view.root,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            view.root.layoutParams.height
+        ).apply {
+            inputMethodMode = PopupWindow.INPUT_METHOD_NEEDED
+            isOutsideTouchable = true
+            isFocusable = true
+            animationStyle = R.style.PopupWindowAnimation
+            setOnDismissListener {
+                _adapter.hideMessage(message.messageId, false)
+            }
+        }
+
+        with(view) {
+            val messageAdapter = MessageAdapter(object : SimpleMessageEvent() {
+                override fun closeMenu() {
+                    _adapter.hideMessage(message.messageId, false)
+                    popupWindow.dismiss()
+                }
+            }).apply {
+                focusMessage(message.clone().apply { isHide = false })
+                setIsGroup(viewModel.conversation.value!!.isGroup())
+                disableSwipe()
+            }
+            rcvMessageSelected.apply {
+                adapter = messageAdapter
+                itemAnimator = null
+            }
+
+            lnContainerMenu.click {
+                _adapter.hideMessage(message.messageId, false)
+                popupWindow.dismiss()
+            }
+
+            lnMenu.apply {
+                val params = layoutParams as LinearLayout.LayoutParams
+                if (message.personSendId.equals(viewModel.user.id)) {
+                    params.gravity = Gravity.END
+                    params.rightMargin =
+                        context.resources.getDimensionPixelOffset(R.dimen.dp_10)
+                } else {
+                    params.gravity = Gravity.START
+                    params.leftMargin = context.resources.getDimensionPixelOffset(R.dimen.dp_55)
+                }
+                loadMenu(message, this) {
+                    _adapter.hideMessage(message.messageId, false)
+                    popupWindow.dismiss()
+                }
+            }
+
+            rcvMessageSelected.apply {
+                startAnimation(fadeIn)
+                show()
+            }
+            lnMenu.apply {
+                startAnimation(slideDown)
+                show()
+            }
+            scrollMenu.launch(ANIMATION_DELAY) {
+                scrollMenu.fullScroll(View.FOCUS_DOWN)
+            }
+        }
+        return popupWindow
+    }
+
+    private fun loadMenu(message: Message, lnMenu: LinearLayout, block: () -> Unit) {
+        val size = SystemUtil.getFontSizeChat(requireActivity())
+
+        val pair = viewModel.getMessagePermission()
+        val list =
+            if (message.status == 2) MessageAction.getMenuAction()
+            else if (InternetManager.isConnected())
+                MessageAction.getMenuAction(message, pair.first, pair.second)
+            else MessageAction.getMenuAction(message, pair.first)
+
+        for (menus in list) {
+            val indexGroup: Int = list.indexOf(menus)
+            for (menu in menus) {
+                val index = menus.indexOf(menu)
+                with(ItemMessageMenuBinding.inflate(layoutInflater, binding.root, false)) {
+                    if (index == menus.size - 1) {
+                        lnMessageAction.setBackgroundResource(R.drawable.bg_border_bottom_grey)
+                    }
+                    imgIcon.setImageResource(menu.icon)
+                    tvTitle.apply {
+                        if (indexGroup == list.size - 1) {
+                            setTextColor(
+                                ContextCompat.getColor(root.context, R.color.color_E80808)
+                            )
+                        }
+                        text = menu.getName()
+                        textSize = size
+                    }
+                    lnMenu.addView(root.apply {
+                        click {
+                            block()
+                            onMenuMessageClick(menu, message)
+                        }
+                    })
+                }
+            }
+        }
+    }
+
+    private fun onMenuMessageClick(menu: MessageAction, message: Message) {
+        val messageId = message.messageId
+        val json = Gson().toJson(message)
+        val copyText = StringUtil.getHtml(message.mainContent[0])
+            .toString()
+            .trim()
+        when (menu) {
+            MessageAction.CREATE_WORK -> {
+//                val work: CreateWork = CreateWork()
+//                val list = java.util.ArrayList<AttachedFile.Work>()
+//                for (file in message.attachedFiles) {
+//                    val attachedFile: AttachedFile.Work = Work()
+//                    attachedFile.setFileId(file.getFileId())
+//                    attachedFile.setFileName(file.getFileName())
+//                    attachedFile.setFileType(file.getFileType())
+//                    attachedFile.setPreventRemove(false)
+//                    attachedFile.setFileUploaded(true)
+//
+//                    list.add(attachedFile)
+//                    work.getAttachment_file_ids().add(file.getFileId())
+//                }
+//                work.setSelectedFiles(list)
+//                work.setTitle(copyText)
+//                work.setReference_id(message.messageId)
+//                work.setReference_type(Common.WORK_ASSIGNMENT)
+//                work.setWork_type(WorkType.CHAT.getType())
+//                work.setShowTempIcon(false)
+//                work.setHideSaveForm(false)
+//
+//                openOnlyForDetailWorkManager(CreateWorkFragment.onlyForChat(Gson().toJson(work)))
+            }
+
+            MessageAction.ANSWER -> {
+
+            }
+
+            MessageAction.FORWARD -> {
+
+            }
+
+            MessageAction.MARK, MessageAction.UN_MARK -> viewModel.markAsImportant(messageId)
+            MessageAction.PIN -> viewModel.pinMessage(messageId)
+            MessageAction.COPY -> SystemUtil.copyToClipboard(requireContext(), copyText, json)
+//            MessageAction.RECALL -> checkWithdrawMessage(message)
+//            MessageAction.DELETE -> deleteMultipleMessage(message)
+//            MessageAction.MY_CLOUD -> apiSendToMyCloud(message)
+//            MessageAction.EDIT -> checkEditMessage(message)
+//            MessageAction.SHARE -> {}
+            else -> {
+
+            }
+        }
+
     }
 }

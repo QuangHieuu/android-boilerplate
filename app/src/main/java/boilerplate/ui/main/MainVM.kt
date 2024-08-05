@@ -6,7 +6,6 @@ import boilerplate.base.BaseViewModel
 import boilerplate.data.local.repository.user.TokenRepository
 import boilerplate.data.local.repository.user.UserRepository
 import boilerplate.data.remote.api.ApiObservable
-import boilerplate.data.remote.api.response.ResponseItems
 import boilerplate.data.remote.repository.auth.LoginRepository
 import boilerplate.data.remote.repository.conversation.ConversationRepository
 import boilerplate.model.conversation.Conversation
@@ -77,25 +76,22 @@ class MainVM(
         isImportant: Boolean,
         search: String?
     ) {
-        val list: ArrayList<Flowable<ResponseItems<Conversation>>> = arrayListOf()
-        val conversation = conversationRepo.getConversations(
-            last,
-            limit,
-            if (isImportant) null else unread,
-            isImportant,
-            search
-        ).doOnNext { _conversations.postValue(Pair(last, it.result?.items.ifEmpty())) }
-        list.add(conversation)
-
-        if (last.isEmpty() && !unread && !isImportant) {
-            val pinConversation = conversationRepo.getPinConversation()
-                .doOnNext { _pinConversations.postValue(it.result?.items.ifEmpty()) }
-
-            list.add(pinConversation)
-        }
-
         launchDisposable {
-            Flowable.concat(list)
+            Flowable.concatArray(
+                conversationRepo.getConversations(
+                    last,
+                    limit,
+                    if (isImportant) null else unread,
+                    isImportant,
+                    search
+                ).doOnNext { _conversations.postValue(Pair(last, it.result?.items.ifEmpty())) },
+                if (last.isEmpty() && !unread && !isImportant) {
+                    conversationRepo.getPinConversation()
+                        .doOnNext { _pinConversations.postValue(it.result?.items.ifEmpty()) }
+                } else {
+                    Flowable.empty()
+                }
+            )
                 .apply { if (last.isEmpty()) loading(_loading) }
                 .withScheduler(schedulerProvider)
                 .result()

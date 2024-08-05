@@ -8,10 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import boilerplate.R
 import boilerplate.databinding.ItemDashboardBlockBinding
 import boilerplate.databinding.ItemDashboardBlockChildBinding
-import boilerplate.model.dashboard.EOfficeMenu
-import boilerplate.model.dashboard.EOfficeMenu.Companion.fromIndex
-import boilerplate.model.dashboard.HomeFeature.HomePage
-import boilerplate.model.dashboard.HomeFeatureMenu.Companion.blockDashboardWork
+import boilerplate.model.dashboard.DashboardBlock
+import boilerplate.model.dashboard.FeatureMenu.Companion.blockDashboardWork
+import boilerplate.model.dashboard.Page
 import boilerplate.ui.dashboard.DashboardFragment.OnMenuListener
 import boilerplate.ui.dashboard.adapter.BlockWorkAdapter.WorkHolder
 import boilerplate.utils.extension.click
@@ -56,17 +55,26 @@ class BlockWorkAdapter(private val _listener: OnMenuListener) : RecyclerView.Ada
 
                 lnContain.removeAllViews()
                 for (feature in features.data) {
-                    when (fromIndex(feature.type)) {
-                        EOfficeMenu.WORK_NO_ASSIGN -> lnContain.addView(addView(feature, a, true))
-                        EOfficeMenu.WORK_NEED_DONE -> lnContain.addView(addView(feature, b, true))
-                        EOfficeMenu.WORK_OVER_TIME -> lnContain.addView(addView(feature, c, false))
+                    when (DashboardBlock.fromIndex(feature.type)) {
+                        DashboardBlock.WORK_NO_ASSIGN -> lnContain.addView(
+                            addView(feature, a, true)
+                        )
+
+                        DashboardBlock.WORK_NOT_DOING -> lnContain.addView(
+                            addView(feature, b, true)
+                        )
+
+                        DashboardBlock.WORK_OVER_TIME -> lnContain.addView(
+                            addView(feature, c, false)
+                        )
+
                         else -> {}
                     }
                 }
             }
         }
 
-        private fun addView(page: HomePage, process: Int, underline: Boolean): View {
+        private fun addView(page: Page, process: Int, underline: Boolean): View {
             val binding =
                 ItemDashboardBlockChildBinding.inflate(LayoutInflater.from(itemView.context))
             with(binding) {

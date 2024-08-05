@@ -38,7 +38,7 @@ import boilerplate.utils.extension.addListener
 import boilerplate.utils.extension.click
 import boilerplate.utils.extension.findOwner
 import boilerplate.utils.extension.gone
-import boilerplate.utils.extension.loadImage
+import boilerplate.utils.extension.loadAvatar
 import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.open
 import boilerplate.utils.extension.show
@@ -64,7 +64,7 @@ class ConversationInformFragment :
     }
 
     override val viewModel: ConversationVM by viewModel(ownerProducer = {
-        findOwner(ConversationDetailFragment::class.java.simpleName)
+        findOwner(ConversationDetailFragment::class)
     })
 
     private lateinit var _imageAdapter: GridImageAdapter
@@ -248,7 +248,7 @@ class ConversationInformFragment :
                 tvConversationName.setText(R.string.my_cloud)
             } else {
                 val isGroup = con.isGroup()
-                val thumb = con.getThumb()
+                val thumb = con.thumb
                 val size = con.tongSoNhanVien
                 val userSize: Int = con.conversationUsers.size
                 val isOneUser = size == 1
@@ -267,7 +267,7 @@ class ConversationInformFragment :
                 }
                 if (isGroup) {
                     if (thumb != null) {
-                        addSingleAvatar().loadImage(con.getThumb())
+                        addSingleAvatar().loadAvatar(con.thumb)
                     } else {
                         if (size == 1) {
                             addAvatar(1, size, null)
@@ -309,13 +309,13 @@ class ConversationInformFragment :
                         ) {
                             onlyContainMe = false
                             builder.append(user.user.name)
-                            addSingleAvatar().loadImage(user.user.avatar)
+                            addSingleAvatar().loadAvatar(user.user.avatar)
                             frameUserOnline.setEnabled(user.user.isOnline())
                         }
                     }
                 }
                 if (onlyContainMe) {
-                    addSingleAvatar().loadImage(viewModel.user.avatar)
+                    addSingleAvatar().loadAvatar(viewModel.user.avatar)
                     builder.append(viewModel.user.name)
                     frameUserOnline.gone()
                 }
@@ -392,7 +392,7 @@ class ConversationInformFragment :
             binding.rlAvatarGroup.addView(it, params)
 
             if (user != null) {
-                it.loadImage(user.user.avatar)
+                it.loadAvatar(user.user.avatar)
             } else {
                 if ((size == 1 && index == 1)) {
                     it.setTextBackground("")
@@ -654,7 +654,7 @@ class ConversationInformFragment :
                         imgPick.layoutParams = pick
                     }
                     imgPick.setPadding(padding, padding, padding, padding)
-                    imgAvatar.loadImage(viewModel.conversation.value?.thumb)
+                    imgAvatar.loadAvatar(viewModel.conversation.value?.thumb)
                 }
 
                 edtName.apply {

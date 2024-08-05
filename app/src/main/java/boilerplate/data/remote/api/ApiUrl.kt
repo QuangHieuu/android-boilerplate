@@ -1,14 +1,10 @@
 package boilerplate.data.remote.api
 
-import boilerplate.data.remote.api.ApiServer.LIVE
-import boilerplate.data.remote.api.ApiServer.STAGING
-import boilerplate.data.remote.api.ApiServer.TEST1
-
 object ApiUrl {
     private const val FILE_CHAT: String = "filechat/get/"
     const val API: String = "api/"
 
-    var DEFAULT: String = LIVE.serverName
+    var DEFAULT: String = ApiServer.LIVE.serverName
 
     const val FIREBASE_URL_VERSON: String = "https://darsitec-eoffice-default-rtdb.firebaseio.com/"
     const val FILE_VERSION_UPDATE: String = ""
@@ -28,7 +24,7 @@ object ApiUrl {
 
     fun setHost(host: String) {
         when (ApiServer.fromType(host)) {
-            TEST1 -> {
+            ApiServer.DARSITEC_TEST -> {
                 HOST_SIGN_IN = "https://sso-darsitec.dn.greenglobal.vn/"
                 HOST_MAIN = "https://api-darsitec.dn.greenglobal.vn/"
                 HOST_CHAT = "https://api-chat-darsitec.dn.greenglobal.vn/"
@@ -38,7 +34,7 @@ object ApiUrl {
                 HOST_SURVEY = "https://api-darsitec.dn.greenglobal.vn/"
             }
 
-            LIVE -> {
+            ApiServer.LIVE -> {
                 HOST_SIGN_IN = "https://api-sso.greenglobal.vn/"
                 HOST_MAIN = "https://api-eoffice.greenglobal.vn/"
                 HOST_CHAT = "https://api-chat.greenglobal.vn/"
@@ -46,10 +42,6 @@ object ApiUrl {
                 HOST_NOTIFICATION = "https://api-push.greenglobal.vn/"
                 HOST_MEETING_CALENDAR = "https://api-meeting.greenglobal.vn/"
                 HOST_SURVEY = "https://api-survey.greenglobal.vn/"
-            }
-
-            STAGING -> {
-
             }
         }
         HOST_FILE_PREVIEW = HOST_FILE + API + FILE_CHAT

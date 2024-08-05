@@ -9,6 +9,7 @@ import boilerplate.model.conversation.ConversationConfig
 import boilerplate.model.conversation.SignalBody
 import boilerplate.model.dashboard.Banner
 import boilerplate.model.dashboard.Dashboard
+import boilerplate.model.dashboard.Statical
 import boilerplate.model.device.Device
 import boilerplate.model.file.AttachedFile
 import boilerplate.model.file.UploadFile
@@ -81,6 +82,23 @@ interface DashboardService {
 
     @GET("dashboard")
     fun getDashBoardStatical(@Query("limit") limit: Int = 10): Flowable<Response<Dashboard>>
+
+    @GET("kysonoibo/tongsovanban")
+    fun getCountSignInternal(
+        @Query("tinh_trang") status: Int
+    ): Flowable<Response<Int>>
+
+    @GET("kysoduan/count")
+    fun getCountSignExternal(): Flowable<Response<Int>>
+
+    @GET("thongke/kyso")
+    fun getStaticalSign(): Flowable<Response<Statical>>
+
+    @GET("thongke/congvan?refresh=false")
+    fun getStaticalDocument(): Flowable<Response<Statical>>
+
+    @GET("thongke/congviec?refresh=false")
+    fun getStaticalWork(): Flowable<Response<Statical>>
 }
 
 interface ConversationService {
@@ -180,20 +198,33 @@ interface ConversationService {
         @Query("connectionId") id: String,
         @Body body: SignalBody
     ): Flowable<Response<Conversation>>
+
+    @POST("tinnhan/ghim")
+    fun postPinMessages(@Body body: Message.Pin): Flowable<Response<Any>>
+
+    @PUT("tinnhan/danhdau")
+    fun putMarkImportant(
+        @Query("tinnhanId") messageId: String,
+        @Query("hoithoaiId") conversationId: String
+    ): Flowable<Response<Any>>
 }
 
 interface FileService {
 
     @Multipart
     @POST("file/chat")
-    @Headers("api-version: 1")
     fun postConversationFile(@Part files: List<MultipartBody.Part>): Flowable<Responses<UploadFile>>
 
     @Multipart
     @POST("file/chat")
-    @Headers("api-version: 1")
     fun postConversationFile(@Part files: MultipartBody.Part): Flowable<Responses<UploadFile>>
 
+    @Multipart
+    @POST("file/avatar?complexFileName=true")
+    fun postAvatarFile(
+        @Query("userName") userName: String?,
+        @Part file: MultipartBody.Part
+    ): Flowable<Responses<UploadFile>>
 }
 
 interface ApiService :

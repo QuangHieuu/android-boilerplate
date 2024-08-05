@@ -10,7 +10,6 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
@@ -38,8 +37,6 @@ import boilerplate.utils.extension.show
 import boilerplate.widget.customText.TextViewExpand
 import boilerplate.widget.customText.TextViewFont
 import boilerplate.widget.image.RoundedImageView
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
 import com.daimajia.swipe.SimpleSwipeListener
 import com.daimajia.swipe.SwipeLayout
 import com.google.gson.Gson
@@ -129,7 +126,7 @@ abstract class MessageHolder(
         } else {
             _lnMain.apply {
                 setBackgroundResource(R.color.colorAppBackground)
-                click { null }
+                click(null)
             }
             _lnMessage.setOnLongClickListener { v ->
                 _listener.longClick(_message, v, _viewType)
@@ -224,7 +221,7 @@ abstract class MessageHolder(
     private fun handleFile() {
         _lnImage.removeAllViews()
         _lnFile.removeAllViews()
-        val surveys: java.util.ArrayList<AttachedFile.SurveyFile> = _message.surveyFiles
+        val surveys = _message.surveyFiles
 
         var countImage = 0
         var countFile = 0
@@ -359,7 +356,7 @@ abstract class MessageHolder(
                     click { _listener.goToMessage(_message.messageId, _message.conversationId) }
                 } else {
                     gone()
-                    click { null }
+                    click(null)
                 }
             }
         }
@@ -485,26 +482,17 @@ abstract class MessageHolder(
         return binding.root.apply { click { _listener.openSurvey(file) } }
     }
 
-
     private fun addViewImage(file: AttachedFile.Conversation, status: Int): View {
         val imageView = RoundedImageView(itemView.context).apply {
             _imgParams.setMargins(0, _imgRadius, 0, 0)
 
             setAdjustViewBounds(true)
-            setScaleType(ImageView.ScaleType.CENTER_CROP)
             setLayoutParams(_imgParams)
-            setMinimumWidth(_minWidth)
             setRadius(_imgRadius)
             click { _listener.openImage(file) }
         }.apply {
-            val options: RequestOptions = RequestOptions()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .dontTransform()
-                .error(R.drawable.bg_error)
-
-            val string = if (status == 2) file.getUrl() else file.filePreview
-
-            loadImage(string, type = file.fileType, requestOptions = options)
+            val string = if (status == 2) file.getUrl() else file.getPreviewUrl(true)
+            loadImage(string, type = file.fileType)
         }
 
         return imageView

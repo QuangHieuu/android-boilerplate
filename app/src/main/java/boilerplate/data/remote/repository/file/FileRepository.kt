@@ -23,6 +23,11 @@ interface FileRepository {
 
     fun postFile(file: MultipartBody.Part): Flowable<Responses<UploadFile>>
 
+    fun postAvatarFile(
+        userName: String,
+        file: MultipartBody.Part
+    ): Flowable<Responses<UploadFile>>
+
 }
 
 class FileImpl(
@@ -35,6 +40,13 @@ class FileImpl(
 
     override fun postFile(file: MultipartBody.Part): Flowable<Responses<UploadFile>> {
         return apiRequest.file.postConversationFile(file).checkInternet()
+    }
+
+    override fun postAvatarFile(
+        userName: String,
+        file: MultipartBody.Part
+    ): Flowable<Responses<UploadFile>> {
+        return apiRequest.file.postAvatarFile(userName, file).checkInternet()
     }
 
     override fun getConversationFile(

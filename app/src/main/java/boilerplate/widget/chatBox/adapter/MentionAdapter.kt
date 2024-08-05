@@ -13,7 +13,7 @@ import boilerplate.model.conversation.ConversationUser
 import boilerplate.model.user.User
 import boilerplate.utils.extension.click
 import boilerplate.utils.extension.gone
-import boilerplate.utils.extension.loadImage
+import boilerplate.utils.extension.loadAvatar
 import boilerplate.utils.extension.show
 import boilerplate.widget.customText.TextViewFont
 import boilerplate.widget.image.RoundedImageView
@@ -56,10 +56,10 @@ class MentionAdapter(private val mListener: OnViewListener) :
             if (!user.name.equals(MENTION_ALL)) {
                 mImgAvatar.apply {
                     show()
-                    loadImage(user.avatar)
+                    loadAvatar(user.avatar)
                 }
-                val company = user.mainCompany?.shortName
-                val department = user.mainDepartment?.shortName
+                val company = user.mainCompany.shortName
+                val department = user.mainDepartment.shortName
                 val string = String.format("%s - %s", company, department)
 
                 mTvName.text = item.user.name

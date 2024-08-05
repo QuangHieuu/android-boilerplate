@@ -8,6 +8,8 @@ import boilerplate.data.remote.api.response.ResponseItems
 import boilerplate.data.remote.repository.conversation.ConversationRepository
 import boilerplate.data.remote.repository.file.FileRepository
 import boilerplate.model.conversation.Conversation
+import boilerplate.model.conversation.ConversationRole
+import boilerplate.model.conversation.ConversationUser
 import boilerplate.model.conversation.SignalBody
 import boilerplate.model.file.AttachedFile
 import boilerplate.model.file.convertFile
@@ -70,6 +72,12 @@ class ConversationVM(
 
     private val _conversationMessage by lazy { MutableLiveData<ArrayList<Message>>() }
     val conversationMessage = _conversationMessage
+
+    private val _pinMessageState by lazy { MutableLiveData<String>() }
+    val pinMessageState = _pinMessageState
+
+    private val _markImportant by lazy { MutableLiveData<String>() }
+    val markImportant = _markImportant
 
     var changeConversationAvatar: Uri? = null
     var changeConversationName: String? = null
@@ -307,6 +315,57 @@ class ConversationVM(
                     { _conversationMessage.postValue(it.result?.items.ifEmpty()) },
                     { _conversationMessage.postValue(arrayListOf()) }
                 )
+        }
+    }
+
+    fun getMessagePermission(): Pair<Boolean, Boolean> {
+        val conversation = conversation.value!!
+        var current: ConversationUser? = null
+        for (item in conversation.conversationUsers) {
+            if (item.user.id == user.id) {
+                current = item
+                break
+            }
+        }
+        val isAMember =
+            ConversationRole.fromType(user.role).type == ConversationRole.MEMBER.type
+        val isAllowPin = if (current != null) {
+            if (conversation.isAllowPinMessage || !isAMember) {
+                true
+            } else {
+                current.isAllowSendMessage
+            }
+        } else {
+            false
+        }
+        val isAllowReply = if (current != null) {
+            if (conversation.isAllowSendMessage || !isAMember) {
+                true
+            } else {
+                current.isAllowSendMessage
+            }
+        } else {
+            false
+        }
+
+        return Pair(isAllowReply, isAllowPin)
+    }
+
+    fun pinMessage(messageId: String) {
+        launchDisposable {
+            conversationRepo.postPinMessage(Message.Pin(conversationId, messageId))
+                .withScheduler(schedulerProvider)
+                .loading(_loading)
+                .result({ _pinMessageState.postValue(it.message) })
+        }
+    }
+
+    fun markAsImportant(messageId: String) {
+        launchDisposable {
+            conversationRepo.putMarkImportant(messageId, conversationId)
+                .withScheduler(schedulerProvider)
+                .loading(_loading)
+                .result({ _markImportant.postValue(messageId) })
         }
     }
 }

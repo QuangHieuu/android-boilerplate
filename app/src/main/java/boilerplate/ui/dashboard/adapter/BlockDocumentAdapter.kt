@@ -9,10 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import boilerplate.R
 import boilerplate.databinding.ItemDashboardBlockBinding
 import boilerplate.databinding.ItemDashboardBlockChildBinding
-import boilerplate.model.dashboard.EOfficeMenu
-import boilerplate.model.dashboard.EOfficeMenu.Companion.fromIndex
-import boilerplate.model.dashboard.HomeFeature.HomePage
-import boilerplate.model.dashboard.HomeFeatureMenu.Companion.blockDashboardDocument
+import boilerplate.model.dashboard.DashboardBlock
+import boilerplate.model.dashboard.FeatureMenu.Companion.blockDashboardDocument
+import boilerplate.model.dashboard.Page
 import boilerplate.ui.dashboard.DashboardFragment.OnMenuListener
 import boilerplate.ui.dashboard.adapter.BlockDocumentAdapter.DocumentVH
 import boilerplate.utils.extension.click
@@ -60,21 +59,13 @@ class BlockDocumentAdapter(
 
                 lnContain.removeAllViews()
                 for (feature in features.data) {
-                    when (fromIndex(feature.type)) {
-                        EOfficeMenu.REFERENCE_HANDLE -> lnContain.addView(
-                            addView(
-                                feature,
-                                process,
-                                true
-                            )
+                    when (DashboardBlock.fromIndex(feature.type)) {
+                        DashboardBlock.REFERENCE_HANDLE -> lnContain.addView(
+                            addView(feature, process, true)
                         )
 
-                        EOfficeMenu.REFERENCE_HANDLING -> lnContain.addView(
-                            addView(
-                                feature,
-                                inProcess,
-                                false
-                            )
+                        DashboardBlock.REFERENCE_HANDLING -> lnContain.addView(
+                            addView(feature, inProcess, false)
                         )
 
                         else -> {}
@@ -83,7 +74,7 @@ class BlockDocumentAdapter(
             }
         }
 
-        private fun addView(page: HomePage, process: Int, underline: Boolean): View {
+        private fun addView(page: Page, process: Int, underline: Boolean): View {
             val binding =
                 ItemDashboardBlockChildBinding.inflate(LayoutInflater.from(_content))
             with(binding) {

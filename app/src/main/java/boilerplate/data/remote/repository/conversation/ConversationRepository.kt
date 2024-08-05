@@ -74,6 +74,13 @@ interface ConversationRepository {
     fun postPersonConversation(
         body: SignalBody
     ): Flowable<Response<Conversation>>
+
+    fun postPinMessage(body: Message.Pin): Flowable<Response<Any>>
+
+    fun putMarkImportant(
+        messageId: String,
+        conversationId: String
+    ): Flowable<Response<Any>>
 }
 
 class ConversationRepositoryImpl(
@@ -171,5 +178,16 @@ class ConversationRepositoryImpl(
     ): Flowable<Response<Conversation>> {
         val connectedId = tokenImpl.getConnectedId()
         return apiRequest.chat.postPersonConversation(connectedId, body).checkInternet()
+    }
+
+    override fun postPinMessage(body: Message.Pin): Flowable<Response<Any>> {
+        return apiRequest.chat.postPinMessages(body).checkInternet()
+    }
+
+    override fun putMarkImportant(
+        messageId: String,
+        conversationId: String
+    ): Flowable<Response<Any>> {
+        return apiRequest.chat.putMarkImportant(messageId, conversationId)
     }
 }

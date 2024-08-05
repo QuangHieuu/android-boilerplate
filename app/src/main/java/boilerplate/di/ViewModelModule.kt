@@ -15,5 +15,5 @@ val viewModelModule = module {
     viewModel { DashboardVM(get(), get()) }
     viewModel { ContactVM(get(), get()) }
     viewModel { ConversationVM(get(), get(), get(), get()) }
-    viewModel { ContactEditVM(get(), get(), get()) }
+    viewModel { ContactEditVM(get(), get(), get(), get()) }
 }

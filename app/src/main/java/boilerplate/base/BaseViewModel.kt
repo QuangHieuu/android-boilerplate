@@ -75,12 +75,15 @@ abstract class BaseViewModel() : ViewModel() {
             }
 
             override fun onServerError(errorCode: Int, api: String, showError: Boolean) {
+                if (!showError) {
+                    return
+                }
                 if (errorCode >= 500) {
                     _error.postValue(application.getString(R.string.error_general))
 //                    Firebase.reportServerError(this, api, AccountManager.getUsername(this))
                     return
                 }
-                if (showError && InternetManager.isConnected()) {
+                if (InternetManager.isConnected()) {
                     _error.postValue(application.getString(R.string.error_general))
                 }
             }

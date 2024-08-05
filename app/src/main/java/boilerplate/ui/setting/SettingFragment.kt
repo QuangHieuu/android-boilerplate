@@ -12,10 +12,10 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.fragment.app.activityViewModels
 import boilerplate.R
 import boilerplate.base.BaseFragment
-import boilerplate.constant.AccountManager
 import boilerplate.databinding.DialogBaseBinding
 import boilerplate.databinding.FragmentSettingBinding
 import boilerplate.databinding.ItemSettingProfileBinding
+import boilerplate.ui.contactDetail.ContactDetailFragment
 import boilerplate.ui.main.MainVM
 import boilerplate.ui.setting.SettingMenu.HOTLINE
 import boilerplate.ui.setting.SettingMenu.LOG_OUT
@@ -24,6 +24,7 @@ import boilerplate.utils.StringUtil
 import boilerplate.utils.extension.click
 import boilerplate.utils.extension.loadImage
 import boilerplate.utils.extension.notNull
+import boilerplate.utils.extension.openDialog
 import boilerplate.utils.extension.showDialog
 import boilerplate.widget.customText.TextViewFont
 import boilerplate.widget.image.RoundedImageView
@@ -141,7 +142,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding, MainVM>() {
     private fun handleMenu(menu: SettingMenu) {
         when (SettingMenu.fromType(menu.index)) {
             PROFILE -> {
-
+                openDialog(ContactDetailFragment.newInstance())
             }
 
             LOG_OUT -> {

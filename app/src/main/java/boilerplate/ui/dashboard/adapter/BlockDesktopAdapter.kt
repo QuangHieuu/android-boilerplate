@@ -9,7 +9,7 @@ import boilerplate.R
 import boilerplate.databinding.ItemDashboardBlockBinding
 import boilerplate.databinding.ItemDashboardBlockDesktopBinding
 import boilerplate.model.dashboard.Desktop
-import boilerplate.model.dashboard.HomeFeatureMenu
+import boilerplate.model.dashboard.FeatureMenu
 import boilerplate.ui.dashboard.DashboardFragment.OnDesktopListener
 import boilerplate.ui.dashboard.adapter.BlockDesktopAdapter.DesktopHolder
 import boilerplate.utils.extension.click
@@ -75,7 +75,7 @@ class BlockDesktopAdapter(
             var color = -1
             when (desktop.type) {
                 0 -> {
-                    type = HomeFeatureMenu.DOCUMENTS.displayName
+                    type = FeatureMenu.DOCUMENTS.displayName
                     titleDeadline = R.string.document_time_with_dot
                     color = R.color.color_work_blue
                     background = R.drawable.bg_feedback_status_blue
@@ -83,7 +83,7 @@ class BlockDesktopAdapter(
                 }
 
                 1 -> {
-                    type = HomeFeatureMenu.SIGNING.displayName
+                    type = FeatureMenu.SIGNING.displayName
                     titleDeadline = R.string.document_time_with_dot
                     color = R.color.color_work_yellow
                     background = R.drawable.bg_feedback_status_yellow
@@ -91,7 +91,7 @@ class BlockDesktopAdapter(
                 }
 
                 2, 3 -> {
-                    type = HomeFeatureMenu.WORKS.displayName
+                    type = FeatureMenu.WORKS.displayName
                     titleDeadline = R.string.deadline_with_dot
                     color = R.color.color_work_green
                     background = R.drawable.bg_feedback_status_green

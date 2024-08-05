@@ -8,7 +8,7 @@ import boilerplate.model.message.Message
 import boilerplate.ui.conversationDetail.adpater.SimpleMessageEvent
 import boilerplate.utils.extension.click
 import boilerplate.utils.extension.gone
-import boilerplate.utils.extension.loadImage
+import boilerplate.utils.extension.loadAvatar
 import boilerplate.utils.extension.show
 
 class WithdrawReceiverHolder(
@@ -33,8 +33,8 @@ class WithdrawReceiverHolder(
 
         val role = String.format(
             "%s - %s",
-            message.personSend.mainDepartment?.shortName,
-            message.personSend.mainCompany?.shortName
+            message.personSend.mainDepartment.shortName,
+            message.personSend.mainCompany.shortName
         )
         with(_binding) {
             tvRole.text = role
@@ -42,7 +42,7 @@ class WithdrawReceiverHolder(
             imgOnline.setVisibility(if (message.personSend.isOnline()) View.VISIBLE else View.GONE)
 
             imgAvatar.apply {
-                loadImage(message.personSend.avatar)
+                loadAvatar(message.personSend.avatar)
                 click { _listener.openUser(message.personSend) }
             }
 

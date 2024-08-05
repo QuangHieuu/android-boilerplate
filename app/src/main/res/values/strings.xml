@@ -32,6 +32,8 @@
     <string name="different_number">Số điện thoại khác</string>
     <string name="phone_number">Số điện thoại</string>
 
+    <string name="roles">Chức danh</string>
+
     <string name="select_user">Chọn nhân viên</string>
     <string name="employee">Nhân viên</string>
     <string name="position">Vị trí</string>

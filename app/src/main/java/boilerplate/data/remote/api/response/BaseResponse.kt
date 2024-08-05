@@ -1,7 +1,8 @@
 package boilerplate.data.remote.api.response
 
 data class Response<T>(
-    var result: T? = null
+    var result: T? = null,
+    var message: String = ""
 )
 
 data class Responses<T>(

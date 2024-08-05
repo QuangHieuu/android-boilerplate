@@ -1,20 +1,25 @@
 package boilerplate.ui.contactDetail
 
+import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import boilerplate.base.BaseViewModel
 import boilerplate.data.local.repository.user.UserRepository
 import boilerplate.data.remote.repository.auth.LoginRepository
+import boilerplate.data.remote.repository.file.FileRepository
 import boilerplate.model.user.UpdateBody
 import boilerplate.model.user.User
+import boilerplate.utils.FileUtils
 import boilerplate.utils.extension.BaseSchedulerProvider
 import boilerplate.utils.extension.loading
 import boilerplate.utils.extension.result
 import boilerplate.utils.extension.withScheduler
+import io.reactivex.rxjava3.core.Flowable
 
 class ContactEditVM(
     private val schedulerProvider: BaseSchedulerProvider,
     private val userRepo: UserRepository,
     private val loginRepo: LoginRepository,
+    private val fileRepo: FileRepository,
 ) : BaseViewModel() {
     val user = userRepo.getUser()
 
@@ -37,22 +42,40 @@ class ContactEditVM(
         }
     }
 
-    fun patchUser(changePhone: String, changeDiffPhone: String, changeMood: String) {
+    fun patchUser(changePhone: String, changeDiffPhone: String, changeMood: String, uri: Uri?) {
         launchDisposable {
-            userRepo.patchUser(UpdateBody(changePhone, changeDiffPhone, changeMood))
+            Flowable.just(uri ?: "")
+                .flatMap {
+                    if (it is Uri) {
+                        fileRepo.postAvatarFile(
+                            userRepo.getUserName(),
+                            FileUtils.multiPartFile(application, it)
+                        ).map { res ->
+                            UpdateBody(changePhone, changeDiffPhone, changeMood, res.result[0].path)
+                        }
+                    } else {
+                        Flowable.just(UpdateBody(changePhone, changeDiffPhone, changeMood, null))
+                    }
+                }
+                .flatMap { body ->
+                    userRepo.patchUser(body).doOnNext {
+                        _userDetail.value?.apply {
+                            phoneNumber = changePhone
+                            diffPhoneNumber = changeDiffPhone
+                            mood = changeMood
+                            avatarId = body.avatar ?: ""
+                        }?.let { user ->
+                            userRepo.saveUser(user)
+                            _userDetail.postValue(user)
+                        }
+                    }
+                }
                 .withScheduler(schedulerProvider)
                 .loading(_loading)
-                .result({
-                    _userDetail.value?.apply {
-                        phoneNumber = changePhone
-                        diffPhoneNumber = changeDiffPhone
-                        mood = changeMood
-                    }?.let {
-                        userRepo.saveUser(it)
-                        _userDetail.postValue(it)
-                    }
-                    _updateSuccess.postValue(true)
-                }, { _updateSuccess.postValue(false) })
+                .result(
+                    { _updateSuccess.postValue(true) },
+                    { _updateSuccess.postValue(false) }
+                )
         }
     }
 }

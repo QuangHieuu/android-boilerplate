@@ -20,7 +20,7 @@ import boilerplate.utils.extension.click
 import boilerplate.utils.extension.gone
 import boilerplate.utils.extension.hide
 import boilerplate.utils.extension.isTablet
-import boilerplate.utils.extension.loadImage
+import boilerplate.utils.extension.loadAvatar
 import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.show
 import boilerplate.widget.image.RoundedImageView
@@ -123,7 +123,7 @@ class ConversationVH(
             if (isGroup) {
                 if (thumb != null) {
                     val image = addSingleAvatar()
-                    image.loadImage(con.getThumb())
+                    image.loadAvatar(con.thumb)
                 } else {
                     if (size == 1) {
                         addAvatar(1, size, null)
@@ -172,13 +172,13 @@ class ConversationVH(
                     if (userSize > 0 && user.user.id != AccountManager.getCurrentUserId()) {
                         onlyContainMe = false
                         builder.append(user.user.name)
-                        addSingleAvatar().loadImage(user.user.avatar)
+                        addSingleAvatar().loadAvatar(user.user.avatar)
                         _binding.frameUserOnline.isEnabled = user.user.isOnline()
                     }
                 }
             }
             if (onlyContainMe) {
-                addSingleAvatar().loadImage(AccountManager.getCurrentNhanVien().avatar)
+                addSingleAvatar().loadAvatar(AccountManager.getCurrentNhanVien().avatar)
                 builder.append(AccountManager.getCurrentNhanVien().name)
                 _binding.frameUserOnline.gone()
             }
@@ -266,7 +266,7 @@ class ConversationVH(
                     setTextBackground(size.toString())
                 }
             } else {
-                loadImage(user.user.avatar)
+                loadAvatar(user.user.avatar)
             }
         }.let {
             val params = RelativeLayout.LayoutParams(_imgSize, _imgSize)

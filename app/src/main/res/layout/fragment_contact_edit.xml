@@ -33,6 +33,19 @@
         app:layout_constraintTop_toBottomOf="@id/toolbar_edit"
         app:radius="@dimen/dp_34" />
 
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/img_pick"
+        android:layout_width="@dimen/dp_21"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_circle_border"
+        android:padding="@dimen/dp_5"
+        android:src="@drawable/ic_camera_fill_grey"
+        app:layout_constraintBottom_toBottomOf="@id/img_avatar"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toEndOf="@id/img_avatar"
+        app:layout_constraintStart_toEndOf="@id/img_avatar"
+        app:layout_constraintTop_toBottomOf="@id/img_avatar" />
+
     <boilerplate.widget.customText.TextViewFont
         android:id="@+id/tv_name"
         style="@style/StyleBold"

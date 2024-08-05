@@ -24,7 +24,7 @@
             android:layout_width="@dimen/dp_24"
             android:layout_height="@dimen/dp_24"
             android:padding="@dimen/dp_2"
-            tools:src="@drawable/ic_menu_type_document" />
+            tools:src="@drawable/ic_dashboard_type_document" />
 
         <boilerplate.widget.customText.TextViewFont
             android:id="@+id/tv_title"

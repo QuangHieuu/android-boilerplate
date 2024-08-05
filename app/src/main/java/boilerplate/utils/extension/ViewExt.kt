@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Rect
-import android.graphics.drawable.Drawable
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -38,10 +37,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.Headers
 import com.bumptech.glide.load.model.LazyHeaders
-import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.snackbar.BaseTransientBottomBar.ANIMATION_MODE_SLIDE
 import com.google.android.material.snackbar.Snackbar
 import java.net.MalformedURLException
@@ -178,11 +174,15 @@ fun EditText.showKeyboard() {
     }
 }
 
+fun ImageView.loadAvatar(url: String? = "") {
+    loadImage(url, requestOptions = RequestOptions().error(R.drawable.ic_avatar).circleCrop())
+}
+
 fun ImageView.loadImage(
     url: String? = "",
     accessToken: String? = AccountManager.getToken(),
     type: String? = "",
-    requestOptions: RequestOptions? = null
+    requestOptions: RequestOptions = RequestOptions().error(R.drawable.bg_error)
 ) {
     if (url.isNullOrEmpty()) {
         return
@@ -197,45 +197,20 @@ fun ImageView.loadImage(
                 .build()
         } ?: Headers.DEFAULT)
 
-        val request = (requestOptions ?: RequestOptions().error(R.drawable.ic_avatar))
-
         if (isGif) {
             Glide
                 .with(context)
                 .asGif()
                 .load(glideUrl)
-                .apply(request)
-                .into(object : CustomTarget<GifDrawable>() {
-                    override fun onResourceReady(
-                        resource: GifDrawable,
-                        transition: Transition<in GifDrawable>?
-                    ) {
-                        setImageDrawable(resource)
-                        resource.start()
-                    }
-
-                    override fun onLoadCleared(placeholder: Drawable?) {
-                        setImageResource(R.color.colorWhite)
-                    }
-                })
+                .apply(requestOptions)
+                .into(this)
         }
         Glide
             .with(context)
-            .asDrawable()
+            .asBitmap()
             .load(glideUrl)
-            .apply(request)
-            .into(object : CustomTarget<Drawable>() {
-                override fun onResourceReady(
-                    resource: Drawable,
-                    transition: Transition<in Drawable>?
-                ) {
-                    setImageDrawable(resource)
-                }
-
-                override fun onLoadCleared(placeholder: Drawable?) {
-                    setImageDrawable(placeholder)
-                }
-            })
+            .apply(requestOptions)
+            .into(this)
     }
 }
 

@@ -60,13 +60,11 @@ class StartVM(
         launchDisposable {
             loginServer.postUserLogin(userName, password)
                 .withScheduler(schedulerProvider)
-                .subscribeWith(ApiObservable.apiCallback(success = {
+                .result({
                     userImpl.saveUseLogin(userName, password)
                     tokenImpl.saveToken(it.tokenType!!, it.accessToken!!)
                     _state.postValue(STATE_CHECK_LOGIN)
-                }, fail = {
-                    setLoading(false)
-                }))
+                }, { setLoading(false) })
         }
     }
 
@@ -88,6 +86,9 @@ class StartVM(
                         _user.postValue(it)
                         registerDeviceId(it)
                     }
+                }, {
+                    setLoading(false)
+                    cancelAutoLogin()
                 })
         }
     }

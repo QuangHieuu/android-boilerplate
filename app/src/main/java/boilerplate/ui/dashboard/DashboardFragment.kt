@@ -11,9 +11,9 @@ import boilerplate.base.BaseFragment
 import boilerplate.constant.AccountManager
 import boilerplate.databinding.FragmentDashboardBinding
 import boilerplate.databinding.ItemDashboardMenuTabBinding
+import boilerplate.model.dashboard.DashboardBlock
 import boilerplate.model.dashboard.Desktop
-import boilerplate.model.dashboard.EOfficeMenu
-import boilerplate.model.dashboard.HomeFeature
+import boilerplate.model.dashboard.Page
 import boilerplate.ui.dashboard.adapter.BlockBannerAdapter
 import boilerplate.ui.dashboard.adapter.BlockDesktopAdapter
 import boilerplate.ui.dashboard.adapter.BlockDocumentAdapter
@@ -24,7 +24,7 @@ import boilerplate.ui.main.tab.HomeTabIndex
 import boilerplate.utils.extension.click
 import boilerplate.utils.extension.gone
 import boilerplate.utils.extension.isTablet
-import boilerplate.utils.extension.loadImage
+import boilerplate.utils.extension.loadAvatar
 import boilerplate.utils.extension.show
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -41,7 +41,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardVM>() 
     }
 
     interface OnMenuListener {
-        fun onMenu(menu: HomeFeature.HomePage)
+        fun onMenu(menu: Page)
     }
 
     interface OnDesktopListener {
@@ -63,7 +63,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardVM>() 
         tableView()
 
         val listener = object : OnMenuListener {
-            override fun onMenu(menu: HomeFeature.HomePage) {
+            override fun onMenu(menu: Page) {
                 handleMenu(menu)
             }
         }
@@ -108,7 +108,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardVM>() 
                     root.run {
                         tvRole.text = currentFullName
                         tvName.text = it.name
-                        imgAvatar.loadImage(it.avatar)
+                        imgAvatar.loadAvatar(it.avatar)
                     }
                 }
             }
@@ -125,15 +125,15 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardVM>() 
 
                     if (AccountManager.hasIncomeDocument()) {
                         _blockDocument.setData(
-                            statical?.documentUnProcess ?: 0,
-                            statical?.documentInProcess ?: 0
+                            statical.documentUnProcess,
+                            statical.documentInProcess
                         )
                         _dynamic.addAdapter(0, _blockDocument)
                     } else {
                         _dynamic.removeAdapter(_blockDocument)
                     }
                     if (AccountManager.hasDigitalSignManage()) {
-                        _blockSign.setData(statical?.signGoing ?: 0)
+                        _blockSign.setData(statical.signGoing)
 
                         val index = if (_dynamic.adapters.isEmpty()) 0 else 1
                         _dynamic.addAdapter(index, _blockSign)
@@ -143,14 +143,14 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardVM>() 
                     _dynamic.notifyItemRangeChanged(0, _dynamic.adapters.size)
 
                     _blockWork.setData(
-                        statical?.workNotAssign ?: 0,
-                        statical?.workNeedDone ?: 0,
-                        statical?.workOverTime ?: 0
+                        statical.workNotAssign,
+                        statical.workNeedDone,
+                        statical.workOverTime
                     )
-                    val list = if (it.desktop!!.size > 5) {
-                        it.desktop!!.subList(0, 5)
+                    val list = if (it.desktop.size > 5) {
+                        it.desktop.subList(0, 5)
                     } else {
-                        it.desktop!!
+                        it.desktop
                     }
                     _blockDesktop.setData(list)
                 }
@@ -194,29 +194,27 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardVM>() 
         viewModel.getDashboard()
     }
 
-    private fun handleMenu(page: HomeFeature.HomePage) {
-        when (EOfficeMenu.fromIndex(page.type)) {
-            EOfficeMenu.REFERENCE_HANDLE -> {
+    private fun handleMenu(page: Page) {
+        when (DashboardBlock.fromIndex(page.type)) {
+            DashboardBlock.REFERENCE_HANDLE -> {
 //                openFragment(DocumentFragment.newInstance())
             }
 
-            EOfficeMenu.REFERENCE_HANDLING -> {
+            DashboardBlock.REFERENCE_HANDLING -> {
 //                openFragment(DocumentFragment.newInstance(1))
             }
 
-            EOfficeMenu.SIGN_GOING -> {
+            DashboardBlock.SIGN_GOING -> {
 //                openFragment(DigitalSignatureFragment.newInstance(DigitalSignType.REFERENCE_SIGNING.getType()))
             }
 
-            EOfficeMenu.WORK_NO_ASSIGN -> {
+            DashboardBlock.WORK_NO_ASSIGN -> {
 //                openFragment(WorkDepartmentFragment.newInstance())
             }
 
-            EOfficeMenu.WORK_NEED_DONE, EOfficeMenu.WORK_OVER_TIME -> {
+            DashboardBlock.WORK_NOT_DOING, DashboardBlock.WORK_OVER_TIME -> {
 //                openFragment(WorkPersonalFragment.newInstance(0))
             }
-
-            else -> {}
         }
     }
 

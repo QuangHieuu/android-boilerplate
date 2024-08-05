@@ -48,7 +48,7 @@ class ConversationMessageFragment :
     }
 
     override val viewModel: ConversationVM by viewModel(ownerProducer = {
-        findOwner(ConversationDetailFragment::class.java.simpleName)
+        findOwner(ConversationDetailFragment::class)
     })
 
     private val _activityVM by activityViewModel<MainVM>()

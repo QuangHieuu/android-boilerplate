@@ -1,12 +1,18 @@
 package boilerplate.utils
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
+import android.widget.Toast
 import boilerplate.R
 import boilerplate.data.local.repository.user.UserRepository
+import boilerplate.ui.main.MainActivity
 import boilerplate.utils.extension.toTextSize
 import org.koin.java.KoinJavaComponent.inject
 import java.io.BufferedInputStream
@@ -340,6 +346,19 @@ object SystemUtil {
             if (mediaStorageDir.isDirectory) {
                 delete(mediaStorageDir)
             }
+        }
+    }
+
+    fun copyToClipboard(context: Context, text: String?, json: String?) {
+        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val appIntent = Intent(context, MainActivity::class.java).apply {
+            putExtra(CLIPBOARD_MESSAGE, json)
+        }
+        val clip = ClipData.newIntent(text, appIntent)
+        clipboard.setPrimaryClip(clip)
+
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
+            Toast.makeText(context, "Đã sao chép", Toast.LENGTH_SHORT).show()
         }
     }
 }

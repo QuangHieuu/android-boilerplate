@@ -28,7 +28,7 @@ class ConversationSettingFragment :
     }
 
     override val viewModel: ConversationVM by viewModel(ownerProducer = {
-        findOwner(ConversationDetailFragment::class.java.simpleName)
+        findOwner(ConversationDetailFragment::class)
     })
 
     private var _leaveInSilent: Boolean = false

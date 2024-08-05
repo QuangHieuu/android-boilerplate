@@ -45,7 +45,7 @@ data class User(
     @SerializedName("truc_tuyen")
     private var isOnline: Int = 0,
     @SerializedName("vai_tro")
-    var vaiTro: Int = 0,
+    var role: Int = 0,
     @SerializedName("is_lanh_dao_don_vi")
     var isLeaderCompany: Boolean = false,
     @SerializedName("is_check_theo_doi")
@@ -83,7 +83,7 @@ data class User(
     @SerializedName("ds_vai_tro")
     var roles: ArrayList<String>? = arrayListOf(),
     @SerializedName("hinh_thuc")
-    val form: Int = 0,
+    var form: Int = 0,
     @SerializedName("ngay_tao")
     var dayCreate: String = ""
 ) : ExpandModel() {
@@ -156,7 +156,8 @@ data class User(
 data class UpdateBody(
     @SerializedName("so_dien_thoai") val phone: String,
     @SerializedName("so_dien_thoai_khac") val otherPhone: String,
-    @SerializedName("tam_trang") val mood: String
+    @SerializedName("tam_trang") val mood: String,
+    @SerializedName("anh_dai_dien") val avatar: String?
 )
 
 data class State(
