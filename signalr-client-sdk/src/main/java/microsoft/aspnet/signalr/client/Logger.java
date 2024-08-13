@@ -18,5 +18,5 @@ public interface Logger {
      * @param level
      *            Message level
      */
-    public void log(String message, LogLevel level);
+    void log(String message, LogLevel level);
 }

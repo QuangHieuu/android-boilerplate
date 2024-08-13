@@ -1,33 +1,49 @@
 package boilerplate.data.remote.api
 
-import boilerplate.data.remote.service.ApiService
-import boilerplate.data.remote.service.ApiUrl
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 
 class ApiRequest(
-    private var builder: Retrofit.Builder,
-    private var okHttpClient: OkHttpClient
+	private var builder: Retrofit.Builder,
+	private var okHttpClient: OkHttpClient
 ) {
+	companion object {
+		const val VERSION = "1.0"
+		const val VERSION_2 = "2.0"
+	}
 
-    private fun createRequest(url: String): ApiService = builder
-        .baseUrl(url)
-        .client(okHttpClient)
-        .build()
-        .create(ApiService::class.java)
+	private fun createRequest(url: String, version: String = VERSION): ApiService {
+		val okBuilder = okHttpClient.newBuilder().addInterceptor { chain ->
+			chain.request().let {
+				chain.proceed(it.newBuilder().apply {
+					header("api-version", version)
+					method(it.method, it.body)
+				}.build())
+			}
+		}
 
-    val login get() = createRequest(ApiUrl.HOST_SIGN_IN)
+		return builder
+			.baseUrl(url)
+			.client(okBuilder.build())
+			.build()
+			.create(ApiService::class.java)
+	}
 
-    val eOffice get() = createRequest(ApiUrl.HOST_E_OFFICE + ApiUrl.API)
+	val login get() = createRequest(ApiUrl.HOST_SIGN_IN)
 
-    val chat get() = createRequest(ApiUrl.HOST_CHAT + ApiUrl.API)
+	val eOffice get() = createRequest(ApiUrl.HOST_MAIN + ApiUrl.API)
 
-    val notify get() = createRequest(ApiUrl.HOST_NOTIFICATION + ApiUrl.API)
+	fun getEOffice(version: String): ApiService =
+		createRequest(ApiUrl.HOST_MAIN + ApiUrl.API, version)
 
-    val file get() = createRequest(ApiUrl.HOST_FILE + ApiUrl.API)
+	val chat get() = createRequest(ApiUrl.HOST_CHAT + ApiUrl.API)
 
-    val firebase get() = createRequest(ApiUrl.FIREBASE_URL_VERSON)
+	val notify get() = createRequest(ApiUrl.HOST_NOTIFICATION + ApiUrl.API)
 
-    val calender get() = createRequest(ApiUrl.HOST_MEETING_CALENDAR + ApiUrl.API)
+	val file get() = createRequest(ApiUrl.HOST_FILE + ApiUrl.API)
+
+	val firebase get() = createRequest(ApiUrl.FIREBASE_URL_VERSON)
+
+	val calender get() = createRequest(ApiUrl.HOST_MEETING_CALENDAR + ApiUrl.API)
 
 }

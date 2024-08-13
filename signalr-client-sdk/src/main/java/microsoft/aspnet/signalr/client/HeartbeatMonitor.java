@@ -28,7 +28,7 @@ public class HeartbeatMonitor {
 
     private boolean mStopped = true;
 
-    private Object mSync = new Object();
+    private final Object mSync = new Object();
 
     /**
      * Starts the monitor

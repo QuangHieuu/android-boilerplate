@@ -26,8 +26,8 @@ import microsoft.aspnet.signalr.client.Logger;
  */
 public class HubConnection extends Connection {
 
-    private Map<String, Action<HubResult>> mCallbacks = Collections.synchronizedMap(new HashMap<String, Action<HubResult>>());
-    private Map<String, HubProxy> mHubs = Collections.synchronizedMap(new HashMap<String, HubProxy>());
+    private final Map<String, Action<HubResult>> mCallbacks = Collections.synchronizedMap(new HashMap<String, Action<HubResult>>());
+    private final Map<String, HubProxy> mHubs = Collections.synchronizedMap(new HashMap<String, HubProxy>());
     private Integer mCallbackId = 0;
 
     /**

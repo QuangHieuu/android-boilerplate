@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#005CDD</color>
-    <color name="colorPrimaryDark">#1943a5</color>
-    <color name="colorPrimaryAlpha">#1A005CDD</color>
+    <color name="colorPrimary">#03A959</color>
+    <color name="colorPrimaryDark">#1A9F5F</color>
+    <color name="colorPrimaryAlpha">#1A03A959</color>
 
-    <color name="colorPrimaryLight">#0496FF</color>
+    <color name="colorPrimaryLight">#00FF84</color>
 
-    <color name="colorPrimaryAlpha50">#80005CDD</color>
+    <color name="colorPrimaryAlpha50">#8003A959</color>
     <color name="colorWhiteAlpha80">#CCFFFFFF</color>
+    <color name="colorWhiteAlpha30">#4DFFFFFF</color>
 
     <color name="transparent">#00000000</color>
 
@@ -24,6 +25,17 @@
     <color name="color_toast_success">#03B56B</color>
     <color name="color_toast_warning">#d19330</color>
     <color name="color_toast_fail">#DC374D</color>
+
+    <!--work-->
+    <color name="color_work_yellow">#d19330</color>
+    <color name="color_work_jade">#32d5c2</color>
+    <color name="color_work_blue">#326ef6</color>
+    <color name="color_work_green">#5ba83e</color>
+    <color name="color_work_red">#f60a18</color>
+
+    <color name="color_conversation_unread">#ECF6FA</color>
+    <color name="color_conversation_quote">#F1F1F1</color>
+    <color name="color_conversation_selected">#ECF6FA</color>
 
     <color name="color_4a4a4a">#4a4a4a</color>
     <color name="color_e6e6e6">#e6e6e6</color>

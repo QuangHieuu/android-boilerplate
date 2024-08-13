@@ -1,35 +1,151 @@
 <resources>
-    <string name="app_name">boilerplate</string>
-    <string name="app_name_full">Darsitec Office</string>
-    <string name="text_app_short_name">Darsitec</string>
-    <string name="text_app_full_name">DOffice 1.0 - Phần mềm văn phòng số</string>
-    <string name="text_app_description">NỀN TẢNG VĂN PHÒNG SỐ</string>
-    <string name="text_copy_right">© 2024 CÔNG TY CỔ PHẦN THÔNG TIN TÍN HIỆU DARSITEC</string>
-
     <string name="no_text" />
+    <string name="no_data">Không có dữ liệu</string>
 
-    <string name="text_confirm_ok">Ok</string>
+    <string name="confirm_ok">Ok</string>
+    <string name="setting">Cài đặt</string>
+    <string name="send_message">Nhắn tin</string>
+    <string name="send_sms">Gửi SMS</string>
+    <string name="show_more">Xem thêm</string>
+    <string name="show_less">Ẩn bớt</string>
+    <string name="collapse">Thu gọn</string>
+    <string name="accept_name">Tên truy cập</string>
+    <string name="password">Mật khẩu</string>
+    <string name="login">Đăng nhập</string>
+    <string name="phone_call">Gọi điện</string>
+    <string name="personal_inform">Thông tin cá nhân</string>
+    <string name="watch_personal_inform">Xem thông tin cá nhân</string>
+    <string name="no">Không</string>
+    <string name="exit">Thoát</string>
+    <string name="ignore">Bỏ qua</string>
+    <string name="pin">Ghim</string>
+    <string name="un_pin">Bỏ ghim</string>
+    <string name="off">Tắt</string>
+    <string name="home">Trang chủ</string>
+    <string name="today">Hôm nay</string>
+    <string name="close">Đóng</string>
+    <string name="edit_information">Chỉnh sửa thông tin</string>
+    <string name="birthday">Ngày sinh</string>
+    <string name="state">Trạng thái</string>
+    <string name="sms">sms</string>
+    <string name="email">Email</string>
+    <string name="different_number">Số điện thoại khác</string>
+    <string name="phone_number">Số điện thoại</string>
 
-    <string name="text_copy_build_version">B1.0</string>
+    <string name="roles">Chức danh</string>
 
-    <string name="text_expandable">Xem thêm</string>
-    <string name="text_un_expand">Thu gọn</string>
-    <string name="text_collapse">Ẩn bớt</string>
+    <string name="select_user">Chọn nhân viên</string>
+    <string name="employee">Nhân viên</string>
+    <string name="position">Vị trí</string>
+    <string name="department">Phòng ban</string>
+    <string name="company">Đơn vị</string>
+    <string name="all_company">Tất cả đơn vị</string>
+    <string name="cancel">Hủy</string>
+    <string name="update">Cập nhật</string>
 
-    <string name="text_internet_error">Mất kết nối internet, vui lòng thử lại</string>
+    <string name="contact">Danh bạ</string>
+    <string name="message">Tin nhắn</string>
+    <string name="filter">Bộ lọc</string>
+    <string name="search">Tìm kiếm</string>
 
-    <string name="text_login">Tên truy cập</string>
-    <string name="text_hint_username">Nhập tên truy cập</string>
-    <string name="text_password">Mật khẩu</string>
-    <string name="text_hint_password">Nhập mật khẩu</string>
-    <string name="text_login_button">Đăng nhập</string>
-    <string name="text_login_with_face_id">đăng nhập bằng face id</string>
-    <string name="text_phone_call">Gọi điện</string>
-    <string name="text_message">Nhắn tin</string>
-    <string name="text_send_sms">Gửi SMS</string>
-    <string name="text_personal_inform">Thông tin cá nhân</string>
-    <string name="text_watch_personal_inform">Xem thông tin cá nhân</string>
+    <string name="logout">Đăng xuất</string>
+    <string name="delete">Xóa</string>
 
-    <string name="text_auth_wrong">Tài khoản đăng nhập hoặc mật khẩu không đúng</string>
+    <string name="duplication">Nhân bản</string>
+    <string name="pick_company">Chọn đơn vị</string>
+    <string name="selected_or_unselected_all">Chọn/hủy tất cả</string>
+    <string name="create_group">Tạo nhóm</string>
+
+    <string name="sent">Đã nhận</string>
+    <string name="seen">Đã xem</string>
+    <string name="pending">Chưa gửi</string>
+    <string name="mark">Đánh dấu</string>
+    <string name="un_mark">Bỏ đánh dấu</string>
+    <string name="my_cloud">Cloud của tôi</string>
+
+    <string name="turn_off_notify">Tắt thông báo</string>
+    <string name="turn_on_notify">Bật thông báo</string>
+    <string name="turn_off_notify_success">Tắt thông báo thành công</string>
+    <string name="turn_on_notify_success">Bật thông báo thành công</string>
+
+    <string name="unread_message_count">9+</string>
+    <string name="conversation_name">Nhóm:\u0020</string>
+    <string name="member_count">%d thành viên</string>
+    <string name="conversation_setting">Cấu hình nhóm</string>
+    <string name="important_message">Tin nhắn quan trọng</string>
+    <string name="withdraw_message">Thu hồi tin nhắn</string>
+    <string name="edit_message">Chỉnh sửa tin nhắn</string>
+
+    <string name="leave_group">Rời nhóm</string>
+    <string name="leave_and_delete">Rời nhóm và xóa trò chuyện?</string>
+    <string name="leave_group_in_silent">Rời nhóm trong im lặng</string>
+
+    <string name="dismiss_conversation">Giải tán nhóm</string>
+    <string name="dismiss">Giải tán</string>
+
+    <string name="conversation_title_setting_1">Cho phép thành viên trong nhóm</string>
+    <string name="conversation_setting_1">Thay đổi tên và ảnh đại diện</string>
+    <string name="conversation_setting_2">Ghim tin nhắn</string>
+    <string name="conversation_setting_3">Chế độ phê duyệt thành viên mới</string>
+    <string name="conversation_setting_4">Cho phép thành viên gửi tin</string>
+    <string name="conversation_setting_5">Chế độ phê duyệt thành viên mới</string>
+    <string name="conversation_setting_6">Cho phép thành viên gửi tin</string>
+
+    <string name="message_is_already_withdraw">Tin nhắn đã được thu hồi</string>
+    <string name="message_is_withdraw">Đã thu hồi tin nhắn</string>
+    <string name="message_send_breakfast_file">Đã gửi Phiếu điểm tâm</string>
+    <string name="message_send_survey_file">Đã gửi Phiếu khảo sát</string>
+    <string name="message_quote">Đã chuyển tiếp tin nhắn</string>
+    <string name="message_send_file">Đã gửi file đính kèm</string>
+
+    <string name="logout_description">Anh/Chị sẽ thoát khỏi phiên hiện tại.</string>
+    <string name="title_tablet">Module Title</string>
+
+    <string name="document">Công văn</string>
+    <string name="work">Công việc</string>
+    <string name="work_manager">Quản lý công việc</string>
+    <string name="signature">Ký số</string>
+    <string name="request_comment_need_handle">Yêu cầu góp ý cần xử lý</string>
+    <string name="desktop">Bàn làm việc</string>
+
+    <string name="deadline_with_dot">Thời hạn:</string>
+    <string name="document_time_with_dot">Ngày công văn:</string>
+    <string name="present_leader">Trình lãnh đạo</string>
+
+    <string name="deny">Từ chối</string>
+    <string name="agree">Đồng ý</string>
+
+    <string name="delete_conversation_message">Xóa hội thoại</string>
+
+    <string name="new_message_count">Có %d tin nhắn mới</string>
+    <string name="audio_message">Tin nhắn thoại</string>
+    <string name="record_mode">Chuyển giọng nói thành văn bản</string>
+    <string name="record_action">Nhấn để ghi âm</string>
+    <string name="playback">Nghe lại</string>
+    <string name="user_pin">Người ghim tin nhắn</string>
+    <string name="go_to_message">Xem tin gốc</string>
+    <string name="survey_file">Phiếu khảo sát</string>
+    <string name="breakfast_file">Phiếu điểm tâm</string>
+
+    <string name="show_more_with_dot">\u0020…Xem thêm</string>
+    <string name="collapse_with_dot">\u0020…Thu gọn</string>
+
+    <string name="see_all">Xem tất cả</string>
+    <string name="pin_message">Tin nhắn ghim</string>
+    <string name="send_from">Tin nhắn của %s</string>
+    <string name="forward_message">Tin nhắn chuyển tiếp</string>
+    <string name="remove_pin">Bỏ ghim</string>
+
+    <string name="general_inform">Thông tin chung</string>
+    <string name="image">Hình ảnh</string>
+    <string name="link">Link</string>
+
+    <string name="document_conversation">Tập tin đính kèm</string>
+    <string name="no_image_conversation">Chưa có ảnh được chia sẻ\ntrong hội thoại này</string>
+    <string name="no_file_conversation">Chưa có tập tin được chia sẻ\ntrong hội thoại này</string>
+    <string name="no_link_conversation">Chưa có link được chia sẻ\ntrong hội thoại này</string>
+    <string name="other_setting">Cài đặt khác</string>
+
+    <string name="approve_member">Phê duyệt thành viên</string>
 
 </resources>

@@ -1,0 +1,6 @@
+<resources>
+    <string name="success_delete_conversation">Xóa hội thoại thành công</string>
+    <string name="success_delete_group">Giải tán nhóm thành công</string>
+
+    <string name="success_update">Cập nhật thành công</string>
+</resources>

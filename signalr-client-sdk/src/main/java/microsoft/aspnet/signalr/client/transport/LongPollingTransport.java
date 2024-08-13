@@ -25,7 +25,7 @@ import microsoft.aspnet.signalr.client.http.Response;
  */
 public class LongPollingTransport extends HttpClientTransport {
     private UpdateableCancellableFuture<Void> mConnectionFuture;
-    private Object mPollSync = new Object();
+    private final Object mPollSync = new Object();
 
     /**
      * Initializes the transport

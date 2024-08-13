@@ -7,17 +7,22 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     defaultConfig {
-        minSdkVersion 24
-        targetSdkVersion 34
-        compileSdk 34
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        compileSdk rootProject.ext.targetSdkVersion
+    }
+    buildTypes {
+        release {
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
     }
     namespace "signalR.client.sdk"
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.google.code.gson:gson:2.10.1'
-    implementation 'org.java-websocket:Java-WebSocket:1.5.4'
+    implementation 'com.google.code.gson:gson:2.11.0'
+    implementation 'org.java-websocket:Java-WebSocket:1.5.7'
 }
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8

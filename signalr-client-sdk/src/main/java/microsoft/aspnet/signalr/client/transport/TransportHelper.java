@@ -49,7 +49,7 @@ public class TransportHelper {
         }
 
         if (json.get("I") != null) {
-            logger.log("Invoking message received with: " + json.toString(), LogLevel.Verbose);
+            logger.log("Invoking message received with: " + json, LogLevel.Verbose);
             connection.onReceived(json);
         } else {
 

@@ -17,7 +17,7 @@ import com.google.gson.JsonElement;
  * Represents a subscription to a message
  */
 public class Subscription {
-    private List<Action<JsonElement[]>> mReceived = new ArrayList<Action<JsonElement[]>>();
+    private final List<Action<JsonElement[]>> mReceived = new ArrayList<Action<JsonElement[]>>();
 
     /**
      * Triggers the "Received" event

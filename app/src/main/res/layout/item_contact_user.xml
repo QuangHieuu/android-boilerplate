@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/crl_selected_user"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_border_bottom_grey"
+    android:padding="@dimen/dp_10"
+    tools:ignore="SpUsage">
+
+    <androidx.appcompat.widget.AppCompatCheckBox
+        android:id="@+id/check_user"
+        android:layout_width="@dimen/dp_18"
+        android:layout_height="0dp"
+        android:layout_marginEnd="@dimen/dp_10"
+        android:background="@drawable/state_checkbox_square"
+        android:button="@null"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toStartOf="@id/img_avatar"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <boilerplate.widget.image.RoundedImageView
+        android:id="@+id/img_avatar"
+        android:layout_width="@dimen/dp_35"
+        android:layout_height="0dp"
+        android:layout_marginEnd="@dimen/dp_10"
+        android:adjustViewBounds="false"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toStartOf="@id/tv_name"
+        app:layout_constraintStart_toEndOf="@id/check_user"
+        app:layout_constraintTop_toTopOf="parent"
+        app:radius="@dimen/dp_18" />
+
+    <FrameLayout
+        android:id="@+id/frame_user_online"
+        android:layout_width="@dimen/dp_8"
+        android:layout_height="0dp"
+        android:background="@drawable/state_user_online"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/img_avatar"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toEndOf="@id/img_avatar"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintStart_toStartOf="@id/img_avatar"
+        app:layout_constraintTop_toTopOf="@id/img_avatar"
+        app:layout_constraintVertical_bias="1" />
+
+    <boilerplate.widget.customText.TextViewFont
+        android:id="@+id/tv_name"
+        style="@style/StyleRegular"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:maxLines="1"
+        android:textColor="@color/color_212121"
+        android:textSize="@dimen/dp_14"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="@id/barrier"
+        app:layout_constraintEnd_toStartOf="@id/img_phone"
+        app:layout_constraintStart_toEndOf="@id/img_avatar"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top"
+        app:constraint_referenced_ids="tv_status, ln_role" />
+
+    <boilerplate.widget.customText.TextViewFont
+        android:id="@+id/tv_status"
+        style="@style/StyleItalic"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/color_828282"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/tv_name"
+        app:layout_constraintStart_toStartOf="@id/tv_name"
+        app:layout_constraintTop_toBottomOf="@id/barrier" />
+
+    <LinearLayout
+        android:id="@+id/ln_role"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/tv_name"
+        app:layout_constraintStart_toStartOf="@id/tv_name"
+        app:layout_constraintTop_toBottomOf="@id/barrier">
+
+        <boilerplate.widget.customText.TextViewFont
+            android:id="@+id/tv_company"
+            style="@style/StyleRegular"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/color_828282"
+            android:textSize="@dimen/dp_12" />
+
+        <boilerplate.widget.customText.TextViewFont
+            android:id="@+id/tv_department"
+            style="@style/StyleRegular"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/color_828282"
+            android:textSize="@dimen/dp_12" />
+
+        <boilerplate.widget.customText.TextViewFont
+            android:id="@+id/tv_role"
+            style="@style/StyleRegular"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/color_828282"
+            android:textSize="@dimen/dp_12"
+            tools:text="asd" />
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/img_phone"
+        android:layout_width="@dimen/dp_36"
+        android:layout_height="0dp"
+        android:padding="@dimen/dp_8"
+        android:src="@drawable/ic_phone_blue"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toStartOf="@id/img_chat"
+        app:layout_constraintStart_toEndOf="@id/tv_name"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/img_chat"
+        android:layout_width="@dimen/dp_36"
+        android:layout_height="0dp"
+        android:layout_centerHorizontal="true"
+        android:padding="@dimen/dp_5"
+        android:src="@drawable/ic_chat_blue"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toStartOf="@id/img_clear"
+        app:layout_constraintStart_toEndOf="@id/img_phone"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/img_clear"
+        android:layout_width="@dimen/dp_36"
+        android:layout_height="0dp"
+        android:padding="@dimen/dp_10"
+        android:src="@drawable/ic_clear"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toStartOf="@id/img_more"
+        app:layout_constraintStart_toEndOf="@id/img_chat"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/img_more"
+        android:layout_width="@dimen/dp_36"
+        android:layout_height="0dp"
+        android:padding="@dimen/dp_10"
+        android:src="@drawable/ic_menu_dot_horizontal"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/img_clear"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

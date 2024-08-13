@@ -18,7 +18,7 @@ public interface Response {
     /**
      * Returns the response headers
      */
-    public Map<String, List<String>> getHeaders();
+    Map<String, List<String>> getHeaders();
 
     /**
      * Return the header value
@@ -27,7 +27,7 @@ public interface Response {
      *            Header to retrieve
      * @return The header Values
      */
-    public List<String> getHeader(String headerName);
+    List<String> getHeader(String headerName);
 
     /**
      * Reads the response stream to the end and returns its value as a String
@@ -35,7 +35,7 @@ public interface Response {
      * @return The response content as a String
      * @throws java.io.IOException
      */
-    public String readToEnd() throws IOException;
+    String readToEnd() throws IOException;
 
     /**
      * Reads one line from the response stream
@@ -43,12 +43,12 @@ public interface Response {
      * @return A line from the response stream
      * @throws java.io.IOException
      */
-    public String readLine() throws IOException;
+    String readLine() throws IOException;
 
     /**
      * Returns the response HTTP Status code
      */
-    public int getStatus();
+    int getStatus();
 
     /**
      * Reads the response stream to the end and returns its value as a Byte[]
@@ -56,5 +56,5 @@ public interface Response {
      * @return The response content as a Byte[]
      * @throws java.io.IOException
      */
-    public byte[] readAllBytes() throws IOException;
+    byte[] readAllBytes() throws IOException;
 }

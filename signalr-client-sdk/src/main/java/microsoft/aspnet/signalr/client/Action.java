@@ -23,5 +23,5 @@ public interface Action<E> {
      *             An Exception is thrown if there is an error executing the
      *             action
      */
-    public void run(E obj) throws Exception;
+    void run(E obj) throws Exception;
 }

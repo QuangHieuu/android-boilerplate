@@ -1,9 +1,11 @@
 package boilerplate.data.remote.api
 
 interface OnApiCallBack {
-    fun invalidLogin()
+	fun notInternet()
 
-    fun invalidToken()
+	fun invalidLogin()
 
-    fun onServerError(errorCode: Int, api: String, showError: Boolean)
+	fun invalidToken()
+
+	fun onServerError(errorCode: Int, api: String, showError: Boolean)
 }

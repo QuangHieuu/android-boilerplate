@@ -31,9 +31,9 @@ public class Connection implements ConnectionBase {
 
     public static final Version PROTOCOL_VERSION = new Version("1.3");
 
-    private Logger mLogger;
+    private final Logger mLogger;
 
-    private String mUrl;
+    private final String mUrl;
 
     private String mConnectionToken;
 
@@ -45,9 +45,9 @@ public class Connection implements ConnectionBase {
 
     private Credentials mCredentials;
 
-    private String mQueryString;
+    private final String mQueryString;
 
-    private Map<String, String> mHeaders = new HashMap<String, String>();
+    private final Map<String, String> mHeaders = new HashMap<String, String>();
 
     private UpdateableCancellableFuture<Void> mConnectionFuture;
 
@@ -67,7 +67,7 @@ public class Connection implements ConnectionBase {
 
     private Runnable mOnConnectionSlow;
 
-    private ArrayList<Runnable> mOnClosedList = new ArrayList<>();
+    private final ArrayList<Runnable> mOnClosedList = new ArrayList<>();
 
     private StateChangedCallback mOnStateChanged;
 
@@ -85,9 +85,9 @@ public class Connection implements ConnectionBase {
 
     protected String mBearerToken;
 
-    private Object mStateLock = new Object();
+    private final Object mStateLock = new Object();
 
-    private Object mStartLock = new Object();
+    private final Object mStartLock = new Object();
 
     /**
      * Initializes the connection with an URL
@@ -665,7 +665,7 @@ public class Connection implements ConnectionBase {
 
             ConnectionType connectionType = isReconnecting ? ConnectionType.Reconnection : ConnectionType.InitialConnection;
 
-            log("Starting transport for " + connectionType.toString(), LogLevel.Verbose);
+            log("Starting transport for " + connectionType, LogLevel.Verbose);
             SignalRFuture<Void> future = mTransport.start(this, connectionType, new DataResultCallback() {
                 @Override
                 public void onData(String data) {

@@ -1,134 +1,122 @@
 package boilerplate.model.file
 
+import android.content.Context
 import android.net.Uri
-import com.google.gson.annotations.SerializedName
-import boilerplate.data.remote.service.ApiUrl
+import boilerplate.data.remote.api.ApiUrl
 import boilerplate.model.ExpandModel
 import boilerplate.utils.ImageUtil.IMAGE_MAX_SIZE
 import boilerplate.utils.ImageUtil.IMAGE_THUMB_SIZE
+import boilerplate.utils.SystemUtil
 import boilerplate.utils.SystemUtil.SYSTEM_DELETE
-import java.util.Locale
+import com.google.gson.annotations.SerializedName
 
-open class AttachedFile : ExpandModel() {
-    var id: String? = null
-        get() = field ?: fileId
+data class AttachedFile(
+	@SerializedName(value = "id", alternate = ["file_id"])
+	var id: String = "",
+	@SerializedName(value = "kieu_file", alternate = ["mime"])
+	var fileType: String = "",
+	@SerializedName("url")
+	var filePath: String = "",
+	@SerializedName(value = "file_name", alternate = ["name", "ten_file", "full_name"])
+	var fileName: String = "",
+	@SerializedName(value = "kich_thuoc", alternate = ["size"])
+	var fileSize: Int = 0,
+	@SerializedName(value = "ngay_tao")
+	var createDate: String = "",
+	@SerializedName("application")
+	var application: String = "",
 
-    @SerializedName(value = "file_id")
-    var fileId: String? = null
-        get() = field ?: "".also { field = it }
+	@SerializedName("is_existed")
+	var isExisted: Boolean = false,
+	@SerializedName(value = "isMigrate", alternate = ["migrated"])
+	var isMigrated: Boolean = false,
 
-    @SerializedName("is_existed")
-    var isExisted = false
+	/**
+	 * file conversation
+	 */
+	@SerializedName("hoi_thoai_id")
+	var conversationId: String = "",
 
-    @SerializedName(value = "kieu_file", alternate = ["mime"])
-    var fileType: String? = null
-        get() = field ?: "".also { fileType = it }
+	@SerializedName("tin_nhan_id")
+	var messageId: String = "",
+	@SerializedName("file_dinh_kem_id")
+	var fileAttachId: String = "",
 
-    @SerializedName(value = "file_name", alternate = ["name"])
-    var fileName: String? = null
-        get() = field ?: "".also { field = it }
+	@SerializedName("file_size_number")
+	var fileSizeNumber: Int = 0,
 
-    @SerializedName(value = "ten_file")
-    var realName: String? = null
-        get() = field?.replace(SYSTEM_DELETE, "") ?: fileName
+	var supportId: String = "",
 
-    @SerializedName(value = "full_name")
-    var fullName: String? = null
-        get() = field ?: "".also { field = it }
+	@SerializedName("cau_hoi_id")
+	var questionId: String = "",
+	@SerializedName("sttcauhoi")
+	var questionIndex: Int = 0,
+	@SerializedName("cauhoi_loai")
+	var questionType: Int = 0,
+	@SerializedName("positionCauHoi")
+	var questionPosition: Int = 0,
 
-    @SerializedName(value = "kich_thuoc", alternate = ["size"])
-    var fileSize = 0
+	/**
+	 * file survey
+	 */
+	@SerializedName("phieu_khao_sat_id")
+	var surveyId: String = "",
+	@SerializedName("tieu_de")
+	var surveyTitle: String = "",
+) : ExpandModel() {
+	var isUpload: Boolean = false
+	var isPreventRemove: Boolean = true
 
-    @SerializedName(value = "isMigrate", alternate = ["migrated"])
-    var isMigrated = false
+	var isContentFile = false
+	var isFirst = false
+	var isFileLetter = false
 
-    @SerializedName(value = "ngay_tao")
-    var createDate: String? = null
-        get() = field ?: "".also { field = it }
+	var status: Int = 0
+	var type: String = ""
 
-    var fileSizeReal: String? = null
-        get() = field ?: "".also { field = it }
+	var uri: Uri? = null
 
-    var application: String? = null
-        get() = if (field == null) "".also { field = it } else field
+	fun getDisplayName(context: Context): String {
+		if (uri == null) return fileName.replace(SYSTEM_DELETE, "")
+		return SystemUtil.getDisplayFilename(context, uri!!)
+	}
 
-    protected var url: String? = null
-    protected var uri: Uri? = null
+	fun getFileSize(context: Context): String {
+		if (fileSize != 0 || uri == null) return SystemUtil.getDisplayFileSize(fileSize)
+		return SystemUtil.getDisplayFileSize(context, uri!!)
+	}
 
-    var status = 0
-    var isPreventRemove = true
-    var isUpload = false
+	val filePreview: String
+		get() = ApiUrl.HOST_FILE_PREVIEW + id + "?w=" + IMAGE_MAX_SIZE
 
-    //id của dữ liệu hỗ trợ cntt
-    var supportId: String? = null
-        get() = field ?: "".also { field = it }
+	val fileThumb: String
+		get() = ApiUrl.HOST_FILE_PREVIEW + id + "?w=" + IMAGE_THUMB_SIZE
 
-    fun getPreviewUrl(isThumb: Boolean): String {
-        return String.format(
-            Locale.getDefault(),
-            "%s%s?w=%d",
-            ApiUrl.HOST_FILE_PREVIEW,
-            id,
-            if (isThumb) IMAGE_THUMB_SIZE else IMAGE_MAX_SIZE
-        )
-    }
+	val fileDownload: String
+		get() = ApiUrl.HOST_FILE + "file/get/" + id
 
-    val filePreview: String
-        get() = ApiUrl.HOST_FILE_PREVIEW + id
-    val fileDownloadUrl: String
-        get() = ApiUrl.HOST_FILE + "file/get/" + id + "?w=" + IMAGE_MAX_SIZE
+	val isSurveyBreakfast: Boolean
+		get() = if (surveyTitle.length > 5) {
+			surveyTitle.startsWith("[PĐT]")
+		} else false
 
-    class Work : AttachedFile() {
-        var idVB = 0
+	val displayTitle: String
+		get() = if (isSurveyBreakfast) {
+			surveyTitle.substring(5)
+		} else {
+			surveyTitle
+		}
+}
 
-        @SerializedName("file_size_number")
-        private val fileSizeNumber = 0
-        val type: String? = null
-        var isContentFile = false
-        var isFirst = false
-        var isFileLetter = false
-        var isFileUploaded = false
-        var count = 0
-    }
-
-    class Conversation : AttachedFile() {
-        @SerializedName("hoi_thoai_id")
-        var conversationId: String? = null
-
-        @SerializedName("tin_nhan_id")
-        var messageId: String? = null
-
-        @SerializedName("file_dinh_kem_id")
-        var fileAttachId: String? = null
-        private val type: String? = null
-    }
-
-    class Question : AttachedFile() {
-        var cau_hoi_id: String? = null
-        var sttcauhoi = 0
-        var cauhoi_loai = 0
-        var positionCauHoi = 0
-    }
-
-    class SurveyFile : AttachedFile() {
-        @SerializedName("phieu_khao_sat_id")
-        var surveyId: String? = null
-            get() = if (field == null) "".also { field = it } else field
-
-        @SerializedName("tieu_de")
-        var title: String? = null
-            get() = if (field == null) "".also { field = it } else field
-
-        val isPhieuDiemTam: Boolean
-            get() = if (title!!.length > 5) {
-                title!!.startsWith("[PĐT]")
-            } else false
-
-        val displayTitle: String
-            get() = if (isPhieuDiemTam) {
-                title!!.substring(5)
-            } else {
-                title!!
-            }
-    }
+fun ArrayList<UploadFile>.convertFile(): ArrayList<AttachedFile> {
+	val list = arrayListOf<AttachedFile>()
+	for (upload in this) {
+		list.add(AttachedFile().apply {
+			id = upload.id
+			fileName = upload.originalName
+			fileSize = upload.length
+			fileType = upload.type
+		})
+	}
+	return list
 }

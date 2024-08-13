@@ -1,127 +1,177 @@
 package boilerplate.base
 
-import android.app.Dialog
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Rect
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.viewbinding.ViewBinding
 import boilerplate.R
+import boilerplate.service.signalr.SignalRManager.INTENT_FILTER_SIGNALR
+import boilerplate.ui.conversationDetail.ConversationDetailFragment
+import boilerplate.utils.extension.findFragmentByTag
 import boilerplate.utils.extension.hideKeyboard
+import boilerplate.utils.extension.isTablet
 import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.showSnackBarFail
 import boilerplate.widget.customText.EditTextFont
-import boilerplate.widget.loading.LoadingScreen
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
-import it.cpc.vn.permission.PermissionUtils
+import java.lang.reflect.ParameterizedType
 
 abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatActivity() {
+	protected abstract val _viewModel: VM
+	private var _binding: AC? = null
+	protected val binding: AC get() = _binding!!
 
-    protected val binding: AC by lazy { bindingFactory() }
-    protected abstract val mViewModel: VM
+	private val compositeDisposable = CompositeDisposable()
 
-    private val compositeDisposable = CompositeDisposable()
+	private val backPress by lazy {
+		object : OnBackPressedCallback(true) {
+			override fun handleOnBackPressed() {
+				val stack = supportFragmentManager.backStackEntryCount
+				val fullScreen = supportFragmentManager.findFragmentById(R.id.app_container)
+				val splitScreen = supportFragmentManager.findFragmentById(R.id.frame_tablet)
+				if (isTablet()) {
+					if (splitScreen != null) {
+						if (stack > 1 || fullScreen != null) {
+							supportFragmentManager.popBackStack()
+						} else {
+							finish()
+						}
+					} else {
+						closeView(stack)
+					}
+				} else {
+					closeView(stack)
+				}
+			}
+		}
+	}
 
-    private val loadingScreen: Dialog by lazy { LoadingScreen(this) }
-    private val backPress by lazy {
-        object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                val stack = supportFragmentManager.backStackEntryCount
-                if (stack == 0) {
-                    finish()
-                } else {
-                    supportFragmentManager.popBackStack()
-                }
-            }
-        }
-    }
+	override fun onCreate(savedInstanceState: Bundle?) {
+		super.onCreate(savedInstanceState)
+		setContentView(
+			@Suppress("UNCHECKED_CAST")
+			javaClass.genericSuperclass.let { it as ParameterizedType }.actualTypeArguments[0]
+				.let { it as Class<*> }.getMethod("inflate", LayoutInflater::class.java)
+				.invoke(null, layoutInflater)
+				.let { it as AC }
+				.apply { _binding = this }.root
+		)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(binding.root)
-        PermissionUtils.initPermissionCheck()
-        onBackPressedDispatcher.addCallback(this@BaseActivity, backPress)
+		onBackPressedDispatcher.addCallback(this@BaseActivity, backPress)
 
-        initialize()
-        baseObserver()
-        onSubscribeObserver()
-        registerOnClick()
+		initialize()
+		baseObserver()
+		onSubscribeObserver()
+		registerOnClick()
 
-    }
+		LocalBroadcastManager.getInstance(application)
+			.registerReceiver(invalidTokeReceiver, IntentFilter(INTENT_FILTER_SIGNALR))
+	}
 
-    override fun onDestroy() {
-        super.onDestroy()
+	override fun onDestroy() {
+		super.onDestroy()
+		compositeDisposable.apply {
+			clear()
+			dispose()
+		}
+		LocalBroadcastManager.getInstance(application).unregisterReceiver(invalidTokeReceiver)
+	}
 
-        loadingScreen.notNull { it.dismiss() }
+	protected abstract fun initialize()
 
-        PermissionUtils.disposable()
-    }
+	protected abstract fun onSubscribeObserver()
 
-    protected abstract fun bindingFactory(): AC
+	protected abstract fun registerOnClick()
 
-    protected abstract fun initialize()
+	protected abstract fun callApi()
 
-    protected abstract fun onSubscribeObserver()
+	protected fun launchDisposable(job: () -> Disposable) {
+		compositeDisposable.add(job())
+	}
 
-    protected abstract fun registerOnClick()
+	override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+		val fragment = findFragmentByTag(ConversationDetailFragment::class.java.simpleName)
+		if (fragment != null &&
+			fragment is ConversationDetailFragment &&
+			fragment.isVisible &&
+			fragment.touchEvent(ev)
+		) {
+			return super.dispatchTouchEvent(ev)
+		}
 
-    protected abstract fun callApi()
+		if (ev.action == MotionEvent.ACTION_UP) {
+			val view = currentFocus
+			if (view != null) {
+				val consumed = super.dispatchTouchEvent(ev)
+				val viewTmp = currentFocus
+				val viewNew: View = viewTmp ?: view
+				if (viewNew == view) {
+					val rect = Rect()
+					val coordinates = IntArray(2)
+					view.getLocationOnScreen(coordinates)
+					rect.set(
+						coordinates[0],
+						coordinates[1],
+						coordinates[0] + view.width,
+						coordinates[1] + view.height
+					)
+					val x = ev.x.toInt()
+					val y = ev.y.toInt()
+					if (rect.contains(x, y)) {
+						return consumed
+					}
+				} else if (viewNew is EditText) {
+					return consumed
+				}
+				if (view is EditTextFont && view.isFocusableInTouchMode) {
+					view.hideKeyboard()
+				}
+				return consumed
+			}
+		}
+		return super.dispatchTouchEvent(ev)
+	}
 
-    protected fun launchDisposable(job: () -> Disposable) {
-        compositeDisposable.add(job())
-    }
+	private fun baseObserver() {
+		with(_viewModel) {
+			error.observe(this@BaseActivity) {
+				binding.root.showSnackBarFail(it)
+			}
+		}
+	}
 
-    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-        if (ev.action == MotionEvent.ACTION_UP) {
-            val view = currentFocus
-            if (view != null) {
-                val consumed = super.dispatchTouchEvent(ev)
-                val viewTmp = currentFocus
-                val viewNew: View = viewTmp ?: view
-                if (viewNew == view) {
-                    val rect = Rect()
-                    val coordinates = IntArray(2)
-                    view.getLocationOnScreen(coordinates)
-                    rect[coordinates[0], coordinates[1], coordinates[0] + view.width] =
-                        coordinates[1] + view.height
-                    val x = ev.x.toInt()
-                    val y = ev.y.toInt()
-                    if (rect.contains(x, y)) {
-                        return consumed
-                    }
-                } else if (viewNew is EditText) {
-                    return consumed
-                }
-                if (view is EditTextFont && view.isFocusableInTouchMode) {
-                    view.hideKeyboard()
-                }
-                return consumed
-            }
-        }
-        return super.dispatchTouchEvent(ev)
-    }
+	private fun closeView(stack: Int) {
+		if (stack == 0) {
+			finish()
+		} else {
+			supportFragmentManager.popBackStack()
+		}
+	}
 
-    private fun baseObserver() {
-        with(mViewModel) {
-            loading.observe(this@BaseActivity) {
-                loadingScreen.notNull { dialog ->
-                    if (it) {
-                        dialog.show()
-                    } else {
-                        dialog.dismiss()
-                    }
-                }
-            }
-            inValidaLogin.observe(this@BaseActivity) {
-                if (it) {
-                    showSnackBarFail(getString(R.string.text_auth_wrong), binding.root)
-                }
-            }
-        }
-    }
+	private val invalidTokeReceiver = object : BroadcastReceiver() {
+		override fun onReceive(context: Context?, intent: Intent?) {
+			intent.notNull {
+				val bundle: Bundle = it.getBundleExtra(BaseApp.APP_FILTER_INVALID) ?: Bundle()
+				val data = bundle.getBoolean(BaseApp.APP_FILTER_INVALID, false)
+				if (data) {
+					handleLogout()
+				}
+			}
+		}
+	}
 
+	protected open fun handleLogout() {
+
+	}
 }

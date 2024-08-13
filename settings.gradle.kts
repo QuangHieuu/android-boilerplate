@@ -9,6 +9,7 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+        jcenter()
     }
 }
 dependencyResolutionManagement {
@@ -16,10 +17,11 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        jcenter()
     }
 }
 
 rootProject.name = "Android Boilerplate"
-include(":permission")
+include(":signalr-client-sdk")
 include(":excel-to-pdf")
 include(":app")

@@ -1,0 +1,17 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ln_toast"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@drawable/bg_corner_white"
+    android:padding="@dimen/dp_8">
+
+    <boilerplate.widget.customText.TextViewFont
+        android:id="@+id/tv_toast"
+        style="@style/StyleRegular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorWhite"
+        tools:text="Toast" />
+</LinearLayout>
