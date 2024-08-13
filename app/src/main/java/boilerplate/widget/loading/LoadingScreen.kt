@@ -6,23 +6,23 @@ import android.widget.FrameLayout
 import boilerplate.databinding.ViewLoadingBinding
 
 class LoadingScreen(context: Context) : FrameLayout(context) {
-    private var _binding: ViewLoadingBinding? = null
+	private var _binding: ViewLoadingBinding? = null
 
-    init {
-        _binding = ViewLoadingBinding.inflate(
-            LayoutInflater.from(context),
-            this,
-            true
-        )
-    }
+	init {
+		_binding = ViewLoadingBinding.inflate(
+			LayoutInflater.from(context),
+			this,
+			true
+		)
+	}
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        _binding?.pulseView?.start()
-    }
+	override fun onAttachedToWindow() {
+		super.onAttachedToWindow()
+		_binding?.pulseView?.start()
+	}
 
-    override fun onDetachedFromWindow() {
-        _binding?.pulseView?.stop()
-        super.onDetachedFromWindow()
-    }
+	override fun onDetachedFromWindow() {
+		_binding?.pulseView?.stop()
+		super.onDetachedFromWindow()
+	}
 }

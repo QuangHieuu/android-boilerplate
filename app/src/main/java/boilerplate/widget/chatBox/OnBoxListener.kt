@@ -1,82 +1,81 @@
 package boilerplate.widget.chatBox
 
 import boilerplate.model.file.AttachedFile
-import boilerplate.model.file.AttachedFile.SurveyFile
 import boilerplate.model.message.Message
 
 interface OnBoxListener {
-    fun onSendMessage(
-        content: String,
-        uploadFile: ArrayList<AttachedFile.Conversation>,
-        currentFile: ArrayList<AttachedFile.Conversation>,
-        surveyFile: ArrayList<SurveyFile>,
-        isSms: Boolean,
-        isEmail: Boolean
-    )
+	fun onSendMessage(
+		content: String,
+		uploadFile: ArrayList<AttachedFile>,
+		currentFile: ArrayList<AttachedFile>,
+		surveyFile: ArrayList<AttachedFile>,
+		isSms: Boolean,
+		isEmail: Boolean
+	)
 
-    fun onEditMessage(
-        lastMessage: Message,
-        content: String,
-        uploadFile: ArrayList<AttachedFile.Conversation>,
-        currentFile: ArrayList<AttachedFile.Conversation>,
-        surveyFile: ArrayList<SurveyFile>,
-        isSms: Boolean,
-        isEmail: Boolean
-    )
+	fun onEditMessage(
+		lastMessage: Message,
+		content: String,
+		uploadFile: ArrayList<AttachedFile>,
+		currentFile: ArrayList<AttachedFile>,
+		surveyFile: ArrayList<AttachedFile>,
+		isSms: Boolean,
+		isEmail: Boolean
+	)
 
-    fun onAttachedClick()
+	fun onAttachedClick()
 
-    fun onCameraClick()
+	fun onCameraClick()
 
-    fun onPickImageClick()
+	fun onPickImageClick()
 
-    fun onEditFocus(focus: Boolean)
+	fun onEditFocus(focus: Boolean)
 
-    fun onOpenRecord()
+	fun onOpenRecord()
 
-    fun onStartRecord(modeSpeech: Boolean)
+	fun onStartRecord(modeSpeech: Boolean)
 
-    fun onRemoveFileOffline(file: String)
+	fun onRemoveFileOffline(file: String)
 }
 
 abstract class SimpleBoxListener : OnBoxListener {
-    override fun onSendMessage(
-        content: String,
-        uploadFile: ArrayList<AttachedFile.Conversation>,
-        currentFile: ArrayList<AttachedFile.Conversation>,
-        surveyFile: ArrayList<SurveyFile>,
-        isSms: Boolean,
-        isEmail: Boolean
-    ) {
-    }
+	override fun onSendMessage(
+		content: String,
+		uploadFile: ArrayList<AttachedFile>,
+		currentFile: ArrayList<AttachedFile>,
+		surveyFile: ArrayList<AttachedFile>,
+		isSms: Boolean,
+		isEmail: Boolean
+	) {
+	}
 
-    override fun onEditMessage(
-        lastMessage: Message, content: String,
-        uploadFile: ArrayList<AttachedFile.Conversation>,
-        currentFile: ArrayList<AttachedFile.Conversation>,
-        surveyFile: ArrayList<SurveyFile>,
-        isSms: Boolean, isEmail: Boolean
-    ) {
-    }
+	override fun onEditMessage(
+		lastMessage: Message, content: String,
+		uploadFile: ArrayList<AttachedFile>,
+		currentFile: ArrayList<AttachedFile>,
+		surveyFile: ArrayList<AttachedFile>,
+		isSms: Boolean, isEmail: Boolean
+	) {
+	}
 
-    override fun onAttachedClick() {
-    }
+	override fun onAttachedClick() {
+	}
 
-    override fun onCameraClick() {
-    }
+	override fun onCameraClick() {
+	}
 
-    override fun onPickImageClick() {
-    }
+	override fun onPickImageClick() {
+	}
 
-    override fun onEditFocus(focus: Boolean) {
-    }
+	override fun onEditFocus(focus: Boolean) {
+	}
 
-    override fun onOpenRecord() {
-    }
+	override fun onOpenRecord() {
+	}
 
-    override fun onStartRecord(modeSpeech: Boolean) {
-    }
+	override fun onStartRecord(modeSpeech: Boolean) {
+	}
 
-    override fun onRemoveFileOffline(file: String) {
-    }
+	override fun onRemoveFileOffline(file: String) {
+	}
 }

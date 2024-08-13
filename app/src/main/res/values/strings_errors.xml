@@ -8,4 +8,8 @@
     <string name="error_unacceptable_file">File không hợp lệ</string>
 
     <string name="error_no_phone_number">Không có số điện thoại</string>
+
+    <string name="error_no_permission_edit_or_withdraw">
+        Anh/chị không thể thực hiện thao tác này
+    </string>
 </resources>

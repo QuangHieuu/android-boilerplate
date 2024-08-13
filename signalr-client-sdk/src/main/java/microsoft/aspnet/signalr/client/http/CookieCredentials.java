@@ -20,7 +20,7 @@ import microsoft.aspnet.signalr.client.Credentials;
  */
 public class CookieCredentials implements Credentials {
 
-    private Map<String, String> mCookieValues;
+    private final Map<String, String> mCookieValues;
 
     /**
      * Creates a new instance
@@ -80,7 +80,7 @@ public class CookieCredentials implements Credentials {
                 currentCookies.append("; ");
             }
 
-            currentCookies.append(this.toString());
+            currentCookies.append(this);
 
             request.removeHeader("Cookie");
             request.addHeader("Cookie", currentCookies.toString());

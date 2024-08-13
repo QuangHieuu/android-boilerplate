@@ -16,7 +16,7 @@ class KeepAliveData {
     /**
      * Determines when we warn the developer that the connection may be lost
      */
-    private double mKeepAliveWarnAt = 2.0 / 3.0;
+    private final double mKeepAliveWarnAt = 2.0 / 3.0;
 
     private long mLastKeepAlive;
 

@@ -19,174 +19,174 @@ import com.bumptech.glide.request.RequestOptions
 
 open class GridImageAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val mList = ArrayList<Any?>()
-    private var mIsMultiChoose = false
-    private var mIsAdjustView = false
+	private val mList = ArrayList<Any?>()
+	private var mIsMultiChoose = false
+	private var mIsAdjustView = false
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val inflater: LayoutInflater = LayoutInflater.from(parent.context)
-        when (viewType) {
-            TYPE_IMAGE -> {
-                return ImageHolder(
-                    ItemConversationImageBinding.inflate(inflater, parent, false),
-                    mIsAdjustView
-                )
-            }
+	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+		val inflater: LayoutInflater = LayoutInflater.from(parent.context)
+		when (viewType) {
+			TYPE_IMAGE -> {
+				return ImageHolder(
+					ItemConversationImageBinding.inflate(inflater, parent, false),
+					mIsAdjustView
+				)
+			}
 
-            TYPE_TITLE -> {
-                return TitleVH(ItemTitleBinding.inflate(inflater))
-            }
+			TYPE_TITLE -> {
+				return TitleVH(ItemTitleBinding.inflate(inflater))
+			}
 
-            else -> {
-                return LoadingVH(ItemLoadMoreBinding.inflate(inflater))
-            }
-        }
-    }
+			else -> {
+				return LoadingVH(ItemLoadMoreBinding.inflate(inflater))
+			}
+		}
+	}
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when (holder.itemViewType) {
-            TYPE_IMAGE -> (holder as ImageHolder).setImage(
-                mList[position] as AttachedFile.Conversation,
-                mIsMultiChoose
-            )
+	override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+		when (holder.itemViewType) {
+			TYPE_IMAGE -> (holder as ImageHolder).setImage(
+				mList[position] as AttachedFile,
+				mIsMultiChoose
+			)
 
-            TYPE_TITLE -> (holder as TitleVH).apply {
-                _binding.tvTitle.text = mList[position] as String?
-            }
+			TYPE_TITLE -> (holder as TitleVH).apply {
+				_binding.tvTitle.text = mList[position] as String?
+			}
 
-            else -> {}
-        }
-    }
+			else -> {}
+		}
+	}
 
-    override fun getItemViewType(position: Int): Int {
-        if (mList[position] is String) {
-            return TYPE_TITLE
-        }
-        if (position == mList.size - 1 && mList[position] == null) {
-            return TYPE_LOAD_MORE
-        }
-        return TYPE_IMAGE
-    }
+	override fun getItemViewType(position: Int): Int {
+		if (mList[position] is String) {
+			return TYPE_TITLE
+		}
+		if (position == mList.size - 1 && mList[position] == null) {
+			return TYPE_LOAD_MORE
+		}
+		return TYPE_IMAGE
+	}
 
-    override fun getItemCount(): Int {
-        return mList.size
-    }
+	override fun getItemCount(): Int {
+		return mList.size
+	}
 
-    fun addImage(items: ArrayList<AttachedFile.Conversation>) {
-        val size = mList.size
-        if (size > 0) {
-            mList.clear()
-            notifyItemRangeRemoved(0, size)
-        }
-        mList.addAll(items)
-        notifyItemRangeInserted(0, mList.size)
-    }
+	fun addImage(items: ArrayList<AttachedFile>) {
+		val size = mList.size
+		if (size > 0) {
+			mList.clear()
+			notifyItemRangeRemoved(0, size)
+		}
+		mList.addAll(items)
+		notifyItemRangeInserted(0, mList.size)
+	}
 
-    fun loadMore(items: ArrayList<Any>) {
-        val size = mList.size
-        val ob = mList[size - 1]
-        if (items.size != 0 && mList.contains(items[0])) {
-            items.removeAt(0)
-        }
-        mList.addAll(items)
-        notifyItemRangeInserted(size, items.size)
-    }
+	fun loadMore(items: ArrayList<Any>) {
+		val size = mList.size
+		val ob = mList[size - 1]
+		if (items.size != 0 && mList.contains(items[0])) {
+			items.removeAt(0)
+		}
+		mList.addAll(items)
+		notifyItemRangeInserted(size, items.size)
+	}
 
-    fun showLoadMore() {
-        mList.add(null)
-        notifyItemInserted(mList.size - 1)
-    }
+	fun showLoadMore() {
+		mList.add(null)
+		notifyItemInserted(mList.size - 1)
+	}
 
-    fun cancelLoadMore() {
-        val size = mList.size
-        if (size > 0) {
-            val ob = mList[size - 1]
-            if (ob == null) {
-                mList.remove(null)
-                notifyItemRemoved(size - 1)
-            }
-        }
-    }
+	fun cancelLoadMore() {
+		val size = mList.size
+		if (size > 0) {
+			val ob = mList[size - 1]
+			if (ob == null) {
+				mList.remove(null)
+				notifyItemRemoved(size - 1)
+			}
+		}
+	}
 
-    fun clearAll() {
-        val size = mList.size
-        mList.clear()
-        notifyItemRangeRemoved(0, size)
-    }
+	fun clearAll() {
+		val size = mList.size
+		mList.clear()
+		notifyItemRangeRemoved(0, size)
+	}
 
-    fun setIsMultiChoose(isChoose: Boolean) {
-        mIsMultiChoose = isChoose
-        for (ob in mList) {
-            if (ob is AttachedFile.Conversation) {
-                if (!mIsMultiChoose) {
-                    ob.isChecked = false
-                }
-            }
-        }
-        notifyItemRangeChanged(0, mList.size)
-    }
+	fun setIsMultiChoose(isChoose: Boolean) {
+		mIsMultiChoose = isChoose
+		for (ob in mList) {
+			if (ob is AttachedFile) {
+				if (!mIsMultiChoose) {
+					ob.isChecked = false
+				}
+			}
+		}
+		notifyItemRangeChanged(0, mList.size)
+	}
 
-    fun updateChecked(file: AttachedFile.Conversation?) {
-        val index = mList.indexOf(file)
-        mList[index] = file
-        notifyItemChanged(index, file)
-    }
+	fun updateChecked(file: AttachedFile?) {
+		val index = mList.indexOf(file)
+		mList[index] = file
+		notifyItemChanged(index, file)
+	}
 
-    val countImageCheck: Int
-        get() {
-            var count = 0
-            for (ob in mList) {
-                if (ob is AttachedFile.Conversation) {
-                    if (ob.isChecked) {
-                        count += 1
-                    }
-                }
-            }
-            return count
-        }
+	val countImageCheck: Int
+		get() {
+			var count = 0
+			for (ob in mList) {
+				if (ob is AttachedFile) {
+					if (ob.isChecked) {
+						count += 1
+					}
+				}
+			}
+			return count
+		}
 
-    val shareImage: ArrayList<AttachedFile.Conversation>
-        get() {
-            val files: ArrayList<AttachedFile.Conversation> = ArrayList()
-            for (ob in mList) {
-                if (ob is AttachedFile.Conversation) {
-                    if (ob.isChecked) {
-                        files.add(ob)
-                    }
-                }
-            }
-            return files
-        }
+	val shareImage: ArrayList<AttachedFile>
+		get() {
+			val files: ArrayList<AttachedFile> = ArrayList()
+			for (ob in mList) {
+				if (ob is AttachedFile) {
+					if (ob.isChecked) {
+						files.add(ob)
+					}
+				}
+			}
+			return files
+		}
 
-    companion object {
-        private const val TYPE_IMAGE = 0
-        const val TYPE_TITLE: Int = 1
-        const val TYPE_LOAD_MORE: Int = 2
-    }
+	companion object {
+		private const val TYPE_IMAGE = 0
+		const val TYPE_TITLE: Int = 1
+		const val TYPE_LOAD_MORE: Int = 2
+	}
 }
 
 
 class ImageHolder(
-    val binding: ItemConversationImageBinding,
-    val isAdjust: Boolean,
-    val context: Context = binding.root.context
+	val binding: ItemConversationImageBinding,
+	val isAdjust: Boolean,
+	val context: Context = binding.root.context
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    fun setImage(file: AttachedFile.Conversation, isMultiChoose: Boolean) {
-        with(binding) {
-            checkBox.apply {
-                isChecked = file.isChecked
-                show(isMultiChoose)
-            }
-            val type = file.fileType
-            val url = if (ExtensionType.isFileGIF(type)) file.filePreview
-            else file.getPreviewUrl(true)
+	fun setImage(file: AttachedFile, isMultiChoose: Boolean) {
+		with(binding) {
+			checkBox.apply {
+				isChecked = file.isChecked
+				show(isMultiChoose)
+			}
+			val type = file.fileType
+			val url = if (ExtensionType.isFileGIF(type)) file.filePreview
+			else file.fileThumb
 
-            val options: RequestOptions = RequestOptions()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .error(R.drawable.bg_error)
-            imgRoundFile.apply { adjustViewBounds = isAdjust }
-                .loadImage(url, type = type, requestOptions = options)
-        }
-    }
+			val options: RequestOptions = RequestOptions()
+				.diskCacheStrategy(DiskCacheStrategy.ALL)
+				.error(R.drawable.bg_error)
+			imgRoundFile.apply { adjustViewBounds = isAdjust }
+				.loadImage(url, type = type, requestOptions = options)
+		}
+	}
 }

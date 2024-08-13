@@ -19,94 +19,94 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import org.koin.java.KoinJavaComponent
 
-abstract class BaseViewModel() : ViewModel() {
-    val gson: Gson by KoinJavaComponent.inject<Gson>(Gson::class.java).also {
-        setApiCallback(it.value)
+abstract class BaseViewModel : ViewModel() {
+	val gson: Gson by KoinJavaComponent.inject<Gson>(Gson::class.java).also {
+		setApiCallback(it.value)
 
-    }
+	}
 
-    val application: Application by KoinJavaComponent.inject(Application::class.java)
+	val application: Application by KoinJavaComponent.inject(Application::class.java)
 
-    val limit: Int by KoinJavaComponent.inject(Int::class.java)
+	val limit: Int by KoinJavaComponent.inject(Int::class.java)
 
-    protected val _loading by lazy { MutableLiveData<Boolean>() }
-    val loading: LiveData<Boolean> = _loading
+	protected val _loading by lazy { MutableLiveData<Boolean>() }
+	val loading: LiveData<Boolean> = _loading
 
-    protected val _error by lazy { MutableLiveData<String>() }
-    val error = _error
+	protected val _error by lazy { MutableLiveData<String>() }
+	val error = _error
 
-    /**
-     * This is the job for all coroutines started by this ViewModel.
-     *
-     * Cancelling this job will cancel all coroutines started by this ViewModel.
-     */
-    private val viewModelJob: Job? by lazy { Job() }
+	/**
+	 * This is the job for all coroutines started by this ViewModel.
+	 *
+	 * Cancelling this job will cancel all coroutines started by this ViewModel.
+	 */
+	private val viewModelJob: Job? by lazy { Job() }
 
-    /**
-     * This is the scope for all coroutines launched by [ViewModel].
-     *
-     * Since we pass [viewModelJob], you can cancel all coroutines launched by [viewModelScope] by calling
-     * viewModelJob.cancel().  This is called in [onCleared].
-     */
-    private val viewModelScope: CoroutineScope? by lazy {
-        CoroutineScope(Dispatchers.Main + viewModelJob as Job)
-    }
+	/**
+	 * This is the scope for all coroutines launched by [ViewModel].
+	 *
+	 * Since we pass [viewModelJob], you can cancel all coroutines launched by [viewModelScope] by calling
+	 * viewModelJob.cancel().  This is called in [onCleared].
+	 */
+	private val viewModelScope: CoroutineScope? by lazy {
+		CoroutineScope(Dispatchers.Main + viewModelJob as Job)
+	}
 
-    private val _disposable = CompositeDisposable()
+	private val _disposable = CompositeDisposable()
 
-    private fun setApiCallback(gson: Gson) {
-        ApiObservable.setServerResponseListener(object : OnApiCallBack {
-            override fun notInternet() {
-                _error.postValue(application.getString(R.string.error_no_connection))
-            }
+	private fun setApiCallback(gson: Gson) {
+		ApiObservable.setServerResponseListener(object : OnApiCallBack {
+			override fun notInternet() {
+				_error.postValue(application.getString(R.string.error_no_connection))
+			}
 
-            override fun invalidLogin() {
-                _error.postValue(application.getString(R.string.error_auth_wrong))
-            }
+			override fun invalidLogin() {
+				_error.postValue(application.getString(R.string.error_auth_wrong))
+			}
 
-            override fun invalidToken() {
-                Intent(BaseApp.APP_FILTER_INVALID)
-                    .apply {
-                        putExtra(BaseApp.APP_FILTER_INVALID, Bundle().apply {
-                            putExtra(BaseApp.APP_FILTER_INVALID, true)
-                        })
-                    }
-                    .let { LocalBroadcastManager.getInstance(application).sendBroadcast(it) }
-            }
+			override fun invalidToken() {
+				Intent(BaseApp.APP_FILTER_INVALID)
+					.apply {
+						putExtra(BaseApp.APP_FILTER_INVALID, Bundle().apply {
+							putExtra(BaseApp.APP_FILTER_INVALID, true)
+						})
+					}
+					.let { LocalBroadcastManager.getInstance(application).sendBroadcast(it) }
+			}
 
-            override fun onServerError(errorCode: Int, api: String, showError: Boolean) {
-                if (!showError) {
-                    return
-                }
-                if (errorCode >= 500) {
-                    _error.postValue(application.getString(R.string.error_general))
+			override fun onServerError(errorCode: Int, api: String, showError: Boolean) {
+				if (!showError) {
+					return
+				}
+				if (errorCode >= 500) {
+					_error.postValue(application.getString(R.string.error_general))
 //                    Firebase.reportServerError(this, api, AccountManager.getUsername(this))
-                    return
-                }
-                if (InternetManager.isConnected()) {
-                    _error.postValue(application.getString(R.string.error_general))
-                }
-            }
-        }, gson)
-    }
+					return
+				}
+				if (InternetManager.isConnected()) {
+					_error.postValue(application.getString(R.string.error_general))
+				}
+			}
+		}, gson)
+	}
 
-    protected fun launchDisposable(job: () -> Disposable) {
-        _disposable.add(job())
-    }
+	protected fun launchDisposable(job: () -> Disposable) {
+		_disposable.add(job())
+	}
 
-    protected fun launchDisposable(vararg job: Disposable) {
-        _disposable.addAll(*job)
-    }
+	protected fun launchDisposable(vararg job: Disposable) {
+		_disposable.addAll(*job)
+	}
 
-    fun setLoading(boolean: Boolean) {
-        _loading.postValue(boolean)
-    }
+	fun setLoading(boolean: Boolean) {
+		_loading.postValue(boolean)
+	}
 
-    override fun onCleared() {
-        super.onCleared()
-        _disposable.clear()
-        if (viewModelScope != null) {
-            viewModelJob?.cancel()
-        }
-    }
+	override fun onCleared() {
+		super.onCleared()
+		_disposable.clear()
+		if (viewModelScope != null) {
+			viewModelJob?.cancel()
+		}
+	}
 }

@@ -15,60 +15,60 @@ import boilerplate.utils.extension.notNull
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MenuFragment : BaseFragment<FragmentMenuBinding, MainVM>() {
-    companion object {
-        fun newInstance(): MenuFragment {
-            return MenuFragment()
-        }
-    }
+	companion object {
+		fun newInstance(): MenuFragment {
+			return MenuFragment()
+		}
+	}
 
-    override val viewModel: MainVM by activityViewModels()
-    private val _childVM by viewModel<DashboardVM>(ownerProducer = {
-        findOwner(DashboardFragment::class)
-    })
+	override val viewModel: MainVM by activityViewModels()
+	private val _childVM by viewModel<DashboardVM>(ownerProducer = {
+		findOwner(DashboardFragment::class)
+	})
 
-    private lateinit var _adapter: EOfficeAdapter
+	private lateinit var _adapter: EOfficeAdapter
 
-    override fun initialize() {
-        _adapter = EOfficeAdapter(object : EOfficeAdapter.OnMenuListener {
-            override fun onChosen(menu: EOfficeMenu) {
+	override fun initialize() {
+		_adapter = EOfficeAdapter(object : EOfficeAdapter.OnMenuListener {
+			override fun onChosen(menu: EOfficeMenu) {
 
-            }
-        })
+			}
+		})
 
-        with(binding) {
-            rcvMenu.adapter = _adapter
-            rcvMenu.itemAnimator = null
-        }
-    }
+		with(binding) {
+			rcvMenu.adapter = _adapter
+			rcvMenu.itemAnimator = null
+		}
+	}
 
-    override fun onSubscribeObserver() {
-        with(_childVM) {
-            updateCount.observe(this@MenuFragment) { data ->
-                data.notNull {
-                    for (result in it) {
-                        _adapter.updateCount(result)
-                    }
-                }
-            }
-        }
-        with(viewModel) {
-            user.observe(this@MenuFragment) {
-                with(binding) {
-                    tvRole.text = currentFullName
-                }
-            }
-        }
-    }
+	override fun onSubscribeObserver() {
+		with(_childVM) {
+			updateCount.observe(this@MenuFragment) { data ->
+				data.notNull {
+					for (result in it) {
+						_adapter.updateCount(result)
+					}
+				}
+			}
+		}
+		with(viewModel) {
+			user.observe(this@MenuFragment) {
+				with(binding) {
+					tvRole.text = currentFullName
+				}
+			}
+		}
+	}
 
-    override fun registerEvent() {
-        with(binding) {
-            btnBackToDashboard.click {
-                viewModel.currentSelected.value = HomeTabIndex.POSITION_HOME_DASHBOARD
-            }
-        }
-    }
+	override fun registerEvent() {
+		with(binding) {
+			btnBackToDashboard.click {
+				viewModel.currentSelected.value = HomeTabIndex.POSITION_HOME_DASHBOARD
+			}
+		}
+	}
 
-    override fun callApi() {
-        _childVM.getMenuStatical()
-    }
+	override fun callApi() {
+		_childVM.getMenuStatical()
+	}
 }

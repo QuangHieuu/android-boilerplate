@@ -7,89 +7,89 @@ import boilerplate.model.user.User
 
 interface OnContactListener {
 
-    fun onExpandCompany(company: Company)
+	fun onExpandCompany(company: Company)
 
-    fun onDepartmentSelected(department: Department)
+	fun onDepartmentSelected(department: Department)
 
-    fun onCompanySelected(company: Company)
+	fun onCompanySelected(company: Company)
 
-    fun onExpandDepartment(department: Department)
+	fun onExpandDepartment(department: Department)
 
-    fun onOpenInform(user: User)
+	fun onOpenInform(user: User)
 
-    fun onChatWith(item: User)
+	fun onChatWith(item: User)
 
-    fun onPhone(phoneNumber: String)
+	fun onPhone(phoneNumber: String)
 
-    fun onUserSelect(item: User)
+	fun onUserSelect(item: User)
 
-    fun onRegularContact(conversation: Conversation)
+	fun onRegularContact(conversation: Conversation)
 
-    fun onRegularMenu(conversation: Conversation)
+	fun onRegularMenu(conversation: Conversation)
 
-    fun onRegularSelected(conversation: Conversation)
+	fun onRegularSelected(conversation: Conversation)
 
-    fun removeUser(item: User)
+	fun removeUser(item: User)
 
-    fun removeConversation(item: Conversation)
+	fun removeConversation(item: Conversation)
 
-    fun onGroup(conversationId: String)
+	fun onGroup(conversationId: String)
 }
 
 abstract class SimpleListener : OnContactListener {
-    override fun onExpandCompany(company: Company) {
+	override fun onExpandCompany(company: Company) {
 
-    }
+	}
 
-    override fun onDepartmentSelected(department: Department) {
+	override fun onDepartmentSelected(department: Department) {
 
-    }
+	}
 
-    override fun onCompanySelected(company: Company) {
+	override fun onCompanySelected(company: Company) {
 
-    }
+	}
 
-    override fun onExpandDepartment(department: Department) {
+	override fun onExpandDepartment(department: Department) {
 
-    }
+	}
 
-    override fun onOpenInform(user: User) {
+	override fun onOpenInform(user: User) {
 
-    }
+	}
 
-    override fun onChatWith(item: User) {
+	override fun onChatWith(item: User) {
 
-    }
+	}
 
-    override fun onPhone(phoneNumber: String) {
+	override fun onPhone(phoneNumber: String) {
 
-    }
+	}
 
-    override fun onUserSelect(item: User) {
+	override fun onUserSelect(item: User) {
 
-    }
+	}
 
-    override fun onRegularContact(conversation: Conversation) {
+	override fun onRegularContact(conversation: Conversation) {
 
-    }
+	}
 
-    override fun onRegularMenu(conversation: Conversation) {
+	override fun onRegularMenu(conversation: Conversation) {
 
-    }
+	}
 
-    override fun onRegularSelected(conversation: Conversation) {
+	override fun onRegularSelected(conversation: Conversation) {
 
-    }
+	}
 
-    override fun removeUser(item: User) {
+	override fun removeUser(item: User) {
 
-    }
+	}
 
-    override fun removeConversation(item: Conversation) {
+	override fun removeConversation(item: Conversation) {
 
-    }
+	}
 
-    override fun onGroup(conversationId: String) {
+	override fun onGroup(conversationId: String) {
 
-    }
+	}
 }

@@ -32,7 +32,7 @@ public abstract class HttpClientTransport implements ClientTransport {
     protected boolean mStartedAbort = false;
     protected SignalRFuture<Void> mAbortFuture = null;
 
-    private Logger mLogger;
+    private final Logger mLogger;
 
     /**
      * Initializes the HttpClientTransport with a logger
@@ -199,7 +199,6 @@ public abstract class HttpClientTransport implements ClientTransport {
                     headersString.append(headerValue);
                     headersString.append("; ");
                 }
-                ;
                 headersString.append("]; ");
             }
 

@@ -12,50 +12,50 @@ import okhttp3.MultipartBody
 
 interface FileRepository {
 
-    fun getConversationFile(
-        conversationId: String?,
-        type: Int,
-        page: Int,
-        limit: Int
-    ): Single<ResponseItems<AttachedFile.Conversation>>
+	fun getConversationFile(
+		conversationId: String?,
+		type: Int,
+		page: Int,
+		limit: Int
+	): Single<ResponseItems<AttachedFile>>
 
-    fun postFile(files: List<MultipartBody.Part>): Flowable<Responses<UploadFile>>
+	fun postFile(files: List<MultipartBody.Part>): Flowable<Responses<UploadFile>>
 
-    fun postFile(file: MultipartBody.Part): Flowable<Responses<UploadFile>>
+	fun postFile(file: MultipartBody.Part): Flowable<Responses<UploadFile>>
 
-    fun postAvatarFile(
-        userName: String,
-        file: MultipartBody.Part
-    ): Flowable<Responses<UploadFile>>
+	fun postAvatarFile(
+		userName: String,
+		file: MultipartBody.Part
+	): Flowable<Responses<UploadFile>>
 
 }
 
 class FileImpl(
-    private val apiRequest: ApiRequest,
+	private val apiRequest: ApiRequest,
 ) : FileRepository {
 
-    override fun postFile(files: List<MultipartBody.Part>): Flowable<Responses<UploadFile>> {
-        return apiRequest.file.postConversationFile(files).checkInternet()
-    }
+	override fun postFile(files: List<MultipartBody.Part>): Flowable<Responses<UploadFile>> {
+		return apiRequest.file.postConversationFile(files).checkInternet()
+	}
 
-    override fun postFile(file: MultipartBody.Part): Flowable<Responses<UploadFile>> {
-        return apiRequest.file.postConversationFile(file).checkInternet()
-    }
+	override fun postFile(file: MultipartBody.Part): Flowable<Responses<UploadFile>> {
+		return apiRequest.file.postConversationFile(file).checkInternet()
+	}
 
-    override fun postAvatarFile(
-        userName: String,
-        file: MultipartBody.Part
-    ): Flowable<Responses<UploadFile>> {
-        return apiRequest.file.postAvatarFile(userName, file).checkInternet()
-    }
+	override fun postAvatarFile(
+		userName: String,
+		file: MultipartBody.Part
+	): Flowable<Responses<UploadFile>> {
+		return apiRequest.file.postAvatarFile(userName, file).checkInternet()
+	}
 
-    override fun getConversationFile(
-        conversationId: String?,
-        type: Int,
-        page: Int,
-        limit: Int
-    ): Single<ResponseItems<AttachedFile.Conversation>> {
-        return apiRequest.chat.getConversationFile(conversationId, type, page, limit)
-            .checkInternet()
-    }
+	override fun getConversationFile(
+		conversationId: String?,
+		type: Int,
+		page: Int,
+		limit: Int
+	): Single<ResponseItems<AttachedFile>> {
+		return apiRequest.chat.getConversationFile(conversationId, type, page, limit)
+			.checkInternet()
+	}
 }

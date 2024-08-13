@@ -1,19 +1,20 @@
 package boilerplate.data.remote.api.response
 
 data class Response<T>(
-    var result: T? = null,
-    var message: String = ""
+	var result: T? = null,
+	var message: String = "",
+	var status: Int = 0
 )
 
 data class Responses<T>(
-    var result: ArrayList<T> = arrayListOf()
+	var result: ArrayList<T> = arrayListOf()
 )
 
 data class ResponseItems<T>(
-    var result: Items<T>? = null,
+	var result: Items<T>? = null,
 )
 
 data class Items<T>(
-    var items: ArrayList<T> = arrayListOf(),
-    var total: Int = 0
+	var items: ArrayList<T> = arrayListOf(),
+	var total: Int = 0
 )

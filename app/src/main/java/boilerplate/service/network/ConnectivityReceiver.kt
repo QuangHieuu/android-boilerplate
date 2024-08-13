@@ -5,13 +5,13 @@ import android.content.Context
 import android.content.Intent
 
 open class ConnectivityReceiver(
-    private val _listener: ConnectivityReceiverListener
+	private val _listener: ConnectivityReceiverListener
 ) : BroadcastReceiver() {
-    override fun onReceive(context: Context, intent: Intent) {
-        _listener.onNetworkConnectionChanged()
-    }
+	override fun onReceive(context: Context, intent: Intent) {
+		_listener.onNetworkConnectionChanged()
+	}
 
-    interface ConnectivityReceiverListener {
-        fun onNetworkConnectionChanged()
-    }
+	interface ConnectivityReceiverListener {
+		fun onNetworkConnectionChanged()
+	}
 }

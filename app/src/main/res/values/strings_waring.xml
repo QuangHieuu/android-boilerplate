@@ -25,4 +25,11 @@
     </string>
 
     <string name="warning_allow_approved_description">Tồn tại thành viên trong danh sách chờ duyệt, cần thực hiện xử lý trước khi tắt tính năng này</string>
+
+    <string name="warning_withdraw_description">
+        Anh/chị chỉ có thể thu hồi tin nhắn trong %d phút
+    </string>
+    <string name="warning_edit_message_description">
+        Anh/chị chỉ có thể chỉnh sửa tin nhắn trong %d phút.
+    </string>
 </resources>

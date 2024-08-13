@@ -30,204 +30,204 @@ import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardVM>() {
-    companion object {
-        fun newInstance(): DashboardFragment {
-            return DashboardFragment()
-        }
-    }
+	companion object {
+		fun newInstance(): DashboardFragment {
+			return DashboardFragment()
+		}
+	}
 
-    interface OnSliderImageListener {
-        fun onClick(url: String)
-    }
+	interface OnSliderImageListener {
+		fun onClick(url: String)
+	}
 
-    interface OnMenuListener {
-        fun onMenu(menu: Page)
-    }
+	interface OnMenuListener {
+		fun onMenu(menu: Page)
+	}
 
-    interface OnDesktopListener {
-        fun onDesktop(desktop: Desktop)
-    }
+	interface OnDesktopListener {
+		fun onDesktop(desktop: Desktop)
+	}
 
-    override val viewModel: DashboardVM by viewModel()
-    private val _activityVM: MainVM by activityViewModel()
+	override val viewModel: DashboardVM by viewModel()
+	private val _activityVM: MainVM by activityViewModel()
 
-    private lateinit var _slider: BlockBannerAdapter
-    private lateinit var _blockDocument: BlockDocumentAdapter
-    private lateinit var _blockSign: BlockSignAdapter
-    private lateinit var _blockWork: BlockWorkAdapter
-    private lateinit var _blockDesktop: BlockDesktopAdapter
+	private lateinit var _slider: BlockBannerAdapter
+	private lateinit var _blockDocument: BlockDocumentAdapter
+	private lateinit var _blockSign: BlockSignAdapter
+	private lateinit var _blockWork: BlockWorkAdapter
+	private lateinit var _blockDesktop: BlockDesktopAdapter
 
-    private lateinit var _dynamic: ConcatAdapter
+	private lateinit var _dynamic: ConcatAdapter
 
-    override fun initialize() {
-        tableView()
+	override fun initialize() {
+		tableView()
 
-        val listener = object : OnMenuListener {
-            override fun onMenu(menu: Page) {
-                handleMenu(menu)
-            }
-        }
+		val listener = object : OnMenuListener {
+			override fun onMenu(menu: Page) {
+				handleMenu(menu)
+			}
+		}
 
-        _slider = BlockBannerAdapter(object : OnSliderImageListener {
-            override fun onClick(url: String) {
-                if (url.isNotEmpty() && URLUtil.isValidUrl(url)) {
-                    Intent(Intent.ACTION_VIEW).apply {
-                        setData(Uri.parse(url.trim()))
-                    }.let { startActivity(it) }
-                }
-            }
-        })
-        _blockDocument = BlockDocumentAdapter(listener)
-        _blockSign = BlockSignAdapter(listener)
-        _blockWork = BlockWorkAdapter(listener)
-        _blockDesktop = BlockDesktopAdapter(object : OnDesktopListener {
-            override fun onDesktop(desktop: Desktop) {
+		_slider = BlockBannerAdapter(object : OnSliderImageListener {
+			override fun onClick(url: String) {
+				if (url.isNotEmpty() && URLUtil.isValidUrl(url)) {
+					Intent(Intent.ACTION_VIEW).apply {
+						setData(Uri.parse(url.trim()))
+					}.let { startActivity(it) }
+				}
+			}
+		})
+		_blockDocument = BlockDocumentAdapter(listener)
+		_blockSign = BlockSignAdapter(listener)
+		_blockWork = BlockWorkAdapter(listener)
+		_blockDesktop = BlockDesktopAdapter(object : OnDesktopListener {
+			override fun onDesktop(desktop: Desktop) {
 
-            }
-        })
+			}
+		})
 
-        _dynamic = ConcatAdapter()
+		_dynamic = ConcatAdapter()
 
-        val mainAdapter = ConcatAdapter(
-            _slider,
-            _dynamic,
-            _blockWork,
-            _blockDesktop
-        )
+		val mainAdapter = ConcatAdapter(
+			_slider,
+			_dynamic,
+			_blockWork,
+			_blockDesktop
+		)
 
-        with(binding.rclTodayWork) {
-            adapter = mainAdapter
-            itemAnimator = null
-        }
-    }
+		with(binding.rclTodayWork) {
+			adapter = mainAdapter
+			itemAnimator = null
+		}
+	}
 
-    override fun onSubscribeObserver() {
-        with(_activityVM) {
-            user.observe(this@DashboardFragment) {
-                with(binding) {
-                    root.run {
-                        tvRole.text = currentFullName
-                        tvName.text = it.name
-                        imgAvatar.loadAvatar(it.avatar)
-                    }
-                }
-            }
-        }
-        with(viewModel) {
-            banners.observe(this@DashboardFragment) { list ->
-                with(binding) {
-                    root.run { _slider.setBanners(list.orEmpty()) }
-                }
-            }
-            dashboard.observe(this@DashboardFragment) {
-                binding.root.run {
-                    val statical = it.statical
+	override fun onSubscribeObserver() {
+		with(_activityVM) {
+			user.observe(this@DashboardFragment) {
+				with(binding) {
+					root.run {
+						tvRole.text = currentFullName
+						tvName.text = it.name
+						imgAvatar.loadAvatar(it.avatar)
+					}
+				}
+			}
+		}
+		with(viewModel) {
+			banners.observe(this@DashboardFragment) { list ->
+				with(binding) {
+					root.run { _slider.setBanners(list.orEmpty()) }
+				}
+			}
+			dashboard.observe(this@DashboardFragment) {
+				binding.root.run {
+					val statical = it.statical
 
-                    if (AccountManager.hasIncomeDocument()) {
-                        _blockDocument.setData(
-                            statical.documentUnProcess,
-                            statical.documentInProcess
-                        )
-                        _dynamic.addAdapter(0, _blockDocument)
-                    } else {
-                        _dynamic.removeAdapter(_blockDocument)
-                    }
-                    if (AccountManager.hasDigitalSignManage()) {
-                        _blockSign.setData(statical.signGoing)
+					if (AccountManager.hasIncomeDocument()) {
+						_blockDocument.setData(
+							statical.documentUnProcess,
+							statical.documentInProcess
+						)
+						_dynamic.addAdapter(0, _blockDocument)
+					} else {
+						_dynamic.removeAdapter(_blockDocument)
+					}
+					if (AccountManager.hasDigitalSignManage()) {
+						_blockSign.setData(statical.signGoing)
 
-                        val index = if (_dynamic.adapters.isEmpty()) 0 else 1
-                        _dynamic.addAdapter(index, _blockSign)
-                    } else {
-                        _dynamic.removeAdapter(_blockSign)
-                    }
-                    _dynamic.notifyItemRangeChanged(0, _dynamic.adapters.size)
+						val index = if (_dynamic.adapters.isEmpty()) 0 else 1
+						_dynamic.addAdapter(index, _blockSign)
+					} else {
+						_dynamic.removeAdapter(_blockSign)
+					}
+					_dynamic.notifyItemRangeChanged(0, _dynamic.adapters.size)
 
-                    _blockWork.setData(
-                        statical.workNotAssign,
-                        statical.workNeedDone,
-                        statical.workOverTime
-                    )
-                    val list = if (it.desktop.size > 5) {
-                        it.desktop.subList(0, 5)
-                    } else {
-                        it.desktop
-                    }
-                    _blockDesktop.setData(list)
-                }
-            }
-        }
-    }
+					_blockWork.setData(
+						statical.workNotAssign,
+						statical.workNeedDone,
+						statical.workOverTime
+					)
+					val list = if (it.desktop.size > 5) {
+						it.desktop.subList(0, 5)
+					} else {
+						it.desktop
+					}
+					_blockDesktop.setData(list)
+				}
+			}
+		}
+	}
 
-    override fun registerEvent() {
-        with(binding) {
-            swipeRefreshDashboard.setOnRefreshListener {
-                swipeRefreshDashboard.isRefreshing = false
-                viewModel.getDashboard()
-            }
-        }
-        with(_activityVM) {
-            tabPosition.observe(this@DashboardFragment) {
-                if (it.isNotEmpty()) {
-                    binding.lnDashboardMenu.removeAllViews()
-                    val iterator: ListIterator<String> = it.listIterator()
-                    while (iterator.hasNext()) {
-                        val index = iterator.nextIndex()
-                        val pos = iterator.next()
-                        ItemDashboardMenuTabBinding.inflate(
-                            from(context),
-                            binding.root,
-                            false
-                        ).apply {
-                            imageTab.setImageResource(HomeTabIndex.tabIcon[index])
-                            tvTab.text = HomeTabIndex.tabTitle[index]
-                            root.click { _activityVM.currentSelected.value = pos }
-                        }.let { v ->
-                            binding.lnDashboardMenu.addView(v.root)
-                        }
-                    }
-                }
-            }
-        }
-    }
+	override fun registerEvent() {
+		with(binding) {
+			swipeRefreshDashboard.setOnRefreshListener {
+				swipeRefreshDashboard.isRefreshing = false
+				viewModel.getDashboard()
+			}
+		}
+		with(_activityVM) {
+			tabPosition.observe(this@DashboardFragment) {
+				if (it.isNotEmpty()) {
+					binding.lnDashboardMenu.removeAllViews()
+					val iterator: ListIterator<String> = it.listIterator()
+					while (iterator.hasNext()) {
+						val index = iterator.nextIndex()
+						val pos = iterator.next()
+						ItemDashboardMenuTabBinding.inflate(
+							from(context),
+							binding.root,
+							false
+						).apply {
+							imageTab.setImageResource(HomeTabIndex.tabIcon[index])
+							tvTab.text = HomeTabIndex.tabTitle[index]
+							root.click { _activityVM.currentSelected.value = pos }
+						}.let { v ->
+							binding.lnDashboardMenu.addView(v.root)
+						}
+					}
+				}
+			}
+		}
+	}
 
-    override fun callApi() {
-        viewModel.getDashboard()
-    }
+	override fun callApi() {
+		viewModel.getDashboard()
+	}
 
-    private fun handleMenu(page: Page) {
-        when (DashboardBlock.fromIndex(page.type)) {
-            DashboardBlock.REFERENCE_HANDLE -> {
+	private fun handleMenu(page: Page) {
+		when (DashboardBlock.fromIndex(page.type)) {
+			DashboardBlock.REFERENCE_HANDLE -> {
 //                openFragment(DocumentFragment.newInstance())
-            }
+			}
 
-            DashboardBlock.REFERENCE_HANDLING -> {
+			DashboardBlock.REFERENCE_HANDLING -> {
 //                openFragment(DocumentFragment.newInstance(1))
-            }
+			}
 
-            DashboardBlock.SIGN_GOING -> {
+			DashboardBlock.SIGN_GOING -> {
 //                openFragment(DigitalSignatureFragment.newInstance(DigitalSignType.REFERENCE_SIGNING.getType()))
-            }
+			}
 
-            DashboardBlock.WORK_NO_ASSIGN -> {
+			DashboardBlock.WORK_NO_ASSIGN -> {
 //                openFragment(WorkDepartmentFragment.newInstance())
-            }
+			}
 
-            DashboardBlock.WORK_NOT_DOING, DashboardBlock.WORK_OVER_TIME -> {
+			DashboardBlock.WORK_NOT_DOING, DashboardBlock.WORK_OVER_TIME -> {
 //                openFragment(WorkPersonalFragment.newInstance(0))
-            }
-        }
-    }
+			}
+		}
+	}
 
-    private fun tableView() {
-        with(binding) {
-            if (requireActivity().isTablet()) {
-                imgFilterWork.gone()
-                scrollTablet.show()
+	private fun tableView() {
+		with(binding) {
+			if (requireActivity().isTablet()) {
+				imgFilterWork.gone()
+				scrollTablet.show()
 
-                imgNotify.updateLayoutParams<ConstraintLayout.LayoutParams> {
-                    horizontalBias = 0f
-                }
-            }
-        }
-    }
+				imgNotify.updateLayoutParams<ConstraintLayout.LayoutParams> {
+					horizontalBias = 0f
+				}
+			}
+		}
+	}
 }

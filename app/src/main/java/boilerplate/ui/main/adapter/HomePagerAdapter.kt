@@ -24,86 +24,86 @@ import com.google.android.material.tabs.TabLayout
  * Created by dungvhp on 4/26/17.
  */
 class HomePagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
-    FragmentStateAdapter(fragmentManager, lifecycle) {
-    private val mFragments = ArrayList<Pair<Int, Fragment>>()
+	FragmentStateAdapter(fragmentManager, lifecycle) {
+	private val mFragments = ArrayList<Pair<Int, Fragment>>()
 
-    override fun createFragment(position: Int): Fragment {
-        return mFragments[position].second
-    }
+	override fun createFragment(position: Int): Fragment {
+		return mFragments[position].second
+	}
 
-    override fun getItemId(position: Int): Long {
-        return mFragments[position].first.toLong()
-    }
+	override fun getItemId(position: Int): Long {
+		return mFragments[position].first.toLong()
+	}
 
-    override fun getItemCount(): Int {
-        return mFragments.size
-    }
+	override fun getItemCount(): Int {
+		return mFragments.size
+	}
 
-    fun addFragment(list: ArrayList<Pair<Int, Fragment>>) {
-        if (mFragments.size != 0) {
-            val size = mFragments.size
-            mFragments.clear()
-            notifyItemRangeRemoved(0, size)
-        }
-        mFragments.addAll(list)
-        notifyItemRangeInserted(0, list.size)
-    }
+	fun addFragment(list: ArrayList<Pair<Int, Fragment>>) {
+		if (mFragments.size != 0) {
+			val size = mFragments.size
+			mFragments.clear()
+			notifyItemRangeRemoved(0, size)
+		}
+		mFragments.addAll(list)
+		notifyItemRangeInserted(0, list.size)
+	}
 
-    fun getTabIndex(pos: Int): Int {
-        return mFragments[pos].first
-    }
+	fun getTabIndex(pos: Int): Int {
+		return mFragments[pos].first
+	}
 
-    fun getCurrentTab(tabIndex: Int): Int {
-        val index = -1
-        for (fragment in mFragments) {
-            if (fragment.first == tabIndex) {
-                return mFragments.indexOf(fragment)
-            }
-        }
-        return index
-    }
+	fun getCurrentTab(tabIndex: Int): Int {
+		val index = -1
+		for (fragment in mFragments) {
+			if (fragment.first == tabIndex) {
+				return mFragments.indexOf(fragment)
+			}
+		}
+		return index
+	}
 
-    fun getTabView(
-        context: Context,
-        root: ViewGroup,
-        title: String,
-        drawable: Int
-    ): View {
-        val view: View = LayoutInflater.from(context)
-            .inflate(R.layout.view_item_tab, root, false)
-        val icon = view.findViewById<ImageView>(R.id.img_icon)
-        val textViewFont: TextViewFont = view.findViewById(R.id.tv_title)
-        textViewFont.text = title
-        icon.setImageResource(drawable)
-        return view
-    }
+	fun getTabView(
+		context: Context,
+		root: ViewGroup,
+		title: String,
+		drawable: Int
+	): View {
+		val view: View = LayoutInflater.from(context)
+			.inflate(R.layout.view_item_tab, root, false)
+		val icon = view.findViewById<ImageView>(R.id.img_icon)
+		val textViewFont: TextViewFont = view.findViewById(R.id.tv_title)
+		textViewFont.text = title
+		icon.setImageResource(drawable)
+		return view
+	}
 }
 
 fun TabLayout.Tab.customTab(
-    title: String,
-    @DrawableRes drawable: Int = -1,
-    count: Int = 0,
-    @ColorRes color: Int = -1
+	title: String,
+	@DrawableRes drawable: Int = -1,
+	count: Int = 0,
+	@ColorRes color: Int = -1
 ): View {
-    val layoutInflater = LayoutInflater.from(view.context)
-    val binding = ViewItemTabBinding.inflate(layoutInflater)
-    with(binding) {
-        if (drawable != -1) {
-            imgIcon.show()
-            imgIcon.setImageResource(drawable)
-        } else {
-            imgIcon.gone()
-        }
+	val layoutInflater = LayoutInflater.from(view.context)
+	val binding = ViewItemTabBinding.inflate(layoutInflater)
+	with(binding) {
+		if (drawable != -1) {
+			imgIcon.show()
+			imgIcon.setImageResource(drawable)
+		} else {
+			imgIcon.gone()
+		}
 
-        if (color != -1) {
-            tvTitle.setTextColor(ContextCompat.getColor(binding.root.context, color))
-        }
-        tvTitle.text = title
+		if (color != -1) {
+			tvTitle.setTextColor(ContextCompat.getColor(binding.root.context, color))
+		}
+		tvTitle.text = title
 
-        if (count > 0) {
-            tvCount.show()
-            tvCount.text = count.toString()
-        }
-    }
-    return binding.root
+		if (count > 0) {
+			tvCount.show()
+			tvCount.text = count.toString()
+		}
+	}
+	return binding.root
 }

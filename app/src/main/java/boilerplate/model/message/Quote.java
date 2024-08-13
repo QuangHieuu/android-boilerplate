@@ -10,19 +10,29 @@ import boilerplate.model.user.User;
 
 public class Quote {
     @SerializedName("tin_nhan_id")
-    private String messageId;
+    private final String messageId;
+    @SerializedName("ngay_tao")
+    private final String dateCreate;
+    @SerializedName("hoi_thoai_id")
+    private final String conversationId;
     @SerializedName("nguoi_gui")
     private PersonQuote personSend;
     @SerializedName("noi_dung")
     private String content;
-    @SerializedName("ngay_tao")
-    private String dateCreate;
-    @SerializedName("hoi_thoai_id")
-    private String conversationId;
     @SerializedName("file_dinh_kem")
-    private ArrayList<AttachedFile.Conversation> attachedFiles;
+    private ArrayList<AttachedFile> attachedFiles;
     @SerializedName("phieu_khao_sat")
-    private ArrayList<AttachedFile.SurveyFile> surveyFiles;
+    private ArrayList<AttachedFile> surveyFiles;
+
+    public Quote(Message message) {
+        this.messageId = message.getMessageId();
+        this.content = message.getMainContent()[0];
+        this.conversationId = message.getConversationId();
+        this.surveyFiles = message.getSurveyFiles();
+        this.attachedFiles = message.getAttachedFiles();
+        this.dateCreate = message.getDateCreate();
+        this.personSend = new PersonQuote(message.getPersonSend());
+    }
 
     public String getMessageId() {
         return messageId;
@@ -38,6 +48,10 @@ public class Quote {
         return content;
     }
 
+    public void setContent(String content) {
+        this.content = content;
+    }
+
     public String getDateCreate() {
         return dateCreate;
     }
@@ -46,42 +60,36 @@ public class Quote {
         return conversationId;
     }
 
-    public ArrayList<AttachedFile.Conversation> getAttachedFiles() {
+    public ArrayList<AttachedFile> getAttachedFiles() {
         if (attachedFiles == null) return attachedFiles = new ArrayList<>();
         return attachedFiles;
     }
 
-    public ArrayList<AttachedFile.SurveyFile> getSurveyFiles() {
+    public ArrayList<AttachedFile> getSurveyFiles() {
         if (surveyFiles == null) return surveyFiles = new ArrayList<>();
         return surveyFiles;
     }
 
-    public Quote(Message message) {
-        this.messageId = message.getMessageId();
-        this.content = message.getMainContent()[0];
-        this.conversationId = message.getConversationId();
-        this.surveyFiles = message.getSurveyFiles();
-        this.attachedFiles = message.getAttachedFiles();
-        this.dateCreate = message.getDateCreate();
-        this.personSend = new PersonQuote(message.getPersonSend());
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
     public static class TitleQuote {
         @SerializedName("phong_ban_chinh")
-        private boolean isMain;
+        private final boolean isMain;
         @SerializedName("don_vi")
-        private CompanyQuote company;
+        private final CompanyQuote company;
         @SerializedName("phong_ban")
-        private DepartmentQuote department;
+        private final DepartmentQuote department;
 
         public TitleQuote(Title title) {
             this.department = new DepartmentQuote(title.getDepartment().getName(), title.getDepartment().getShortName());
             this.company = new CompanyQuote(title.getCompany().getName(), title.getCompany().getShortName());
             this.isMain = title.isMain();
+        }
+
+        public static ArrayList<TitleQuote> clone(ArrayList<Title> titles) {
+            ArrayList<TitleQuote> list = new ArrayList<>();
+            for (Title title : titles) {
+                list.add(new TitleQuote(title));
+            }
+            return list;
         }
 
         public boolean isMain() {
@@ -94,14 +102,6 @@ public class Quote {
 
         public DepartmentQuote getDepartment() {
             return department;
-        }
-
-        public static ArrayList<TitleQuote> clone(ArrayList<Title> titles) {
-            ArrayList<TitleQuote> list = new ArrayList<>();
-            for (Title title : titles) {
-                list.add(new TitleQuote(title));
-            }
-            return list;
         }
     }
 

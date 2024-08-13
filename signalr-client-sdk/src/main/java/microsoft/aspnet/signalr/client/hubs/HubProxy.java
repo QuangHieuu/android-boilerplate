@@ -28,18 +28,18 @@ import microsoft.aspnet.signalr.client.SignalRFuture;
  */
 public class HubProxy {
 
-    private String mHubName;
+    private final String mHubName;
 
-    private HubConnection mConnection;
+    private final HubConnection mConnection;
 
-    private Map<String, Subscription> mSubscriptions = Collections.synchronizedMap(new HashMap<String, Subscription>());
+    private final Map<String, Subscription> mSubscriptions = Collections.synchronizedMap(new HashMap<String, Subscription>());
 
-    private Map<String, JsonElement> mState = Collections.synchronizedMap(new HashMap<String, JsonElement>());
+    private final Map<String, JsonElement> mState = Collections.synchronizedMap(new HashMap<String, JsonElement>());
 
-    private Logger mLogger;
+    private final Logger mLogger;
 
-    private static final List<String> EXCLUDED_METHODS = Arrays.asList(new String[]{"equals", "getClass", "hashCode", "notify", "notifyAll", "toString",
-        "wait"});
+    private static final List<String> EXCLUDED_METHODS = Arrays.asList("equals", "getClass", "hashCode", "notify", "notifyAll", "toString",
+            "wait");
 
     private static final String SUBSCRIPTION_HANDLER_METHOD = "run";
 

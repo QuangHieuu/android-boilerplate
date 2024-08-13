@@ -4,7 +4,5 @@ import androidx.recyclerview.widget.RecyclerView
 import boilerplate.databinding.ItemTitleBinding
 
 class TitleVH(
-    val _binding: ItemTitleBinding
-) : RecyclerView.ViewHolder(_binding.root) {
-
-}
+	val _binding: ItemTitleBinding
+) : RecyclerView.ViewHolder(_binding.root)

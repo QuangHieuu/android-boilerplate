@@ -4,7 +4,6 @@ import android.app.job.JobInfo
 import android.app.job.JobScheduler
 import android.content.ComponentName
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Bundle
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.lifecycle.Lifecycle
@@ -38,183 +37,179 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
-    companion object {
-        const val JOB_SCHEDULER_ID: Int = 100
-    }
+	companion object {
+		const val JOB_SCHEDULER_ID: Int = 100
+	}
 
-    override val _viewModel: MainVM by viewModel()
+	override val _viewModel: MainVM by viewModel()
 
-    private lateinit var _windowInfoTracker: WindowInfoTracker
-    private lateinit var _homeAdapter: HomePagerAdapter
+	private lateinit var _windowInfoTracker: WindowInfoTracker
+	private lateinit var _homeAdapter: HomePagerAdapter
 
-    private lateinit var _serviceIntent: Intent
+	private lateinit var _serviceIntent: Intent
 
-    private var _isBackFromBackground = false
+	private var _isBackFromBackground = false
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        _windowInfoTracker = WindowInfoTracker.getOrCreate(this@MainActivity)
-        _serviceIntent = Intent(this@MainActivity, SignalRService::class.java)
-        _isBackFromBackground = false
+	override fun onCreate(savedInstanceState: Bundle?) {
+		super.onCreate(savedInstanceState)
+		_windowInfoTracker = WindowInfoTracker.getOrCreate(this@MainActivity)
+		_serviceIntent = Intent(this@MainActivity, SignalRService::class.java)
+		_isBackFromBackground = false
 
-        lifecycleScope.launch {
-            lifecycle.withCreated {
-                SignalRManager.serviceConnect(this@MainActivity, _serviceIntent)
-                scheduleJob()
-            }
-            lifecycle.withStarted {
-                splitScreen()
-            }
-        }
+		lifecycleScope.launch {
+			lifecycle.withCreated {
+				SignalRManager.serviceConnect(this@MainActivity, _serviceIntent)
+				scheduleJob()
+			}
+			lifecycle.withStarted {
+				splitScreen()
+			}
+		}
 
-        lifecycleScope.launch {
-            lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                if (_isBackFromBackground && InternetManager.isConnected()) {
-                    SignalRManager.reconnectSignal()
-                }
-            }
-        }
-    }
+		lifecycleScope.launch {
+			lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+				if (_isBackFromBackground && InternetManager.isConnected()) {
+					SignalRManager.reconnectSignal()
+				}
+			}
+		}
+	}
 
-    override fun onStop() {
-        super.onStop()
-        _isBackFromBackground = baseContext.isAppInBackground()
-    }
+	override fun onStop() {
+		super.onStop()
+		_isBackFromBackground = baseContext.isAppInBackground()
+	}
 
-    override fun onDestroy() {
-        super.onDestroy()
+	override fun onDestroy() {
+		super.onDestroy()
 
-        SignalRManager.stopSignal()
-        SignalRManager.unbindServices(this@MainActivity, _serviceIntent)
-    }
+		SignalRManager.stopSignal()
+		SignalRManager.unbindServices(this@MainActivity, _serviceIntent)
+	}
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-    }
+	override fun initialize() {
+		initHomepage()
+	}
 
-    override fun initialize() {
-        initHomepage()
-    }
+	override fun onSubscribeObserver() {
+		with(_viewModel) {
+			logout.observe(this@MainActivity) {
+				if (it) {
+					startActivityAtRoot(StartActivity::class.java)
+					finish()
+				}
+			}
+			currentSelected.observe(this@MainActivity) {
+				binding.frameDashboard.apply {
+					if (it == HomeTabIndex.POSITION_HOME_DASHBOARD && isTablet()) show() else gone()
+				}
+				if (it != HomeTabIndex.POSITION_HOME_DASHBOARD) {
+					binding.viewPagerHome.setCurrentItem(HomeTabIndex.getCurrentTabIndex(it), false)
+				}
+			}
+		}
+	}
 
-    override fun onSubscribeObserver() {
-        with(_viewModel) {
-            logout.observe(this@MainActivity) {
-                if (it) {
-                    startActivityAtRoot(StartActivity::class.java)
-                    finish()
-                }
-            }
-            currentSelected.observe(this@MainActivity) {
-                binding.frameDashboard.apply {
-                    if (it == HomeTabIndex.POSITION_HOME_DASHBOARD && isTablet()) show() else gone()
-                }
-                if (it != HomeTabIndex.POSITION_HOME_DASHBOARD) {
-                    binding.viewPagerHome.setCurrentItem(HomeTabIndex.getCurrentTabIndex(it), false)
-                }
-            }
-        }
-    }
+	override fun registerOnClick() {
 
-    override fun registerOnClick() {
+	}
 
-    }
+	override fun callApi() {
+	}
 
-    override fun callApi() {
-    }
+	override fun handleLogout() {
+		_viewModel.logout()
+	}
 
-    override fun handleLogout() {
-        _viewModel.logout()
-    }
+	private fun initHomepage() {
+		with(binding) {
+			if (isTablet()) {
+				replaceFragmentInActivity(
+					R.id.frame_dashboard,
+					DashboardFragment.newInstance(),
+					animateType = AnimateType.FADE,
+					addToBackStack = false
+				)
+			}
 
-    private fun initHomepage() {
-        with(binding) {
-            if (isTablet()) {
-                replaceFragmentInActivity(
-                    R.id.frame_dashboard,
-                    DashboardFragment.newInstance(),
-                    animateType = AnimateType.FADE,
-                    addToBackStack = false
-                )
-            }
+			_homeAdapter = HomePagerAdapter(supportFragmentManager, lifecycle)
+			viewPagerHome.apply {
+				setAdapter(_homeAdapter)
+				setUserInputEnabled(false)
+				setOffscreenPageLimit(4)
+			}
 
-            _homeAdapter = HomePagerAdapter(supportFragmentManager, lifecycle)
-            viewPagerHome.apply {
-                setAdapter(_homeAdapter)
-                setUserInputEnabled(false)
-                setOffscreenPageLimit(4)
-            }
+			HomeTabIndex.setupFragment(isTablet()).let {
+				_homeAdapter.addFragment(it)
+				_viewModel.tabPosition.value = HomeTabIndex.tabPosition
+			}
 
-            HomeTabIndex.setupFragment(isTablet()).let {
-                _homeAdapter.addFragment(it)
-                _viewModel.tabPosition.value = HomeTabIndex.tabPosition
-            }
+			TabLayoutMediator(
+				tabLayoutHome,
+				viewPagerHome,
+				true,
+				false
+			) { tab: TabLayout.Tab, position: Int ->
+				tab.setCustomView(
+					tab.customTab(
+						HomeTabIndex.tabTitle[position],
+						HomeTabIndex.tabIcon[position]
+					)
+				)
+			}.attach()
+		}
+	}
 
-            TabLayoutMediator(
-                tabLayoutHome,
-                viewPagerHome,
-                true,
-                false
-            ) { tab: TabLayout.Tab, position: Int ->
-                tab.setCustomView(
-                    tab.customTab(
-                        HomeTabIndex.tabTitle[position],
-                        HomeTabIndex.tabIcon[position]
-                    )
-                )
-            }.attach()
-        }
-    }
+	private fun scheduleJob() {
+		val jobScheduler = getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
+		var isScheduler = false
+		for (jobInfo in jobScheduler.allPendingJobs) {
+			if (jobInfo.id == JOB_SCHEDULER_ID) {
+				isScheduler = true
+				break
+			}
+		}
+		if (!isScheduler) {
+			JobInfo.Builder(
+				JOB_SCHEDULER_ID,
+				ComponentName(this, NetworkSchedulerService::class.java)
+			)
+				.setMinimumLatency(1000)
+				.setOverrideDeadline(2000)
+				.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+				.build()
+				.let { jobScheduler.schedule(it) }
+		}
+	}
 
-    private fun scheduleJob() {
-        val jobScheduler = getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
-        var isScheduler = false
-        for (jobInfo in jobScheduler.allPendingJobs) {
-            if (jobInfo.id == JOB_SCHEDULER_ID) {
-                isScheduler = true
-                break
-            }
-        }
-        if (!isScheduler) {
-            JobInfo.Builder(
-                JOB_SCHEDULER_ID,
-                ComponentName(this, NetworkSchedulerService::class.java)
-            )
-                .setMinimumLatency(1000)
-                .setOverrideDeadline(2000)
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                .build()
-                .let { jobScheduler.schedule(it) }
-        }
-    }
-
-    private fun splitScreen() {
-        binding.frameTablet.apply { if (isTablet()) show() else gone() }
-        with(binding.appContainer) {
-            val set = ConstraintSet()
-            set.clone(this)
-            if (isTablet()) {
-                set.connect(
-                    R.id.ln_home,
-                    ConstraintSet.END,
-                    R.id.frame_tablet,
-                    ConstraintSet.START
-                )
-                set.connect(
-                    R.id.frame_tablet,
-                    ConstraintSet.START,
-                    R.id.ln_home,
-                    ConstraintSet.END
-                )
-            } else {
-                set.connect(
-                    R.id.ln_home,
-                    ConstraintSet.END,
-                    ConstraintSet.PARENT_ID,
-                    ConstraintSet.END
-                )
-            }
-            set.applyTo(this)
-        }
-    }
+	private fun splitScreen() {
+		binding.frameTablet.apply { if (isTablet()) show() else gone() }
+		with(binding.appContainer) {
+			val set = ConstraintSet()
+			set.clone(this)
+			if (isTablet()) {
+				set.connect(
+					R.id.ln_home,
+					ConstraintSet.END,
+					R.id.frame_tablet,
+					ConstraintSet.START
+				)
+				set.connect(
+					R.id.frame_tablet,
+					ConstraintSet.START,
+					R.id.ln_home,
+					ConstraintSet.END
+				)
+			} else {
+				set.connect(
+					R.id.ln_home,
+					ConstraintSet.END,
+					ConstraintSet.PARENT_ID,
+					ConstraintSet.END
+				)
+			}
+			set.applyTo(this)
+		}
+	}
 
 }

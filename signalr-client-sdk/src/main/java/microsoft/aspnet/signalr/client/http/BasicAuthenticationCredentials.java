@@ -106,7 +106,7 @@ public class BasicAuthenticationCredentials implements Credentials {
          *            Bytes to encode
          * @return The encoded bytes
          */
-        public String encodeBytes(byte[] bytes);
+        String encodeBytes(byte[] bytes);
     }
 
     public class InvalidPlatformException extends Exception {

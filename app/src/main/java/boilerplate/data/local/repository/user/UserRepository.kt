@@ -17,221 +17,221 @@ import com.google.gson.reflect.TypeToken
 import io.reactivex.rxjava3.core.Flowable
 
 interface UserRepository {
-    fun logout(): Flowable<Response<Boolean>>
+	fun logout(): Flowable<Response<Boolean>>
 
-    fun getUser(): User
+	fun getUser(): User
 
-    fun getUserName(): String
+	fun getUserName(): String
 
-    fun getUserPassword(): String
+	fun getUserPassword(): String
 
-    fun saveUseLogin(userName: String, password: String)
+	fun saveUseLogin(userName: String, password: String)
 
-    fun saveUser(user: User)
+	fun saveUser(user: User)
 
-    fun wipeUserData()
+	fun wipeUserData()
 
-    fun getSystemTextSize(): Int
+	fun getSystemTextSize(): Int
 
-    fun saveSystemTextSize(size: Int)
+	fun saveSystemTextSize(size: Int)
 
-    fun getSystemSound(): Boolean
+	fun getSystemSound(): Boolean
 
-    fun saveSystemSound(b: Boolean)
+	fun saveSystemSound(b: Boolean)
 
-    fun setCurrentRole(role: String)
+	fun setCurrentRole(role: String)
 
-    fun getCurrentRole(): String
+	fun getCurrentRole(): String
 
-    fun getCurrentRoleFullName(): String
+	fun getCurrentRoleFullName(): String
 
-    fun saveRolePermission(r: ArrayList<Role>)
+	fun saveRolePermission(r: ArrayList<Role>)
 
-    fun getRolePermission(): ArrayList<String>
+	fun getRolePermission(): ArrayList<String>
 
-    fun saveContact(c: ArrayList<Company>)
+	fun saveContact(c: ArrayList<Company>)
 
-    fun getContactCompany(): ArrayList<Company>
+	fun getContactCompany(): ArrayList<Company>
 
-    fun getCurrentCompany(): Company
+	fun getCurrentCompany(): Company
 
-    fun getCurrentDepartment(): Department
+	fun getCurrentDepartment(): Department
 
-    fun getCompanyDepartment(id: String): Flowable<ResponseItems<Department>>
+	fun getCompanyDepartment(id: String): Flowable<ResponseItems<Department>>
 
-    fun saveConversationConfig(config: ConversationConfig)
+	fun saveConversationConfig(config: ConversationConfig)
 
-    fun getConversationConfig(): ConversationConfig
+	fun getConversationConfig(): ConversationConfig
 
-    fun patchUser(body: UpdateBody): Flowable<Response<Any>>
+	fun patchUser(body: UpdateBody): Flowable<Response<Any>>
 }
 
 class UserRepositoryImpl(
-    private val share: SharedPrefsApi,
-    private val api: ApiRequest,
-    private val gson: Gson
+	private val share: SharedPrefsApi,
+	private val api: ApiRequest,
+	private val gson: Gson
 ) : UserRepository {
 
-    override fun getUser(): User {
-        return share.get(SharedPrefsKey.USER_DATA, User::class.java)
-    }
+	override fun getUser(): User {
+		return share.get(SharedPrefsKey.USER_DATA, User::class.java)
+	}
 
-    override fun getUserName(): String =
-        share.get(SharedPrefsKey.USER_NAME_LOGIN, String::class.java)
+	override fun getUserName(): String =
+		share.get(SharedPrefsKey.USER_NAME_LOGIN, String::class.java)
 
-    override fun getUserPassword(): String =
-        share.get(SharedPrefsKey.USER_PASSWORD_LOGIN, String::class.java)
+	override fun getUserPassword(): String =
+		share.get(SharedPrefsKey.USER_PASSWORD_LOGIN, String::class.java)
 
-    override fun saveUseLogin(userName: String, password: String) {
-        share.put(SharedPrefsKey.USER_NAME_LOGIN, userName)
-        share.put(SharedPrefsKey.USER_PASSWORD_LOGIN, password)
-    }
+	override fun saveUseLogin(userName: String, password: String) {
+		share.put(SharedPrefsKey.USER_NAME_LOGIN, userName)
+		share.put(SharedPrefsKey.USER_PASSWORD_LOGIN, password)
+	}
 
-    override fun saveUser(user: User) {
-        for (title in user.titles) {
-            if (title.isMain) {
-                if (title.company.id.isEmpty()) {
-                    title.company.id = title.companyId
-                }
-                if (title.department.id.isNullOrEmpty()) {
-                    title.department.id = title.departmentId
-                }
-            }
-        }
-        share.put(SharedPrefsKey.USER_DATA, user)
-        setCurrentRole(user.mainRole)
-    }
+	override fun saveUser(user: User) {
+		for (title in user.titles) {
+			if (title.isMain) {
+				if (title.company.id.isEmpty()) {
+					title.company.id = title.companyId
+				}
+				if (title.department.id.isNullOrEmpty()) {
+					title.department.id = title.departmentId
+				}
+			}
+		}
+		share.put(SharedPrefsKey.USER_DATA, user)
+		setCurrentRole(user.mainRole)
+	}
 
-    override fun wipeUserData() {
-        share.clearKey(SharedPrefsKey.USER_DATA)
-        share.clearKey(SharedPrefsKey.USER_ROLE)
-        share.clearKey(SharedPrefsKey.USER_COMPANY_DATA)
-        share.clearKey(SharedPrefsKey.USER_ROLE_PERMISSION)
-        share.clearKey(SharedPrefsKey.USER_CONVERSATION_CONFIG)
-        share.clearKey(SharedPrefsKey.SIZE)
-        share.clearKey(SharedPrefsKey.SOUND)
-    }
+	override fun wipeUserData() {
+		share.clearKey(SharedPrefsKey.USER_DATA)
+		share.clearKey(SharedPrefsKey.USER_ROLE)
+		share.clearKey(SharedPrefsKey.USER_COMPANY_DATA)
+		share.clearKey(SharedPrefsKey.USER_ROLE_PERMISSION)
+		share.clearKey(SharedPrefsKey.USER_CONVERSATION_CONFIG)
+		share.clearKey(SharedPrefsKey.SIZE)
+		share.clearKey(SharedPrefsKey.SOUND)
+	}
 
-    override fun getSystemTextSize(): Int {
-        return share.get(SharedPrefsKey.SIZE, Int::class.java)
-    }
+	override fun getSystemTextSize(): Int {
+		return share.get(SharedPrefsKey.SIZE, Int::class.java)
+	}
 
-    override fun saveSystemTextSize(size: Int) {
-        share.put(SharedPrefsKey.SIZE, size)
-    }
+	override fun saveSystemTextSize(size: Int) {
+		share.put(SharedPrefsKey.SIZE, size)
+	}
 
-    override fun getSystemSound(): Boolean {
-        return share.get(SharedPrefsKey.SOUND, Boolean::class.java)
-    }
+	override fun getSystemSound(): Boolean {
+		return share.get(SharedPrefsKey.SOUND, Boolean::class.java)
+	}
 
-    override fun saveSystemSound(b: Boolean) {
-        share.put(SharedPrefsKey.SOUND, b)
-    }
+	override fun saveSystemSound(b: Boolean) {
+		share.put(SharedPrefsKey.SOUND, b)
+	}
 
-    override fun setCurrentRole(role: String) {
-        share.put(SharedPrefsKey.USER_ROLE, role)
-    }
+	override fun setCurrentRole(role: String) {
+		share.put(SharedPrefsKey.USER_ROLE, role)
+	}
 
-    override fun getCurrentRole(): String {
-        return share.get(SharedPrefsKey.USER_ROLE, String::class.java)
-    }
+	override fun getCurrentRole(): String {
+		return share.get(SharedPrefsKey.USER_ROLE, String::class.java)
+	}
 
-    override fun getCurrentRoleFullName(): String {
-        val user = getUser()
-        val role = getCurrentRole()
+	override fun getCurrentRoleFullName(): String {
+		val user = getUser()
+		val role = getCurrentRole()
 
-        var name = ""
-        for (title in user.titles) {
-            if (title.id.equals(role)) {
-                name = "${title.position.name} ${title.department.shortName}"
-            }
-        }
-        return name
-    }
+		var name = ""
+		for (title in user.titles) {
+			if (title.id.equals(role)) {
+				name = "${title.position.name} ${title.department.shortName}"
+			}
+		}
+		return name
+	}
 
-    override fun saveRolePermission(r: ArrayList<Role>) {
-        val list = arrayListOf<String>()
-        for (role in r) {
-            if (role.isActive) list.add(role.codeId)
-        }
-        share.put(SharedPrefsKey.USER_ROLE_PERMISSION, list)
-    }
+	override fun saveRolePermission(r: ArrayList<Role>) {
+		val list = arrayListOf<String>()
+		for (role in r) {
+			if (role.isActive) list.add(role.codeId)
+		}
+		share.put(SharedPrefsKey.USER_ROLE_PERMISSION, list)
+	}
 
-    override fun getRolePermission(): ArrayList<String> {
-        val json = share.get(SharedPrefsKey.USER_ROLE_PERMISSION, String::class.java)
+	override fun getRolePermission(): ArrayList<String> {
+		val json = share.get(SharedPrefsKey.USER_ROLE_PERMISSION, String::class.java)
 
-        return if (json.isEmpty()) {
-            arrayListOf()
-        } else {
-            try {
-                gson.fromJson(json, object : TypeToken<ArrayList<String>>() {}.type)
-            } catch (ignore: Exception) {
-                arrayListOf()
-            }
-        }
-    }
+		return if (json.isEmpty()) {
+			arrayListOf()
+		} else {
+			try {
+				gson.fromJson(json, object : TypeToken<ArrayList<String>>() {}.type)
+			} catch (ignore: Exception) {
+				arrayListOf()
+			}
+		}
+	}
 
-    override fun saveContact(c: ArrayList<Company>) {
-        share.put(SharedPrefsKey.USER_COMPANY_DATA, c)
-    }
+	override fun saveContact(c: ArrayList<Company>) {
+		share.put(SharedPrefsKey.USER_COMPANY_DATA, c)
+	}
 
-    override fun getContactCompany(): ArrayList<Company> {
-        val json = share.get(SharedPrefsKey.USER_COMPANY_DATA, String::class.java)
-        return if (json.isEmpty()) {
-            arrayListOf()
-        } else {
-            try {
-                gson.fromJson(json, object : TypeToken<ArrayList<Company>>() {}.type)
-            } catch (ignore: Exception) {
-                arrayListOf()
-            }
-        }
-    }
+	override fun getContactCompany(): ArrayList<Company> {
+		val json = share.get(SharedPrefsKey.USER_COMPANY_DATA, String::class.java)
+		return if (json.isEmpty()) {
+			arrayListOf()
+		} else {
+			try {
+				gson.fromJson(json, object : TypeToken<ArrayList<Company>>() {}.type)
+			} catch (ignore: Exception) {
+				arrayListOf()
+			}
+		}
+	}
 
-    override fun getCurrentCompany(): Company {
-        val user = getUser()
-        val role = getCurrentRole()
+	override fun getCurrentCompany(): Company {
+		val user = getUser()
+		val role = getCurrentRole()
 
-        var company: Company? = null
-        for (title in user.titles) {
-            if (title.id.equals(role)) {
-                company = title.company
-            }
-        }
-        return company ?: Company()
-    }
+		var company: Company? = null
+		for (title in user.titles) {
+			if (title.id.equals(role)) {
+				company = title.company
+			}
+		}
+		return company ?: Company()
+	}
 
-    override fun getCurrentDepartment(): Department {
-        val user = getUser()
-        val role = getCurrentRole()
+	override fun getCurrentDepartment(): Department {
+		val user = getUser()
+		val role = getCurrentRole()
 
-        var department: Department? = null
-        for (title in user.titles) {
-            if (title.id.equals(role)) {
-                department = title.department
-            }
-        }
-        return department ?: Department()
-    }
+		var department: Department? = null
+		for (title in user.titles) {
+			if (title.id.equals(role)) {
+				department = title.department
+			}
+		}
+		return department ?: Department()
+	}
 
-    override fun getCompanyDepartment(id: String): Flowable<ResponseItems<Department>> {
-        return api.chat.getCompanyDepartment(id).checkInternet()
-    }
+	override fun getCompanyDepartment(id: String): Flowable<ResponseItems<Department>> {
+		return api.chat.getCompanyDepartment(id).checkInternet()
+	}
 
-    override fun saveConversationConfig(config: ConversationConfig) {
-        share.put(SharedPrefsKey.USER_CONVERSATION_CONFIG, gson.toJson(config))
-    }
+	override fun saveConversationConfig(config: ConversationConfig) {
+		share.put(SharedPrefsKey.USER_CONVERSATION_CONFIG, gson.toJson(config))
+	}
 
-    override fun getConversationConfig(): ConversationConfig {
-        return share.get(SharedPrefsKey.USER_CONVERSATION_CONFIG, ConversationConfig::class.java)
-    }
+	override fun getConversationConfig(): ConversationConfig {
+		return share.get(SharedPrefsKey.USER_CONVERSATION_CONFIG, ConversationConfig::class.java)
+	}
 
-    override fun patchUser(body: UpdateBody): Flowable<Response<Any>> {
-        return api.eOffice.patchUser(body).checkInternet()
-    }
+	override fun patchUser(body: UpdateBody): Flowable<Response<Any>> {
+		return api.eOffice.patchUser(body).checkInternet()
+	}
 
-    override fun logout(): Flowable<Response<Boolean>> {
-        return api.notify.deleteDevice(share.get(SharedPrefsKey.DEVICE_ID, String::class.java))
-            .checkInternet()
-    }
+	override fun logout(): Flowable<Response<Boolean>> {
+		return api.notify.deleteDevice(share.get(SharedPrefsKey.DEVICE_ID, String::class.java))
+			.checkInternet()
+	}
 }

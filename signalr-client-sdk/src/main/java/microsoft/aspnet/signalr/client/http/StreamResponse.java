@@ -21,9 +21,9 @@ import microsoft.aspnet.signalr.client.Constants;
  * Response implementation based on an InputStream
  */
 public class StreamResponse implements Response {
-    private BufferedReader mReader;
-    private int mStatus;
-    private InputStream mOriginalStream;
+    private final BufferedReader mReader;
+    private final int mStatus;
+    private final InputStream mOriginalStream;
     Map<String, List<String>> mHeaders;
 
     /**

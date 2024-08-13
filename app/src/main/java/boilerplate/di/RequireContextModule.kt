@@ -13,29 +13,29 @@ import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
 
 val contextRequireModule = module {
-    single { provideResources(androidApplication()) }
-    single { provideSharedPrefsApi(get(), get()) }
-    single { provideOkHttpCache(androidApplication()) }
-    single { provideLimit(androidApplication()) }
+	single { provideResources(androidApplication()) }
+	single { provideSharedPrefsApi(get(), get()) }
+	single { provideOkHttpCache(androidApplication()) }
+	single { provideLimit(androidApplication()) }
 }
 
 fun provideSharedPrefsApi(app: Application, gson: Gson): SharedPrefsApi {
-    return SharedPrefsImpl(app, gson).also { server ->
-        server.get(SharedPrefsKey.SERVER, String::class.java)
-            .ifEmpty { ApiUrl.DEFAULT }
-            .also { ApiUrl.setHost(it) }
-    }
+	return SharedPrefsImpl(app, gson).also { server ->
+		server.get(SharedPrefsKey.SERVER, String::class.java)
+			.ifEmpty { ApiUrl.DEFAULT }
+			.also { ApiUrl.setHost(it) }
+	}
 }
 
 fun provideOkHttpCache(app: Application): Cache {
-    val cacheSize: Long = 10 * 1024 * 1024 // 10 MiB
-    return Cache(app.cacheDir, cacheSize)
+	val cacheSize: Long = 10 * 1024 * 1024 // 10 MiB
+	return Cache(app.cacheDir, cacheSize)
 }
 
 fun provideResources(app: Application): Resources {
-    return app.resources
+	return app.resources
 }
 
 fun provideLimit(app: Application): Int {
-    return if (app.isTablet()) 20 else 10
+	return if (app.isTablet()) 20 else 10
 }

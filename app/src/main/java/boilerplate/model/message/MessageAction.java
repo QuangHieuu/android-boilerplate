@@ -29,14 +29,6 @@ public enum MessageAction {
         this.name = name;
     }
 
-    public int getIcon() {
-        return icon;
-    }
-
-    public String getName() {
-        return name;
-    }
-
     public static ArrayList<ArrayList<MessageAction>> getMenuAction(Message message, boolean isAllowReply, boolean allowPinMessage) {
         ArrayList<MessageAction> group1 = new ArrayList<>();
         ArrayList<MessageAction> group2 = new ArrayList<>();
@@ -100,5 +92,13 @@ public enum MessageAction {
         list.add(group1);
         list.add(group2);
         return list;
+    }
+
+    public int getIcon() {
+        return icon;
+    }
+
+    public String getName() {
+        return name;
     }
 }

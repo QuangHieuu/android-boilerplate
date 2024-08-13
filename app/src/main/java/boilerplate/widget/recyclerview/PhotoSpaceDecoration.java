@@ -1,5 +1,3 @@
-
-
 package boilerplate.widget.recyclerview;
 
 import android.content.Context;

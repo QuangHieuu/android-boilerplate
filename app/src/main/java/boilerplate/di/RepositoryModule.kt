@@ -20,50 +20,50 @@ import com.google.gson.Gson
 import org.koin.dsl.module
 
 val repositoryModule = module {
-    single { provideUserRepository(get(), get(), get()) }
-    single { provideTokenRepository(get()) }
-    single { provideServerRepository(get()) }
-    single { providerLoginRepository(get(), get()) }
-    single { providerConversationRepository(get(), get(), get()) }
-    single { providerDashBoard(get()) }
-    single { providerFile(get()) }
+	single { provideUserRepository(get(), get(), get()) }
+	single { provideTokenRepository(get()) }
+	single { provideServerRepository(get()) }
+	single { providerLoginRepository(get(), get()) }
+	single { providerConversationRepository(get(), get(), get()) }
+	single { providerDashBoard(get()) }
+	single { providerFile(get()) }
 }
 
 fun provideUserRepository(
-    share: SharedPrefsApi,
-    apiRequest: ApiRequest,
-    gson: Gson
+	share: SharedPrefsApi,
+	apiRequest: ApiRequest,
+	gson: Gson
 ): UserRepository {
-    return UserRepositoryImpl(share, apiRequest, gson)
+	return UserRepositoryImpl(share, apiRequest, gson)
 }
 
 fun provideTokenRepository(share: SharedPrefsApi): TokenRepository {
-    return TokenRepositoryImpl(share)
+	return TokenRepositoryImpl(share)
 }
 
 fun provideServerRepository(share: SharedPrefsApi): ServerRepository {
-    return ServerRepositoryImpl(share)
+	return ServerRepositoryImpl(share)
 }
 
 fun providerLoginRepository(
-    apiRequest: ApiRequest,
-    userRepository: UserRepository
+	apiRequest: ApiRequest,
+	userRepository: UserRepository
 ): LoginRepository {
-    return LoginRepositoryImpl(apiRequest, userRepository)
+	return LoginRepositoryImpl(apiRequest, userRepository)
 }
 
 fun providerConversationRepository(
-    apiRequest: ApiRequest,
-    userRepository: UserRepository,
-    tokenRepository: TokenRepository
+	apiRequest: ApiRequest,
+	userRepository: UserRepository,
+	tokenRepository: TokenRepository
 ): ConversationRepository {
-    return ConversationRepositoryImpl(apiRequest, userRepository, tokenRepository)
+	return ConversationRepositoryImpl(apiRequest, userRepository, tokenRepository)
 }
 
 fun providerDashBoard(apiRequest: ApiRequest): DashboardRepository {
-    return DashboardImpl(apiRequest)
+	return DashboardImpl(apiRequest)
 }
 
 fun providerFile(apiRequest: ApiRequest): FileRepository {
-    return FileImpl(apiRequest)
+	return FileImpl(apiRequest)
 }

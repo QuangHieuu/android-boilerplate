@@ -8,6 +8,8 @@ import boilerplate.constant.AccountManager;
 import boilerplate.model.user.User;
 
 public class SignalBody {
+    @SerializedName("nhan_vien_hoi_thoai")
+    private final ArrayList<ConversationUser> member;
     @SerializedName("hoi_thoai_id")
     private String id;
     @SerializedName("anh_dai_dien")
@@ -16,9 +18,6 @@ public class SignalBody {
     private String creatorId;
     @SerializedName("ten_hoi_thoai")
     private String groupName;
-    @SerializedName("nhan_vien_hoi_thoai")
-    private ArrayList<ConversationUser> member;
-
     @SerializedName("ten_nhom_lien_lac")
     private String regularName;
     @SerializedName("nhan_viens")
@@ -101,6 +100,10 @@ public class SignalBody {
         return regularName;
     }
 
+    public void setRegularName(String regularName) {
+        this.regularName = regularName;
+    }
+
     public ArrayList<User> getRegularUser() {
         if (regularUser == null) return regularUser = new ArrayList<>();
         return regularUser;
@@ -116,10 +119,6 @@ public class SignalBody {
 
     public void setRegularGroupId(String regularGroupId) {
         this.regularGroupId = regularGroupId;
-    }
-
-    public void setRegularName(String regularName) {
-        this.regularName = regularName;
     }
 
     public ArrayList<ConversationUser> getMember() {
@@ -166,7 +165,7 @@ public class SignalBody {
 
     public static class ConversationUser {
         @SerializedName("nguoi_nhan_id")
-        private String id;
+        private final String id;
         @SerializedName("ten_nhan_vien")
         private String name;
 

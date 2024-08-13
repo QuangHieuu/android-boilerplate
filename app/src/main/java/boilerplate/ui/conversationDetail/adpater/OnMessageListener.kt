@@ -6,77 +6,77 @@ import boilerplate.model.message.Message
 import boilerplate.model.user.User
 
 private interface OnMessageListener {
-    fun goToMessage(messageId: String, conversationId: String)
-    fun longClick(message: Message, view: View, viewType: Int)
-    fun openUser(person: User)
-    fun openImage(file: AttachedFile.Conversation)
-    fun openSurvey(surveyFile: AttachedFile.SurveyFile)
-    fun openFile(file: AttachedFile.Conversation)
-    fun quoteMessage(message: Message)
-    fun showReaction(message: Message, view: View)
-    fun whoseReactions(messageId: String)
-    fun mentionUser(userId: String)
-    fun openPhone(number: String)
-    fun playRecord(file: AttachedFile.Conversation)
-    fun downloadAudio(file: AttachedFile.Conversation)
-    fun closeMenu()
+	fun goToMessage(messageId: String, conversationId: String)
+	fun longClick(message: Message, view: View, viewType: Int)
+	fun openUser(person: User)
+	fun openImage(file: AttachedFile)
+	fun openSurvey(surveyFile: AttachedFile)
+	fun openFile(file: AttachedFile)
+	fun quoteMessage(message: Message)
+	fun showReaction(message: Message, view: View)
+	fun whoseReactions(messageId: String)
+	fun mentionUser(userId: String)
+	fun openPhone(number: String)
+	fun playRecord(file: AttachedFile)
+	fun downloadAudio(file: AttachedFile)
+	fun closeMenu()
 }
 
 abstract class SimpleMessageEvent : OnMessageListener {
-    override fun goToMessage(messageId: String, conversationId: String) {
+	override fun goToMessage(messageId: String, conversationId: String) {
 
-    }
+	}
 
-    override fun longClick(message: Message, view: View, viewType: Int) {
+	override fun longClick(message: Message, view: View, viewType: Int) {
 
-    }
+	}
 
-    override fun openUser(person: User) {
+	override fun openUser(person: User) {
 
-    }
+	}
 
-    override fun openImage(file: AttachedFile.Conversation) {
+	override fun openImage(file: AttachedFile) {
 
-    }
+	}
 
-    override fun openSurvey(surveyFile: AttachedFile.SurveyFile) {
+	override fun openSurvey(surveyFile: AttachedFile) {
 
-    }
+	}
 
-    override fun openFile(file: AttachedFile.Conversation) {
+	override fun openFile(file: AttachedFile) {
 
-    }
+	}
 
-    override fun quoteMessage(message: Message) {
+	override fun quoteMessage(message: Message) {
 
-    }
+	}
 
-    override fun showReaction(message: Message, view: View) {
+	override fun showReaction(message: Message, view: View) {
 
-    }
+	}
 
-    override fun whoseReactions(messageId: String) {
+	override fun whoseReactions(messageId: String) {
 
-    }
+	}
 
-    override fun mentionUser(userId: String) {
+	override fun mentionUser(userId: String) {
 
-    }
+	}
 
-    override fun openPhone(number: String) {
+	override fun openPhone(number: String) {
 
-    }
+	}
 
-    override fun playRecord(file: AttachedFile.Conversation) {
+	override fun playRecord(file: AttachedFile) {
 
-    }
+	}
 
-    override fun downloadAudio(file: AttachedFile.Conversation) {
+	override fun downloadAudio(file: AttachedFile) {
 
-    }
+	}
 
-    override fun closeMenu() {
+	override fun closeMenu() {
 
-    }
+	}
 
 }

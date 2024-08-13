@@ -17,80 +17,80 @@ import androidx.core.view.inputmethod.InputConnectionCompat
 import boilerplate.R
 
 class EditTextFont @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = androidx.appcompat.R.attr.editTextStyle
+	context: Context,
+	attrs: AttributeSet? = null,
+	defStyle: Int = androidx.appcompat.R.attr.editTextStyle
 ) : AppCompatEditText(context, attrs, defStyle) {
-    abstract class SimpleEvent : KeyImeChange, TextMenuListener {
-        override fun onKeyIme(keyCode: Int, event: KeyEvent?) {}
-        override fun onPaste() {}
-    }
+	abstract class SimpleEvent : KeyImeChange, TextMenuListener {
+		override fun onKeyIme(keyCode: Int, event: KeyEvent?) {}
+		override fun onPaste() {}
+	}
 
-    private interface KeyImeChange {
-        fun onKeyIme(keyCode: Int, event: KeyEvent?)
-    }
+	private interface KeyImeChange {
+		fun onKeyIme(keyCode: Int, event: KeyEvent?)
+	}
 
-    private interface TextMenuListener {
-        fun onPaste()
-    }
+	private interface TextMenuListener {
+		fun onPaste()
+	}
 
-    private var mListener: SimpleEvent? = null
+	private var mListener: SimpleEvent? = null
 
-    init {
-        init(context, attrs, defStyle)
-    }
+	init {
+		init(context, attrs, defStyle)
+	}
 
-    override fun onKeyPreIme(keyCode: Int, event: KeyEvent): Boolean {
-        if (mListener != null) {
-            mListener!!.onKeyIme(keyCode, event)
-        }
-        return false
-    }
+	override fun onKeyPreIme(keyCode: Int, event: KeyEvent): Boolean {
+		if (mListener != null) {
+			mListener!!.onKeyIme(keyCode, event)
+		}
+		return false
+	}
 
-    fun setListener(listener: SimpleEvent?) {
-        mListener = listener
-    }
+	fun setListener(listener: SimpleEvent?) {
+		mListener = listener
+	}
 
-    private fun init(context: Context, attrs: AttributeSet?, defStyle: Int) {
-        highlightColor = ContextCompat.getColor(getContext(), R.color.colorHighlight)
+	private fun init(context: Context, attrs: AttributeSet?, defStyle: Int) {
+		highlightColor = ContextCompat.getColor(getContext(), R.color.colorHighlight)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            textCursorDrawable =
-                ResourcesCompat.getDrawable(resources, R.drawable.bg_cursor, null)
-        }
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+			textCursorDrawable =
+				ResourcesCompat.getDrawable(resources, R.drawable.bg_cursor, null)
+		}
 
-        val array: TypedArray =
-            context.obtainStyledAttributes(attrs, R.styleable.EditTextFont, defStyle, 0)
-        val typefaceAssetPath: Int =
-            array.getResourceId(R.styleable.TextViewFont_customTypeface, R.font.roboto_regular)
-        val typeface = ResourcesCompat.getFont(getContext(), typefaceAssetPath)
-        setTypeface(typeface)
-        array.recycle()
-    }
+		val array: TypedArray =
+			context.obtainStyledAttributes(attrs, R.styleable.EditTextFont, defStyle, 0)
+		val typefaceAssetPath: Int =
+			array.getResourceId(R.styleable.TextViewFont_customTypeface, R.font.roboto_regular)
+		val typeface = ResourcesCompat.getFont(getContext(), typefaceAssetPath)
+		setTypeface(typeface)
+		array.recycle()
+	}
 
-    override fun setInputType(type: Int) {
-        super.setInputType(type or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS)
-    }
+	override fun setInputType(type: Int) {
+		super.setInputType(type or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS)
+	}
 
-    override fun onCreateInputConnection(outAttrs: EditorInfo): InputConnection? {
-        var ic = super.onCreateInputConnection(outAttrs)
-        EditorInfoCompat.setContentMimeTypes(outAttrs, KeyboardReceiver.MIME_TYPES)
-        val mimeTypes = ViewCompat.getOnReceiveContentMimeTypes(this)
-        if (mimeTypes != null) {
-            EditorInfoCompat.setContentMimeTypes(outAttrs, mimeTypes)
-            ic = InputConnectionCompat.createWrapper(this, ic!!, outAttrs)
-        }
-        return ic
-    }
+	override fun onCreateInputConnection(outAttrs: EditorInfo): InputConnection? {
+		var ic = super.onCreateInputConnection(outAttrs)
+		EditorInfoCompat.setContentMimeTypes(outAttrs, KeyboardReceiver.MIME_TYPES)
+		val mimeTypes = ViewCompat.getOnReceiveContentMimeTypes(this)
+		if (mimeTypes != null) {
+			EditorInfoCompat.setContentMimeTypes(outAttrs, mimeTypes)
+			ic = InputConnectionCompat.createWrapper(this, ic!!, outAttrs)
+		}
+		return ic
+	}
 
-    override fun onTextContextMenuItem(id: Int): Boolean {
-        val consumed: Boolean = super.onTextContextMenuItem(id)
-        if (mListener == null) {
-            return consumed
-        }
-        when (id) {
-            android.R.id.paste -> mListener!!.onPaste()
-        }
-        return consumed
-    }
+	override fun onTextContextMenuItem(id: Int): Boolean {
+		val consumed: Boolean = super.onTextContextMenuItem(id)
+		if (mListener == null) {
+			return consumed
+		}
+		when (id) {
+			android.R.id.paste -> mListener!!.onPaste()
+		}
+		return consumed
+	}
 }

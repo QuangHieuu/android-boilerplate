@@ -60,7 +60,7 @@ public class Xls2HtmlConverter {
     private final Workbook wb;
     private final Appendable output;
     private final OutputStream target;
-    private boolean completeHTML;
+    private final boolean completeHTML;
     private Formatter out;
     private boolean gotBounds;
     private int firstColumn;
@@ -375,7 +375,7 @@ public class Xls2HtmlConverter {
                             CellValue cellValue = evaluator.evaluate(cell);
                             DecimalFormat df2 = new DecimalFormat("##0.000");
 
-                            content = String.valueOf(df2.format(cellValue.getNumberValue()));
+                            content = df2.format(cellValue.getNumberValue());
                         } else
                             content = result.text;
 

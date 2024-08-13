@@ -6,12 +6,12 @@ import boilerplate.databinding.ItemMessageTimeBinding
 import boilerplate.utils.DateTimeUtil
 
 class TimeHolder(
-    private val _binding: ItemMessageTimeBinding
+	private val _binding: ItemMessageTimeBinding
 ) : RecyclerView.ViewHolder(_binding.root) {
 
-    fun setData(message: String?) {
-        _binding.tvTitleTime.text =
-            if (DateTimeUtil.isToDay(message)) itemView.resources.getString(R.string.today)
-            else message
-    }
+	fun setData(message: String?) {
+		_binding.tvTitleTime.text =
+			if (DateTimeUtil.isToDay(message)) itemView.resources.getString(R.string.today)
+			else message
+	}
 }

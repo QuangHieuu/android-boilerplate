@@ -17,12 +17,12 @@ public interface ClientTransport {
     /**
      * Transport name
      */
-    public String getName();
+    String getName();
 
     /**
      * True if the transport supports keepalive messages
      */
-    public boolean supportKeepAlive();
+    boolean supportKeepAlive();
 
     /**
      * Begins the negotiation with the server
@@ -31,7 +31,7 @@ public interface ClientTransport {
      *            Connection information to do the negotiation
      * @return A Future for the operation
      */
-    public SignalRFuture<NegotiationResponse> negotiate(ConnectionBase connection);
+    SignalRFuture<NegotiationResponse> negotiate(ConnectionBase connection);
 
     /**
      * Starts the transport
@@ -44,7 +44,7 @@ public interface ClientTransport {
      *            Callback to invoke when there is new data
      * @return A Future for the operation
      */
-    public SignalRFuture<Void> start(ConnectionBase connection, ConnectionType connectionType, DataResultCallback callback);
+    SignalRFuture<Void> start(ConnectionBase connection, ConnectionType connectionType, DataResultCallback callback);
 
     /**
      * Sends data using the transport
@@ -57,7 +57,7 @@ public interface ClientTransport {
      *            Callback to invoke when data is returned
      * @return A Future for the operation
      */
-    public SignalRFuture<Void> send(ConnectionBase connection, String data, DataResultCallback callback);
+    SignalRFuture<Void> send(ConnectionBase connection, String data, DataResultCallback callback);
 
     /**
      * Aborts the transport
@@ -66,5 +66,5 @@ public interface ClientTransport {
      *            Connection information to abort
      * @return A Future for the operation
      */
-    public SignalRFuture<Void> abort(ConnectionBase connection);
+    SignalRFuture<Void> abort(ConnectionBase connection);
 }

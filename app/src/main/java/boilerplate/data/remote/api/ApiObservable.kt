@@ -16,114 +16,114 @@ import org.reactivestreams.Subscription
 import java.util.concurrent.atomic.AtomicReference
 
 interface ApiObserver<T : Any> : Observer<T>, FlowableSubscriber<T>,
-    SingleObserver<T>, CompletableObserver {
-
-}
+	SingleObserver<T>, CompletableObserver
 
 abstract class ApiObservable<T : Any>(
-    private val mShowCommon: Boolean
+	private val mShowCommon: Boolean
 ) : ApiObserver<T>, Disposable {
 
-    private val upstreamDisposable: AtomicReference<Disposable> = AtomicReference()
-    private val upstreamSubscription: AtomicReference<Subscription> = AtomicReference()
+	private val upstreamDisposable: AtomicReference<Disposable> = AtomicReference()
+	private val upstreamSubscription: AtomicReference<Subscription> = AtomicReference()
 
-    override fun onSubscribe(s: Subscription) {
-        if (EndConsumerHelper.setOnce(this.upstreamSubscription, s, javaClass)) {
-            onStart()
-        }
-    }
+	override fun onSubscribe(s: Subscription) {
+		if (EndConsumerHelper.setOnce(this.upstreamSubscription, s, javaClass)) {
+			onStart()
+		}
+	}
 
-    override fun onSubscribe(d: Disposable) {
-        if (EndConsumerHelper.setOnce(this.upstreamDisposable, d, javaClass)) {
-            onStart()
-        }
-    }
+	override fun onSubscribe(d: Disposable) {
+		if (EndConsumerHelper.setOnce(this.upstreamDisposable, d, javaClass)) {
+			onStart()
+		}
+	}
 
-    override fun isDisposed(): Boolean {
-        return upstreamDisposable.get() === DisposableHelper.DISPOSED
-    }
+	override fun isDisposed(): Boolean {
+		return upstreamDisposable.get() === DisposableHelper.DISPOSED
+	}
 
-    override fun dispose() {
-        DisposableHelper.dispose(upstreamDisposable)
-    }
+	override fun dispose() {
+		DisposableHelper.dispose(upstreamDisposable)
+	}
 
-    override fun onNext(t: T) {
-        onSuccess(t)
-    }
+	override fun onNext(t: T) {
+		onSuccess(t)
+	}
 
-    override fun onError(t: Throwable) {
-        if (t is InternetException) {
-            sListener.notInternet()
-            return
-        }
-        if (t is RetrofitException) {
-            val json: String = t.errorMessage
-            try {
-                val error: ApiError = sGson.fromJson(json, ApiError::class.java)
-                handleError(error)
-                return
-            } catch (exception: Exception) {
-                handleError(ApiError(0, "", ""))
-                return
-            }
-        }
-        handleError(ApiError(0, "", ""))
-    }
+	override fun onError(t: Throwable) {
+		if (t is InternetException) {
+			sListener.notInternet()
+			return
+		}
+		if (t is RetrofitException) {
+			val json: String = t.errorMessage
+			try {
+				val error: ApiError = sGson.fromJson(json, ApiError::class.java)
+				handleError(error)
+				return
+			} catch (exception: Exception) {
+				handleError(ApiError(0, "", ""))
+				return
+			}
+		}
+		if (t is ApiError) {
+			handleError(t)
+			return
+		}
+		handleError(ApiError(0, "", ""))
+	}
 
-    override fun onComplete() {
-    }
+	override fun onComplete() {
+	}
 
-    private fun onFailed(error: ApiError?) {
-    }
+	abstract fun onFail(error: ApiError)
 
-    abstract override fun onSuccess(response: T)
+	abstract override fun onSuccess(response: T)
 
-    private fun onStart() {
-        upstreamSubscription.get().notNull { it.request(Long.MAX_VALUE) }
-    }
+	private fun onStart() {
+		upstreamSubscription.get().notNull { it.request(Long.MAX_VALUE) }
+	}
 
-    private fun handleError(error: ApiError) {
-        val api: String = error.api
-        if (error.code == 401) {
-            sListener.invalidToken()
-            onFailed(error)
-            return
-        }
-        if (api.contains("connect/token")) {
-            if (error.code == 400) {
-                sListener.invalidLogin()
-            } else {
-                sListener.onServerError(error.code, api, mShowCommon)
-            }
-            onFailed(error)
-            return
-        }
-        sListener.onServerError(error.code, api, mShowCommon)
-        onFailed(error)
-    }
+	private fun handleError(error: ApiError) {
+		val api: String = error.api
+		if (error.code == 401) {
+			sListener.invalidToken()
+			onFail(error)
+			return
+		}
+		if (api.contains("connect/token")) {
+			if (error.code == 400) {
+				sListener.invalidLogin()
+			} else {
+				sListener.onServerError(error.code, api, mShowCommon)
+			}
+			onFail(error)
+			return
+		}
+		sListener.onServerError(error.code, api, mShowCommon)
+		onFail(error)
+	}
 
-    companion object {
-        lateinit var sGson: Gson
-        lateinit var sListener: OnApiCallBack
+	companion object {
+		lateinit var sGson: Gson
+		lateinit var sListener: OnApiCallBack
 
-        fun setServerResponseListener(listener: OnApiCallBack, gson: Gson) {
-            sGson = gson
-            sListener = listener
-        }
+		fun setServerResponseListener(listener: OnApiCallBack, gson: Gson) {
+			sGson = gson
+			sListener = listener
+		}
 
-        fun <T : Any> apiCallback(
-            success: (response: T) -> Unit,
-            fail: (t: Throwable) -> Unit = {},
-            common: Boolean = false
-        ): ApiObservable<T> = object : ApiObservable<T>(common) {
-            override fun onSuccess(response: T) {
-                success(response)
-            }
+		fun <T : Any> apiCallback(
+			success: (response: T) -> Unit,
+			fail: (t: ApiError) -> Unit = {},
+			common: Boolean = false
+		): ApiObservable<T> = object : ApiObservable<T>(common) {
+			override fun onSuccess(response: T) {
+				success(response)
+			}
 
-            override fun onError(t: Throwable) {
-                super.onError(t)
-                fail(t)
-            }
-        }
-    }
+			override fun onFail(error: ApiError) {
+				fail(error)
+			}
+		}
+	}
 }

@@ -7,6 +7,7 @@ See License.txt in the project root for license information.
 package microsoft.aspnet.signalr.client;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Constants used through the framework
@@ -31,5 +32,5 @@ public class Constants {
     /**
      * UTF-8 Charset instance
      */
-    public static final Charset UTF8 = Charset.forName(UTF8_NAME);
+    public static final Charset UTF8 = StandardCharsets.UTF_8;
 }

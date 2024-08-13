@@ -18,36 +18,36 @@ import org.koin.core.context.startKoin
 
 class BaseApp : Application() {
 
-    companion object {
-        lateinit var sInstance: BaseApp
-        const val APP_FILTER_INVALID = "APP_FILTER_INVALID"
-    }
+	companion object {
+		lateinit var sInstance: BaseApp
+		const val APP_FILTER_INVALID = "APP_FILTER_INVALID"
+	}
 
-    override fun onCreate() {
-        super.onCreate()
-        sInstance = this
+	override fun onCreate() {
+		super.onCreate()
+		sInstance = this
 
-        Platform.loadPlatformComponent(object : PlatformComponent {
-            override fun createHttpConnection(logger: Logger): HttpConnection {
-                return JavaHttpConnection(logger)
-            }
+		Platform.loadPlatformComponent(object : PlatformComponent {
+			override fun createHttpConnection(logger: Logger): HttpConnection {
+				return JavaHttpConnection(logger)
+			}
 
-            override fun getOSName(): String {
-                return "android"
-            }
-        })
+			override fun getOSName(): String {
+				return "android"
+			}
+		})
 
-        startKoin {
-            androidLogger()
-            androidContext(this@BaseApp)
-            androidFileProperties()
-            modules(
-                appModule,
-                viewModelModule,
-                contextRequireModule,
-                remoteModule,
-                repositoryModule
-            )
-        }
-    }
+		startKoin {
+			androidLogger()
+			androidContext(this@BaseApp)
+			androidFileProperties()
+			modules(
+				appModule,
+				viewModelModule,
+				contextRequireModule,
+				remoteModule,
+				repositoryModule
+			)
+		}
+	}
 }

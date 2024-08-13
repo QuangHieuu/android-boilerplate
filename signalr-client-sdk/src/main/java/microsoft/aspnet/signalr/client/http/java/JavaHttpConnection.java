@@ -25,7 +25,7 @@ public class JavaHttpConnection implements HttpConnection {
      */
     private static final String USER_AGENT_HEADER = "User-Agent";
 
-    private Logger mLogger;
+    private final Logger mLogger;
 
     /**
      * Initializes the JavaHttpConnection

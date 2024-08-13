@@ -5,17 +5,17 @@ import boilerplate.model.message.Message
 import boilerplate.model.user.User
 
 interface ConversationMessageListener {
-    fun onFile(file: AttachedFile.Conversation)
+	fun onFile(file: AttachedFile)
 
-    fun onMention(id: String)
+	fun onMention(id: String)
 
-    fun onPhoneNumber(phone: String)
+	fun onPhoneNumber(phone: String)
 
-    fun onRemoveImportant(message: Message)
+	fun onRemoveImportant(message: Message)
 
-    fun onGoTo(message: Message)
+	fun onGoTo(message: Message)
 
-    fun onRemovePin(message: Message)
+	fun onRemovePin(message: Message)
 
-    fun onAvatar(personSend: User)
+	fun onAvatar(personSend: User)
 }

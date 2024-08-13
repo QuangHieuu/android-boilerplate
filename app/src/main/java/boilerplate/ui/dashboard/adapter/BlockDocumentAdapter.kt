@@ -17,79 +17,79 @@ import boilerplate.ui.dashboard.adapter.BlockDocumentAdapter.DocumentVH
 import boilerplate.utils.extension.click
 
 class BlockDocumentAdapter(
-    private val _listener: OnMenuListener
+	private val _listener: OnMenuListener
 ) : RecyclerView.Adapter<DocumentVH>() {
-    private var _needDone = 0
-    private var _notAssign = 0
+	private var _needDone = 0
+	private var _notAssign = 0
 
-    fun setData(notAssign: Int, needDone: Int) {
-        _notAssign = notAssign
-        _needDone = needDone
-        notifyItemChanged(0)
-    }
+	fun setData(notAssign: Int, needDone: Int) {
+		_notAssign = notAssign
+		_needDone = needDone
+		notifyItemChanged(0)
+	}
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DocumentVH {
-        val layoutInflater = LayoutInflater.from(parent.context)
-        return DocumentVH(
-            ItemDashboardBlockBinding.inflate(layoutInflater, parent, false),
-            _listener
-        )
-    }
+	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DocumentVH {
+		val layoutInflater = LayoutInflater.from(parent.context)
+		return DocumentVH(
+			ItemDashboardBlockBinding.inflate(layoutInflater, parent, false),
+			_listener
+		)
+	}
 
-    override fun onBindViewHolder(holder: DocumentVH, position: Int) {
-        holder.setData(_notAssign, _needDone)
-    }
+	override fun onBindViewHolder(holder: DocumentVH, position: Int) {
+		holder.setData(_notAssign, _needDone)
+	}
 
-    override fun getItemCount(): Int {
-        return 1
-    }
+	override fun getItemCount(): Int {
+		return 1
+	}
 
-    class DocumentVH(
-        private val _binding: ItemDashboardBlockBinding,
-        private val _listener: OnMenuListener,
-        private val _content: Context = _binding.root.context
-    ) : RecyclerView.ViewHolder(_binding.root) {
+	class DocumentVH(
+		private val _binding: ItemDashboardBlockBinding,
+		private val _listener: OnMenuListener,
+		private val _content: Context = _binding.root.context
+	) : RecyclerView.ViewHolder(_binding.root) {
 
-        fun setData(process: Int, inProcess: Int) {
-            val features = blockDashboardDocument()
+		fun setData(process: Int, inProcess: Int) {
+			val features = blockDashboardDocument()
 
-            with(_binding) {
-                tvTitle.setText(features.name)
-                imgIcon.setImageResource(features.icon)
+			with(_binding) {
+				tvTitle.setText(features.name)
+				imgIcon.setImageResource(features.icon)
 
-                lnContain.removeAllViews()
-                for (feature in features.data) {
-                    when (DashboardBlock.fromIndex(feature.type)) {
-                        DashboardBlock.REFERENCE_HANDLE -> lnContain.addView(
-                            addView(feature, process, true)
-                        )
+				lnContain.removeAllViews()
+				for (feature in features.data) {
+					when (DashboardBlock.fromIndex(feature.type)) {
+						DashboardBlock.REFERENCE_HANDLE -> lnContain.addView(
+							addView(feature, process, true)
+						)
 
-                        DashboardBlock.REFERENCE_HANDLING -> lnContain.addView(
-                            addView(feature, inProcess, false)
-                        )
+						DashboardBlock.REFERENCE_HANDLING -> lnContain.addView(
+							addView(feature, inProcess, false)
+						)
 
-                        else -> {}
-                    }
-                }
-            }
-        }
+						else -> {}
+					}
+				}
+			}
+		}
 
-        private fun addView(page: Page, process: Int, underline: Boolean): View {
-            val binding =
-                ItemDashboardBlockChildBinding.inflate(LayoutInflater.from(_content))
-            with(binding) {
-                cardview.setCardBackgroundColor(Color.parseColor(page.color))
-                imgIcon.setImageResource(page.icon)
-                tvTitle.text = page.name
-                tvCount.text = process.toString()
-                lnBackground.setBackgroundResource(
-                    if (underline) R.drawable.bg_border_bottom_grey
-                    else R.color.colorWhite
-                )
-            }
-            return binding.root.also {
-                it.click { _listener.onMenu(page) }
-            }
-        }
-    }
+		private fun addView(page: Page, process: Int, underline: Boolean): View {
+			val binding =
+				ItemDashboardBlockChildBinding.inflate(LayoutInflater.from(_content))
+			with(binding) {
+				cardview.setCardBackgroundColor(Color.parseColor(page.color))
+				imgIcon.setImageResource(page.icon)
+				tvTitle.text = page.name
+				tvCount.text = process.toString()
+				lnBackground.setBackgroundResource(
+					if (underline) R.drawable.bg_border_bottom_grey
+					else R.color.colorWhite
+				)
+			}
+			return binding.root.also {
+				it.click { _listener.onMenu(page) }
+			}
+		}
+	}
 }

@@ -68,11 +68,13 @@
     <string name="turn_off_notify_success">Tắt thông báo thành công</string>
     <string name="turn_on_notify_success">Bật thông báo thành công</string>
 
-    <string name="text_unread_message_count">9+</string>
+    <string name="unread_message_count">9+</string>
     <string name="conversation_name">Nhóm:\u0020</string>
     <string name="member_count">%d thành viên</string>
     <string name="conversation_setting">Cấu hình nhóm</string>
     <string name="important_message">Tin nhắn quan trọng</string>
+    <string name="withdraw_message">Thu hồi tin nhắn</string>
+    <string name="edit_message">Chỉnh sửa tin nhắn</string>
 
     <string name="leave_group">Rời nhóm</string>
     <string name="leave_and_delete">Rời nhóm và xóa trò chuyện?</string>
