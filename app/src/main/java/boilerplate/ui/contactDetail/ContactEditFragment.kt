@@ -16,7 +16,7 @@ import boilerplate.utils.extension.findOwner
 import boilerplate.utils.extension.isTablet
 import boilerplate.utils.extension.loadAvatar
 import boilerplate.utils.extension.notNull
-import boilerplate.utils.extension.showSnackBarFail
+import boilerplate.utils.extension.showFail
 import com.bumptech.glide.Glide
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.FileNotFoundException
@@ -46,7 +46,7 @@ class ContactEditFragment : BaseDialogFragment<FragmentContactEditBinding, Conta
 		with(binding) {
 			toolbarEdit.apply {
 				setNavigationIcon(
-					if (context.isTablet()) R.drawable.ic_close
+					if (isTablet()) R.drawable.ic_close
 					else R.drawable.ic_arrow_previous_white
 				)
 				click { handleBack() }
@@ -124,10 +124,10 @@ class ContactEditFragment : BaseDialogFragment<FragmentContactEditBinding, Conta
 						.error(R.drawable.ic_avatar)
 						.into(imgAvatar)
 				} catch (e: FileNotFoundException) {
-					binding.root.showSnackBarFail(R.string.error_unacceptable_file)
+					binding.root.showFail(R.string.error_unacceptable_file)
 				}
 			} else {
-				binding.root.showSnackBarFail(R.string.error_unacceptable_file)
+				binding.root.showFail(R.string.error_unacceptable_file)
 			}
 		}
 	}

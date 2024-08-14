@@ -397,7 +397,7 @@ class MessageAdapter(
 		notifyItemRangeChanged(0, _list.size)
 	}
 
-	fun focusMessage(message: Message?) {
+	fun focusMessage(message: Message) {
 		val size: Int = _list.size
 		_list.clear()
 		notifyItemRemoved(size)

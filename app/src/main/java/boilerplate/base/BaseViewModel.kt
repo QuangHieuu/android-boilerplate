@@ -11,6 +11,7 @@ import boilerplate.R
 import boilerplate.data.remote.api.ApiObservable
 import boilerplate.data.remote.api.OnApiCallBack
 import boilerplate.utils.InternetManager
+import boilerplate.utils.extension.BaseSchedulerProvider
 import com.google.gson.Gson
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -25,6 +26,7 @@ abstract class BaseViewModel : ViewModel() {
 
 	}
 
+	val schedulerProvider: BaseSchedulerProvider by KoinJavaComponent.inject(BaseSchedulerProvider::class.java)
 	val application: Application by KoinJavaComponent.inject(Application::class.java)
 
 	val limit: Int by KoinJavaComponent.inject(Int::class.java)

@@ -20,9 +20,6 @@ import boilerplate.utils.extension.show
 import boilerplate.widget.customText.TextViewFont
 import com.google.android.material.tabs.TabLayout
 
-/**
- * Created by dungvhp on 4/26/17.
- */
 class HomePagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
 	FragmentStateAdapter(fragmentManager, lifecycle) {
 	private val mFragments = ArrayList<Pair<Int, Fragment>>()

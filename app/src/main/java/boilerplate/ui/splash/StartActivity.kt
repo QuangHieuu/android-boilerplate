@@ -77,7 +77,7 @@ class StartActivity : BaseActivity<ActivityStartBinding, StartVM>() {
 					delay(1000)
 					it.notNull {
 						if (state.value != StartVM.STATE_LOGIN) {
-							goTo(MainActivity::class).also { finishAfterTransition() }
+							goTo(MainActivity::class, isFinish = true)
 						}
 					}
 				}

@@ -22,6 +22,8 @@ import boilerplate.model.message.SendMessageResult
 import boilerplate.service.signalr.SignalRImpl
 import boilerplate.service.signalr.SignalRManager
 import boilerplate.service.signalr.SignalRResult
+import boilerplate.ui.contact.ContactSelectFragment
+import boilerplate.ui.contact.ContactSelectFragment.Companion.FOR_CREATE_GROUP
 import boilerplate.ui.conversation.adapter.ConversationAdapter
 import boilerplate.ui.conversationDetail.ConversationDetailFragment
 import boilerplate.ui.main.MainVM
@@ -33,10 +35,11 @@ import boilerplate.utils.extension.isTablet
 import boilerplate.utils.extension.launch
 import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.open
+import boilerplate.utils.extension.openDialog
 import boilerplate.utils.extension.show
 import boilerplate.utils.extension.showDialog
-import boilerplate.utils.extension.showSnackBarFail
-import boilerplate.utils.extension.showSnackBarSuccess
+import boilerplate.utils.extension.showFail
+import boilerplate.utils.extension.showSuccess
 import boilerplate.widget.recyclerview.EndlessListener
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -200,7 +203,7 @@ class ConversationFragment : BaseFragment<FragmentConversationBinding, MainVM>()
 					open(
 						split = true,
 						fragment = ConversationDetailFragment.newInstance(it.id),
-						animateType = if (context?.isTablet() == true) AnimateType.STAY
+						animateType = if (isTablet()) AnimateType.STAY
 						else AnimateType.SLIDE_TO_LEFT
 					)
 				}
@@ -215,6 +218,9 @@ class ConversationFragment : BaseFragment<FragmentConversationBinding, MainVM>()
 				_endLessListener.refreshPage()
 				SignalRManager.reconnectSignal()
 				loadMore("")
+			}
+			fabMenuCreateGroup.click {
+				openDialog(ContactSelectFragment.newInstance(FOR_CREATE_GROUP))
 			}
 		}
 	}
@@ -324,12 +330,12 @@ class ConversationFragment : BaseFragment<FragmentConversationBinding, MainVM>()
 					val userId = viewModel.user.value?.id
 					val isPlaySound = AccountManager.isPlaySound()
 					for (user in message.receiverNotifies) {
-						if (user.receiverId.equals(userId) && !user.isOffNotify && isPlaySound) {
+						if (user.receiverId == userId && !user.isOffNotify && isPlaySound) {
 							playAudio()
 						}
 					}
 					val isSelf: Boolean =
-						message.personSendId.equals(AccountManager.getCurrentUserId())
+						message.personSendId == AccountManager.getCurrentUserId()
 					if (newMessage(message, isSelf)) {
 						viewModel.apiGetConversationDetail(message)
 					}
@@ -354,7 +360,7 @@ class ConversationFragment : BaseFragment<FragmentConversationBinding, MainVM>()
 				}
 
 				override fun deleteMember(leaveGroup: LeaveGroup) {
-					if (leaveGroup.userId.equals(viewModel.user.value?.id)) {
+					if (leaveGroup.userId == viewModel.user.value?.id) {
 						if (!_adapterPin.leavePinConversation(leaveGroup.conversationId)) {
 							_adapter.leaveConversation(leaveGroup.conversationId)
 						}
@@ -376,12 +382,12 @@ class ConversationFragment : BaseFragment<FragmentConversationBinding, MainVM>()
 						}
 						if (_isDeleteConversation) {
 							_isDeleteConversation = false
-							binding.root.showSnackBarSuccess(R.string.success_delete_conversation)
+							binding.root.showSuccess(R.string.success_delete_conversation)
 						}
 					} else {
 						if (_isDeleteConversation) {
 							_isDeleteConversation = false
-							binding.root.showSnackBarFail(R.string.error_delete_conversation)
+							binding.root.showFail(R.string.error_delete_conversation)
 						}
 					}
 				}
@@ -394,7 +400,7 @@ class ConversationFragment : BaseFragment<FragmentConversationBinding, MainVM>()
 					if (item != null) {
 						val success = if (item) R.string.turn_off_notify_success
 						else R.string.turn_on_notify_success
-						binding.root.showSnackBarSuccess(success)
+						binding.root.showSuccess(success)
 					}
 				}
 

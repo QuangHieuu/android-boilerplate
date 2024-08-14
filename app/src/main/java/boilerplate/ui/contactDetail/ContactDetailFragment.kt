@@ -45,7 +45,7 @@ class ContactDetailFragment : BaseDialogFragment<FragmentContactDetailBinding, C
 		with(binding) {
 			imgBack.apply {
 				setImageResource(
-					if (context.isTablet()) R.drawable.ic_close
+					if (isTablet()) R.drawable.ic_close
 					else R.drawable.ic_arrow_previous_white
 				)
 				click { handleBack() }
@@ -118,14 +118,14 @@ class ContactDetailFragment : BaseDialogFragment<FragmentContactDetailBinding, C
 							)
 						)
 					)
-					addView(
-						initRowInform(
-							R.drawable.ic_double_quote,
-							R.string.state,
-							R.color.color_081C36,
-							user.mood
-						)
-					)
+//					addView(
+//						initRowInform(
+//							R.drawable.ic_double_quote,
+//							R.string.state,
+//							R.color.color_081C36,
+//							user.mood
+//						)
+//					)
 					addView(
 						initRowInform(
 							R.drawable.ic_phone_blue,

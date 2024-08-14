@@ -220,7 +220,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardVM>() 
 
 	private fun tableView() {
 		with(binding) {
-			if (requireActivity().isTablet()) {
+			if (isTablet()) {
 				imgFilterWork.gone()
 				scrollTablet.show()
 

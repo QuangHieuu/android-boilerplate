@@ -30,7 +30,7 @@ import boilerplate.utils.extension.isVisible
 import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.show
 import boilerplate.utils.extension.showKeyboard
-import boilerplate.utils.extension.showSnackBarWarning
+import boilerplate.utils.extension.showWarning
 import boilerplate.widget.chatBox.adapter.BoxAdapter
 import boilerplate.widget.chatBox.adapter.MentionAdapter
 import boilerplate.widget.customText.EditTextFont
@@ -135,7 +135,7 @@ class ChatBox @JvmOverloads constructor(
 					if (validate(messageContent)) {
 						if (isFileLimit()) {
 							finishSendWhenError()
-							root.showSnackBarWarning(R.string.warning_file_maximum)
+							root.showWarning(R.string.warning_file_maximum)
 						} else {
 							if (_isEdit) {
 								it.onEditMessage(
@@ -237,6 +237,10 @@ class ChatBox @JvmOverloads constructor(
 				}
 			}
 		}
+	}
+
+	fun enableButtonSend(isEnable: Boolean) {
+		_binding.btnSend.setEnabled(isEnable)
 	}
 
 	fun enableChat(isEnable: Boolean) {

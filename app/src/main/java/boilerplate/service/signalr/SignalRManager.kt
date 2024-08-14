@@ -11,10 +11,11 @@ import android.os.IBinder
 import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import boilerplate.model.conversation.Conversation
-import boilerplate.model.conversation.SignalBody
 import boilerplate.model.message.Message
+import boilerplate.model.user.UserSignalR
 import boilerplate.service.signalr.SignalRService.Companion.TAG
 import boilerplate.utils.extension.notNull
+import com.google.gson.JsonSyntaxException
 import java.util.Collections
 import java.util.Date
 
@@ -116,7 +117,12 @@ object SignalRManager : ServiceConnection {
 		if (key.isNotEmpty()) {
 			Log.d(TAG, "Key: $key")
 			for (keys in _subscriptions.keys) {
-				_subscriptions[keys]?.receiver(key, data)
+				try {
+					_subscriptions[keys]?.receiver(key, data)
+				} catch (e: JsonSyntaxException) {
+					Log.d(TAG, "Key-error: $key")
+					continue
+				}
 			}
 		}
 	}
@@ -146,7 +152,7 @@ object SignalRManager : ServiceConnection {
 		checkService { it.updateConversationSetting(conversation) }
 	}
 
-	fun addMember(conversationId: String, member: ArrayList<SignalBody.ConversationUser>) {
+	fun addMember(conversationId: String, member: ArrayList<UserSignalR>) {
 		checkService { it.addMember(conversationId, member) }
 	}
 
@@ -157,7 +163,7 @@ object SignalRManager : ServiceConnection {
 	fun approveMemberOrNot(
 		isApprove: Boolean,
 		conversationId: String?,
-		list: ArrayList<SignalBody.ConversationUser>
+		list: ArrayList<UserSignalR>
 	) {
 		checkService { it.approveMemberOrNot(isApprove, conversationId, list) }
 	}

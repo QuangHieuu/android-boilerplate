@@ -2,6 +2,7 @@ package boilerplate.utils.extension
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
@@ -17,6 +18,7 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.viewbinding.ViewBinding
 import boilerplate.R
 import boilerplate.constant.Constants
+import java.security.AccessController.getContext
 import kotlin.reflect.KClass
 
 fun <T : Fragment> Fragment.findOwner(tag: KClass<T>): Fragment {
@@ -36,21 +38,29 @@ fun <T : Fragment> Fragment.findOwner(tag: KClass<T>): Fragment {
 
 fun Fragment.openDialog(
 	fragment: DialogFragment,
-	asDialog: Boolean = context?.isTablet() ?: false,
+	asDialog: Boolean = isTablet(),
 	addToBackStack: Boolean = true,
 	animateType: AnimateType = AnimateType.SLIDE_TO_LEFT,
 	@IdRes containerId: Int = R.id.app_container,
 	tag: String = fragment::class.java.simpleName,
 ) {
+	val fm = requireActivity().supportFragmentManager
 	if (asDialog) {
-		val fm = requireActivity().supportFragmentManager
 		if (fm.isExistFragment(fragment)) {
 			fm.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE)
 		}
 		fragment.show(fm, tag)
 	} else {
 		fragment.showsDialog = false
-		open(fragment, false, addToBackStack, animateType, containerId, tag)
+		fm.transact({
+			if (addToBackStack) {
+				addToBackStack(tag)
+			}
+			if (fm.isExistFragment(fragment)) {
+				fm.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+			}
+			add(containerId, fragment, tag)
+		}, animateType)
 	}
 }
 
@@ -64,12 +74,10 @@ fun Fragment.open(
 ) {
 	val fm = requireActivity().supportFragmentManager
 	fm.transact({
-		hide(this@open)
 		if (addToBackStack) {
 			addToBackStack(tag)
 		}
-		val isTablet = context?.isTablet()
-		if (isTablet == true && split) {
+		if (isTablet() && split) {
 			if (fm.isExistFragment(fragment)) {
 				fm.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE)
 			}
@@ -184,7 +192,7 @@ fun Fragment.callPhone(phone: String?) {
 	try {
 		startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phone")))
 	} catch (_: NullPointerException) {
-		view?.showSnackBarFail(R.string.error_no_phone_number)
+		view?.showFail(R.string.error_no_phone_number)
 	}
 }
 
@@ -194,7 +202,7 @@ fun Fragment.sendSms(phone: String?) {
 			putExtra("sms_body", "")
 		})
 	} catch (_: NullPointerException) {
-		view?.showSnackBarFail(R.string.error_no_phone_number)
+		view?.showFail(R.string.error_no_phone_number)
 	}
 }
 
@@ -204,6 +212,6 @@ fun Fragment.sendEmail(email: String?) {
 			.apply { setType("text/html") }
 			.let { startActivity(Intent.createChooser(it, "Send Email")) }
 	} else {
-		view?.showSnackBarFail(R.string.error_no_phone_number)
+		view?.showFail(R.string.error_no_phone_number)
 	}
 }

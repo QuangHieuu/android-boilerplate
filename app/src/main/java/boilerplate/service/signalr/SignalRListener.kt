@@ -14,6 +14,7 @@ import boilerplate.model.message.PinMessage
 import boilerplate.model.message.SendMessageResult
 import boilerplate.model.message.SyncRead
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import org.koin.java.KoinJavaComponent.inject
 
@@ -133,6 +134,7 @@ class SubscriptionSignalr {
 		signalr = listener
 	}
 
+	@Throws(JsonSyntaxException::class)
 	fun receiver(key: String, data: String) {
 		when (SignalRResult.fromKey(key)) {
 			SignalRResult.CONNECTED, SignalRResult.DISCONNECTED -> {

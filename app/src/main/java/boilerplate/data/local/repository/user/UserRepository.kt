@@ -64,6 +64,24 @@ interface UserRepository {
 	fun getConversationConfig(): ConversationConfig
 
 	fun patchUser(body: UpdateBody): Flowable<Response<Any>>
+
+	fun getDeviceId(): String
+
+	fun getDepartments(id: String): Flowable<Response<Department>>
+
+	fun getSearchContact(
+		id: String,
+		text: String,
+		page: Int,
+		limit: Int
+	): Flowable<ResponseItems<User>>
+
+	fun getSearchUser(
+		id: String?,
+		text: String,
+		page: Int,
+		limit: Int = 10
+	): Flowable<ResponseItems<User>>
 }
 
 class UserRepositoryImpl(
@@ -230,8 +248,34 @@ class UserRepositoryImpl(
 		return api.eOffice.patchUser(body).checkInternet()
 	}
 
+	override fun getDeviceId(): String {
+		return share.get(SharedPrefsKey.DEVICE_ID, String::class.java)
+	}
+
 	override fun logout(): Flowable<Response<Boolean>> {
 		return api.notify.deleteDevice(share.get(SharedPrefsKey.DEVICE_ID, String::class.java))
 			.checkInternet()
+	}
+
+	override fun getDepartments(id: String): Flowable<Response<Department>> {
+		return api.chat.getDepartments(id).checkInternet()
+	}
+
+	override fun getSearchContact(
+		id: String,
+		text: String,
+		page: Int,
+		limit: Int
+	): Flowable<ResponseItems<User>> {
+		return api.chat.getSearchContact(id, text, page, limit)
+	}
+
+	override fun getSearchUser(
+		id: String?,
+		text: String,
+		page: Int,
+		limit: Int
+	): Flowable<ResponseItems<User>> {
+		return api.chat.getSearchUser(id, text, page, limit)
 	}
 }

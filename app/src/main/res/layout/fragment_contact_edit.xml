@@ -210,14 +210,11 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_cancel"
+            style="@style/ButtonCancel"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginEnd="@dimen/dp_7"
-            android:background="@drawable/bg_button_white"
-            android:gravity="center"
             android:text="@string/cancel"
-            android:textSize="@dimen/dp_14"
-            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btn_update"
             app:layout_constraintStart_toStartOf="parent"

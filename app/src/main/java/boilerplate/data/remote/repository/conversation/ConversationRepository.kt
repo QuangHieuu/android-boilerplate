@@ -7,7 +7,7 @@ import boilerplate.data.remote.api.response.Response
 import boilerplate.data.remote.api.response.ResponseItems
 import boilerplate.model.conversation.Conversation
 import boilerplate.model.conversation.ConversationConfig
-import boilerplate.model.conversation.SignalBody
+import boilerplate.model.conversation.ConversationSignalR
 import boilerplate.model.message.Message
 import boilerplate.model.message.PinMessage
 import boilerplate.model.message.Reaction
@@ -47,7 +47,7 @@ interface ConversationRepository {
 		limit: Int
 	): Single<ResponseItems<Message>>
 
-	fun putConversation(body: SignalBody): Flowable<ResponseItems<Any>>
+	fun putConversation(body: ConversationSignalR): Flowable<ResponseItems<Any>>
 
 	fun getMemberConversation(
 		conversationId: String?,
@@ -69,7 +69,7 @@ interface ConversationRepository {
 		limit: Int
 	): Flowable<ResponseItems<Message>>
 
-	fun postPersonConversation(body: SignalBody): Flowable<Response<Conversation>>
+	fun postPersonConversation(body: ConversationSignalR): Flowable<Response<Conversation>>
 
 	fun postPinMessage(body: PinMessage): Flowable<Response<Any>>
 
@@ -90,6 +90,10 @@ interface ConversationRepository {
 	): Flowable<Response<Any>>
 
 	fun putEditMessage(message: Message): Flowable<Response<Any>>
+
+	fun getSearchConversations(data: Map<String, Any>): Flowable<ResponseItems<Conversation>>
+
+	fun putEditGroup(id: String, body: ConversationSignalR): Flowable<Response<Conversation>>
 }
 
 class ConversationRepositoryImpl(
@@ -149,7 +153,7 @@ class ConversationRepositoryImpl(
 		return apiRequest.chat.getConversationLink(conversationId, page, limit).checkInternet()
 	}
 
-	override fun putConversation(body: SignalBody): Flowable<ResponseItems<Any>> {
+	override fun putConversation(body: ConversationSignalR): Flowable<ResponseItems<Any>> {
 		val id = tokenImpl.getConnectedId()
 		return apiRequest.chat.putUpdateGroup(id, body).checkInternet()
 	}
@@ -182,7 +186,7 @@ class ConversationRepositoryImpl(
 			.checkInternet()
 	}
 
-	override fun postPersonConversation(body: SignalBody): Flowable<Response<Conversation>> {
+	override fun postPersonConversation(body: ConversationSignalR): Flowable<Response<Conversation>> {
 		val connectedId = tokenImpl.getConnectedId()
 		return apiRequest.chat.postPersonConversation(connectedId, body).checkInternet()
 	}
@@ -228,5 +232,13 @@ class ConversationRepositoryImpl(
 
 	override fun putEditMessage(message: Message): Flowable<Response<Any>> {
 		return apiRequest.chat.putEditMessage(message).checkInternet()
+	}
+
+	override fun getSearchConversations(data: Map<String, Any>): Flowable<ResponseItems<Conversation>> {
+		return apiRequest.chat.getSearchConversations(data).checkInternet()
+	}
+
+	override fun putEditGroup(id: String, body: ConversationSignalR): Flowable<Response<Conversation>> {
+		return apiRequest.chat.putEditGroup(id, body)
 	}
 }

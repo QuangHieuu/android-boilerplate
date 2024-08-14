@@ -7,6 +7,7 @@ import boilerplate.ui.contact.ContactFragment
 import boilerplate.ui.conversation.ConversationFragment
 import boilerplate.ui.dashboard.DashboardFragment
 import boilerplate.ui.empty.EmptyFragment
+import boilerplate.ui.file.FileFragment
 import boilerplate.ui.menu.MenuFragment
 import boilerplate.ui.setting.SettingFragment
 

@@ -10,18 +10,18 @@ import boilerplate.data.remote.repository.conversation.ConversationRepository
 import boilerplate.data.remote.repository.file.FileRepository
 import boilerplate.model.conversation.Conversation
 import boilerplate.model.conversation.ConversationRole
+import boilerplate.model.conversation.ConversationSignalR
 import boilerplate.model.conversation.Member
-import boilerplate.model.conversation.SignalBody
 import boilerplate.model.file.AttachedFile
 import boilerplate.model.file.convertFile
 import boilerplate.model.message.Message
 import boilerplate.model.message.PinMessage
 import boilerplate.model.message.Reaction
 import boilerplate.model.user.User
+import boilerplate.model.user.UserSignalR
 import boilerplate.service.signalr.SignalRManager
 import boilerplate.utils.DateTimeUtil
 import boilerplate.utils.FileUtils
-import boilerplate.utils.extension.BaseSchedulerProvider
 import boilerplate.utils.extension.ifEmpty
 import boilerplate.utils.extension.loading
 import boilerplate.utils.extension.notNull
@@ -35,7 +35,6 @@ import java.util.Date
 import java.util.TreeMap
 
 class ConversationVM(
-	private val schedulerProvider: BaseSchedulerProvider,
 	private val conversationRepo: ConversationRepository,
 	private val fileRepo: FileRepository,
 	userRepo: UserRepository,
@@ -177,7 +176,7 @@ class ConversationVM(
 	) {
 		val sendMessage = createSendMessage(isSms, isEmail).apply {
 			content = message
-			surveyFiles = surveyFile
+			setSurveyFiles(surveyFile)
 			setAttachFiles(currentFile)
 		}
 
@@ -212,10 +211,10 @@ class ConversationVM(
 	) {
 		editMessage.apply {
 			content = message
-			surveyFiles = surveyFile
 			isSendSms = isSms
 			isSendMail = isEmail
 
+			setSurveyFiles(surveyFile)
 			setAttachFiles(currentFile)
 		}
 
@@ -338,19 +337,19 @@ class ConversationVM(
 		}
 	}
 
-	private fun postBody(): SignalBody {
-		return SignalBody().apply {
+	private fun postBody(): ConversationSignalR {
+		return ConversationSignalR().apply {
 			id = conversationId
-			creatorId = _conversation.value?.creatorId
-			groupName = _conversation.value?.name
+			creatorId = _conversation.value?.creatorId ?: ""
+			groupName = _conversation.value?.name ?: ""
 			isChangeInform = _conversation.value?.isChangeInform ?: false
 			isAllowApproved = _conversation.value?.isAllowApproved ?: false
 			isAllowPinMessage = _conversation.value?.isAllowPinMessage ?: false
 			isAllowSendMessage = _conversation.value?.isAllowSendMessage ?: false
-			avatar = _conversation.value?.avatar
-			val list = ArrayList<SignalBody.ConversationUser>()
+			avatar = _conversation.value?.avatar ?: ""
+			val list = ArrayList<UserSignalR>()
 			for (user in _conversation.value?.members.ifEmpty()) {
-				list.add(SignalBody.ConversationUser(user.user.id))
+				list.add(UserSignalR(user.user.id))
 			}
 			member = list
 		}

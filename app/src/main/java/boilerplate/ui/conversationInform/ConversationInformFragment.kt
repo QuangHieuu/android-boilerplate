@@ -43,8 +43,8 @@ import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.open
 import boilerplate.utils.extension.show
 import boilerplate.utils.extension.showDialog
-import boilerplate.utils.extension.showSnackBarFail
-import boilerplate.utils.extension.showSnackBarSuccess
+import boilerplate.utils.extension.showFail
+import boilerplate.utils.extension.showSuccess
 import boilerplate.widget.customText.TextViewFont
 import boilerplate.widget.gridImage.GridImageAdapter
 import boilerplate.widget.image.RoundedImageView
@@ -168,7 +168,7 @@ class ConversationInformFragment :
 			changeConfig.observe(this@ConversationInformFragment) {
 				if (it != null) {
 					viewModel.conversation.postValue(it)
-					binding.root.showSnackBarSuccess(R.string.success_update)
+					binding.root.showSuccess(R.string.success_update)
 				}
 			}
 		}
@@ -701,10 +701,10 @@ class ConversationInformFragment :
 							.error(R.drawable.ic_avatar)
 							.into(imgAvatar)
 					} catch (e: FileNotFoundException) {
-						binding.root.showSnackBarFail(R.string.error_unacceptable_file)
+						binding.root.showFail(R.string.error_unacceptable_file)
 					}
 				} else {
-					binding.root.showSnackBarFail(R.string.error_unacceptable_file)
+					binding.root.showFail(R.string.error_unacceptable_file)
 				}
 			}
 		}

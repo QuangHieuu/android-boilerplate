@@ -1,13 +1,18 @@
 package boilerplate.ui.contact.tab
 
 import android.os.Bundle
+import android.util.Log
 import boilerplate.base.BaseFragment
 import boilerplate.databinding.FragmentContactTabBinding
+import boilerplate.model.user.Company
 import boilerplate.model.user.Department
 import boilerplate.model.user.User
-import boilerplate.ui.contact.ContactVM
 import boilerplate.ui.contact.adapter.ContactTabAdapter
 import boilerplate.ui.contact.listener.SimpleListener
+import boilerplate.ui.contact.tab.ContactTab.TYPE_TAB_COMPANY
+import boilerplate.ui.contact.tab.ContactTab.TYPE_TAB_DEPARTMENT
+import boilerplate.ui.contact.tab.ContactTab.TYPE_TAB_GROUP
+import boilerplate.ui.contact.viewModel.ContactVM
 import boilerplate.ui.contactDetail.ContactDetailFragment
 import boilerplate.ui.main.MainVM
 import boilerplate.utils.extension.callPhone
@@ -37,14 +42,22 @@ class ContactTabFragment : BaseFragment<FragmentContactTabBinding, ContactVM>() 
 			_screen = it.getString(KEY_SCREEN) ?: ""
 
 			_adapter = ContactTabAdapter(object : SimpleListener() {
+				override fun onExpandCompany(company: Company) {
+					company.isExpanding = !company.isExpanding
+					viewModel.getCompany(company)
+				}
+
 				override fun onExpandDepartment(department: Department) {
-					if (department.users.isNullOrEmpty()) {
+					if (department.totalUser == 0) return
+					if (department.users.isEmpty()) {
+						viewModel.getDepartment(department)
 					} else {
 						_adapter.expandDepartment(department)
 					}
 				}
 
 				override fun onOpenInform(user: User) {
+					Log.d("SSS", "onOpenInform: ")
 					openDialog(ContactDetailFragment.newInstance(user.id))
 				}
 
@@ -66,14 +79,33 @@ class ContactTabFragment : BaseFragment<FragmentContactTabBinding, ContactVM>() 
 
 	override fun onSubscribeObserver() {
 		with(viewModel) {
-			if (_screen == ContactTab.TYPE_TAB_DEPARTMENT.type) {
-				contact.observe(this@ContactTabFragment) {
-					_adapter.insertData(it)
+			when (ContactTab.fromType(_screen)) {
+				TYPE_TAB_DEPARTMENT -> {
+					department.observe(this@ContactTabFragment) {
+						_adapter.insertData(it)
+					}
+					putEditGroup.observe(this@ContactTabFragment) {
+						_adapter.updateRegularGroup(it)
+					}
 				}
+
+				TYPE_TAB_COMPANY -> {
+					company.observe(this@ContactTabFragment) {
+						_adapter.insertData(ArrayList(it))
+					}
+				}
+
+				else -> {}
+			}
+			expandDepartment.observe(this@ContactTabFragment) {
+				_adapter.expandDepartment(it)
+			}
+			expandCompany.observe(this@ContactTabFragment) {
+				_adapter.expandCompany(it)
 			}
 		}
 		with(_activityVM) {
-			if (_screen == ContactTab.TYPE_TAB_DEPARTMENT.type) {
+			if (_screen == TYPE_TAB_DEPARTMENT.type) {
 				user.observe(this@ContactTabFragment) {
 					_adapter.updateContact(it)
 				}
@@ -92,12 +124,15 @@ class ContactTabFragment : BaseFragment<FragmentContactTabBinding, ContactVM>() 
 
 	override fun callApi() {
 		when (ContactTab.fromType(_screen)) {
-			ContactTab.TYPE_TAB_DEPARTMENT -> {
+			TYPE_TAB_DEPARTMENT -> {
 				viewModel.getCurrentCompany()
 			}
 
-			ContactTab.TYPE_TAB_COMPANY -> {}
-			ContactTab.TYPE_TAB_GROUP -> {}
+			TYPE_TAB_COMPANY -> {
+				viewModel.getAllCompanies()
+			}
+
+			TYPE_TAB_GROUP -> {}
 			else -> {
 
 			}

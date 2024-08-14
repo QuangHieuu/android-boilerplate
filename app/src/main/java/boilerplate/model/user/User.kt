@@ -2,6 +2,7 @@ package boilerplate.model.user
 
 import boilerplate.data.remote.api.ApiUrl
 import boilerplate.model.ExpandModel
+import boilerplate.model.conversation.Conversation
 import boilerplate.model.file.AttachedFile
 import com.google.gson.annotations.SerializedName
 import java.util.Locale
@@ -90,7 +91,6 @@ data class User(
 
 	val listReacted = ArrayList<String>()
 	var isRegularMember: Boolean = false
-	var level: Int = 0
 
 	fun isOnline() = isOnline == 1
 
@@ -180,3 +180,19 @@ data class Role(
 	@SerializedName("is_active")
 	val isActive: Boolean
 )
+
+data class SelectedContact(
+	val user: User?,
+	val conversation: Conversation?,
+	val isCheck: Boolean,
+	val isSearch: Boolean = false
+)
+
+data class UserSignalR(
+	@SerializedName("nguoi_nhan_id")
+	private val id: String,
+	@SerializedName("ten_nhan_vien")
+	private var name: String
+) {
+	constructor(id: String) : this(id, "")
+}

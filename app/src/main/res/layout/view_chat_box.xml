@@ -402,7 +402,7 @@
         android:id="@+id/tv_disable"
         style="@style/StyleRegular"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="center"
         android:padding="@dimen/dp_10"
         android:text="@string/warning_disable_chat_box"

@@ -16,12 +16,11 @@
 
     <boilerplate.widget.customText.TextViewFont
         android:id="@+id/tv_confirm"
-        style="@style/StyleRegular"
+        style="@style/ButtonCancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/dp_10"
-        android:background="@drawable/bg_button_white"
         android:paddingStart="@dimen/dp_25"
         android:paddingTop="@dimen/dp_10"
         android:paddingEnd="@dimen/dp_25"

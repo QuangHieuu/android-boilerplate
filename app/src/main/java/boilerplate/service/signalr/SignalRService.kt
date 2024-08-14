@@ -9,6 +9,7 @@ import boilerplate.data.local.repository.user.TokenRepository
 import boilerplate.data.remote.api.ApiUrl
 import boilerplate.model.conversation.AddMember
 import boilerplate.model.conversation.Conversation
+import boilerplate.model.conversation.ConversationSignalR
 import boilerplate.model.conversation.ImportantConversation
 import boilerplate.model.conversation.JoinGroup
 import boilerplate.model.conversation.LeaveGroup
@@ -16,12 +17,12 @@ import boilerplate.model.conversation.Member
 import boilerplate.model.conversation.PinConversation
 import boilerplate.model.conversation.SeenMessage
 import boilerplate.model.conversation.Setting
-import boilerplate.model.conversation.SignalBody
 import boilerplate.model.conversation.UpdateRole
 import boilerplate.model.message.Message
 import boilerplate.model.message.Option
 import boilerplate.model.message.PinMessage
 import boilerplate.model.message.SendBody
+import boilerplate.model.user.UserSignalR
 import boilerplate.utils.InternetManager
 import boilerplate.utils.StringUtil
 import boilerplate.utils.extension.notNull
@@ -238,7 +239,7 @@ class SignalRService : Service() {
 		}
 	}
 
-	fun createConversation(conversation: SignalBody) {
+	fun createConversation(conversation: ConversationSignalR) {
 		_chatProxy.notNull {
 			it.invoke(SERVER_METHOD_CREATE_CONVERSATION, conversation)
 				.onError {
@@ -301,7 +302,7 @@ class SignalRService : Service() {
 		}
 	}
 
-	fun addMember(conversationId: String?, list: ArrayList<SignalBody.ConversationUser>) {
+	fun addMember(conversationId: String?, list: ArrayList<UserSignalR>) {
 		_chatProxy.notNull {
 			it.invoke(SERVER_METHOD_ADD_MEMBER, conversationId, list)
 				.onError { sendResult(SignalRResult.ADD_MEMBER, SignalRResult.ERROR.key) }
@@ -312,7 +313,7 @@ class SignalRService : Service() {
 	fun approveMemberOrNot(
 		isApprove: Boolean,
 		conversationId: String?,
-		list: ArrayList<SignalBody.ConversationUser>
+		list: ArrayList<UserSignalR>
 	) {
 		_chatProxy.notNull {
 			it.invoke(SERVER_METHOD_APPROVE_MEMBER, conversationId, isApprove, list)

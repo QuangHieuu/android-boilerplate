@@ -13,7 +13,6 @@ import android.os.Build
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.StyleSpan
-import android.util.Log
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import boilerplate.BuildConfig
@@ -103,7 +102,6 @@ class FirebaseMessageService : FirebaseMessagingService() {
 	}
 
 	override fun onMessageReceived(notify: RemoteMessage) {
-		Log.d("sss", "onMessageReceived: " + notify)
 		val token = tokenRepo.getToken()
 		if (token.isEmpty()) return
 		val message = notify.data[KEY_ALERT]
@@ -148,6 +146,8 @@ class FirebaseMessageService : FirebaseMessagingService() {
 
 	override fun onNewToken(token: String) {
 		val user = userRepo.getUser()
+		val deviceId = userRepo.getDeviceId()
+		if (deviceId.isEmpty() || token == deviceId) return
 		disposable.add(
 			userRepo.logout()
 				.subscribeOn(Schedulers.io())

@@ -21,7 +21,7 @@ interface OnContactListener {
 
 	fun onPhone(phoneNumber: String)
 
-	fun onUserSelect(item: User)
+	fun onUserSelect(user: User)
 
 	fun onRegularContact(conversation: Conversation)
 
@@ -29,9 +29,9 @@ interface OnContactListener {
 
 	fun onRegularSelected(conversation: Conversation)
 
-	fun removeUser(item: User)
+	fun removeUser(user: User)
 
-	fun removeConversation(item: Conversation)
+	fun removeConversation(conversation: Conversation)
 
 	fun onGroup(conversationId: String)
 }
@@ -65,7 +65,7 @@ abstract class SimpleListener : OnContactListener {
 
 	}
 
-	override fun onUserSelect(item: User) {
+	override fun onUserSelect(user: User) {
 
 	}
 
@@ -81,11 +81,11 @@ abstract class SimpleListener : OnContactListener {
 
 	}
 
-	override fun removeUser(item: User) {
+	override fun removeUser(user: User) {
 
 	}
 
-	override fun removeConversation(item: Conversation) {
+	override fun removeConversation(conversation: Conversation) {
 
 	}
 

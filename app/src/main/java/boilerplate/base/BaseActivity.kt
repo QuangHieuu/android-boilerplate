@@ -26,7 +26,7 @@ import boilerplate.utils.extension.findFragmentByTag
 import boilerplate.utils.extension.hideKeyboard
 import boilerplate.utils.extension.isTablet
 import boilerplate.utils.extension.notNull
-import boilerplate.utils.extension.showSnackBarFail
+import boilerplate.utils.extension.showFail
 import boilerplate.widget.customText.EditTextFont
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -172,7 +172,7 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 	private fun baseObserver() {
 		with(_viewModel) {
 			error.observe(this@BaseActivity) {
-				binding.root.showSnackBarFail(it)
+				binding.root.showFail(it)
 			}
 		}
 	}

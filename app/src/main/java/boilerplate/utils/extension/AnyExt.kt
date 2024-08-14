@@ -1,8 +1,10 @@
 package boilerplate.utils.extension
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.ActivityManager
 import android.app.ActivityManager.RunningAppProcessInfo
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -12,8 +14,10 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowInsets
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.recyclerview.widget.RecyclerView
 import boilerplate.service.signalr.SignalRManager
 import boilerplate.service.signalr.SignalRResult
 import com.google.gson.Gson
@@ -109,8 +113,16 @@ fun Context.isAppInBackground(): Boolean {
 	return isInBackground
 }
 
-fun Context.isTablet(): Boolean = Configuration.SCREENLAYOUT_SIZE_LARGE <=
-	(resources.configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK)
+fun Application.isTablet(): Boolean = resources.isTablet()
+
+fun Fragment.isTablet(): Boolean = resources.isTablet()
+
+fun Activity.isTablet(): Boolean = resources.isTablet()
+
+fun RecyclerView.ViewHolder.isTablet(): Boolean = itemView.resources.isTablet()
+
+fun Resources.isTablet(): Boolean = Configuration.SCREENLAYOUT_SIZE_LARGE <=
+	(configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK)
 
 fun Float.toTextSize(): Float {
 	val displayMetrics = Resources.getSystem().displayMetrics

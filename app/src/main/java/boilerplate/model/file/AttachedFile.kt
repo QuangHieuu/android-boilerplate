@@ -86,6 +86,9 @@ data class AttachedFile(
 		return SystemUtil.getDisplayFileSize(context, uri!!)
 	}
 
+	val fileChat: String
+		get() = ApiUrl.HOST_FILE_PREVIEW + id
+
 	val filePreview: String
 		get() = ApiUrl.HOST_FILE_PREVIEW + id + "?w=" + IMAGE_MAX_SIZE
 

@@ -30,17 +30,19 @@ data class Message(
 	var personPin: User = User(),
 
 	@SerializedName("nguoi_nhan")
-	var receiverNotifies: ArrayList<ReceiverNotify> = arrayListOf(),
+	private var _receiverNotifies: ArrayList<ReceiverNotify>? = null,
 
 	@SerializedName("noi_dung")
 	var content: String = "",
 
 	@SerializedName("file_dinh_kem")
-	var attachedFiles: ArrayList<AttachedFile> = arrayListOf(),
+	private var _attachedFiles: ArrayList<AttachedFile>? = null,
+
 	@SerializedName("phieu_khao_sat")
-	var surveyFiles: ArrayList<AttachedFile> = arrayListOf(),
+	private var _surveyFiles: ArrayList<AttachedFile>? = null,
+
 	@SerializedName("ds_thong_ke_emoticon")
-	var reactions: ArrayList<Reaction> = arrayListOf(),
+	private var _reactions: ArrayList<Reaction>? = null,
 
 	@SerializedName("gui_kem_email")
 	var isSendMail: Boolean = false,
@@ -50,8 +52,10 @@ data class Message(
 
 	@SerializedName("danh_dau")
 	var isImportant: Boolean = false,
+
 	@SerializedName("is_evict")
 	var isWithdraw: Boolean = false,
+
 	@SerializedName("is_msg_system")
 	var isMsgSystem: Boolean = false,
 
@@ -62,12 +66,31 @@ data class Message(
 	var dateCreateGroup: String = "",
 ) {
 
+	val receiverNotifies: ArrayList<ReceiverNotify>
+		get() {
+			return _receiverNotifies ?: arrayListOf<ReceiverNotify>().also { _receiverNotifies = it }
+		}
+
+	val attachedFiles: ArrayList<AttachedFile>
+		get() {
+			return _attachedFiles ?: arrayListOf<AttachedFile>().also { _attachedFiles = it }
+		}
+
+	val surveyFiles: ArrayList<AttachedFile>
+		get() {
+			return _surveyFiles ?: arrayListOf<AttachedFile>().also { _surveyFiles = it }
+		}
+	val reactions: ArrayList<Reaction>
+		get() {
+			return _reactions ?: arrayListOf<Reaction>().also { _reactions = it }
+		}
+
 	/**
 	 * trạng thái = 2: offline
 	 */
-	var status = 0
+	var status: Int = 0
 	var isFocus: Boolean = false
-	var isHide = false
+	var isHide: Boolean = false
 	var isShow: Boolean = true
 	var isSelected: Boolean = false
 
@@ -76,7 +99,11 @@ data class Message(
 	}
 
 	fun setAttachFiles(list: ArrayList<AttachedFile>) {
-		attachedFiles = list
+		_attachedFiles = list
+	}
+
+	fun setSurveyFiles(surveyFile: ArrayList<AttachedFile>) {
+		_attachedFiles = surveyFile
 	}
 
 	val mainContent: Array<String>
@@ -143,11 +170,11 @@ data class SendBody(
 	@SerializedName("hoi_thoai_id")
 	var conversationId: String = "",
 	@SerializedName("file_dinh_kem")
-	var listFile: ArrayList<AttachedFile> = arrayListOf(),
+	var listFile: ArrayList<AttachedFile>? = null,
 	@SerializedName("tuy_chon")
 	var option: Option = Option(),
 	@SerializedName("phieu_khao_sat")
-	var listSurvey: ArrayList<AttachedFile> = arrayListOf(),
+	var listSurvey: ArrayList<AttachedFile>? = null,
 	@SerializedName("is_msg_system")
 	var isMsgSystem: Boolean = false
 )
@@ -160,7 +187,7 @@ data class ReceiverNotify(
 )
 
 data class DeleteBody(
-	var items: ArrayList<String> = arrayListOf()
+	var items: ArrayList<String>? = null
 )
 
 data class PinMessage(

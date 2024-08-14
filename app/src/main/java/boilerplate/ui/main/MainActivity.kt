@@ -7,8 +7,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.view.ViewCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -42,6 +42,7 @@ import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.replaceFragmentInActivity
 import boilerplate.utils.extension.show
 import boilerplate.utils.extension.startActivityAtRoot
+import boilerplate.utils.keyboard.InsetsWithKeyboardCallback
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.launch
@@ -63,6 +64,19 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
+
+		val insetsWithKeyboardCallback = InsetsWithKeyboardCallback(window) { isKeyboardHide ->
+			binding.tabLayoutHome.show(isKeyboardHide)
+		}
+		ViewCompat.setOnApplyWindowInsetsListener(
+			binding.appContainer,
+			insetsWithKeyboardCallback
+		)
+		ViewCompat.setWindowInsetsAnimationCallback(
+			binding.appContainer,
+			insetsWithKeyboardCallback
+		)
+
 		_windowInfoTracker = WindowInfoTracker.getOrCreate(this@MainActivity)
 		_serviceIntent = Intent(this@MainActivity, SignalRService::class.java)
 		_isBackFromBackground = false
@@ -101,14 +115,10 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
 
 	override fun onNewIntent(intent: Intent) {
 		super.onNewIntent(intent)
-		Log.d("SSS", "onNewIntent: " + intent)
-
 		handleDataFromApp(intent)
 	}
 
 	override fun initialize() {
-		Log.d("SSS", "initialize: " + intent)
-
 		handleDataFromApp(intent)
 		initHomepage()
 	}
@@ -163,7 +173,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
 
 			HomeTabIndex.setupFragment(isTablet()).let {
 				_homeAdapter.addFragment(it)
-				_viewModel.tabPosition.value = HomeTabIndex.tabPosition
+				_viewModel.tabPosition.postValue(HomeTabIndex.tabPosition)
 			}
 
 			TabLayoutMediator(

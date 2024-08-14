@@ -9,6 +9,7 @@ import boilerplate.utils.extension.checkInternet
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Single
 import okhttp3.MultipartBody
+import okhttp3.ResponseBody
 
 interface FileRepository {
 
@@ -28,6 +29,7 @@ interface FileRepository {
 		file: MultipartBody.Part
 	): Flowable<Responses<UploadFile>>
 
+	fun downloadFile(fileUrl: String): Flowable<ResponseBody>
 }
 
 class FileImpl(
@@ -47,6 +49,10 @@ class FileImpl(
 		file: MultipartBody.Part
 	): Flowable<Responses<UploadFile>> {
 		return apiRequest.file.postAvatarFile(userName, file).checkInternet()
+	}
+
+	override fun downloadFile(fileUrl: String): Flowable<ResponseBody> {
+		return apiRequest.file.downloadFile(fileUrl).checkInternet()
 	}
 
 	override fun getConversationFile(

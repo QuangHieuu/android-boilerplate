@@ -9,12 +9,11 @@ import boilerplate.data.remote.api.ApiObservable
 import boilerplate.data.remote.repository.auth.LoginRepository
 import boilerplate.data.remote.repository.conversation.ConversationRepository
 import boilerplate.model.conversation.Conversation
-import boilerplate.model.conversation.SignalBody
+import boilerplate.model.conversation.ConversationSignalR
 import boilerplate.model.message.Message
 import boilerplate.model.user.User
 import boilerplate.ui.main.tab.HomeTabIndex
 import boilerplate.utils.SystemUtil
-import boilerplate.utils.extension.BaseSchedulerProvider
 import boilerplate.utils.extension.ifEmpty
 import boilerplate.utils.extension.loading
 import boilerplate.utils.extension.result
@@ -22,7 +21,6 @@ import boilerplate.utils.extension.withScheduler
 import io.reactivex.rxjava3.core.Flowable
 
 class MainVM(
-	private val schedulerProvider: BaseSchedulerProvider,
 	private val userRepo: UserRepository,
 	private val tokenRepo: TokenRepository,
 	private val conversationRepo: ConversationRepository,
@@ -53,6 +51,9 @@ class MainVM(
 
 	private val _conversationDetail by lazy { MutableLiveData<Conversation>() }
 	val conversationDetail = _conversationDetail
+
+	private val _putEditGroup by lazy { MutableLiveData<Conversation>() }
+	val putEditGroup = _putEditGroup
 
 	fun logout() {
 		launchDisposable {
@@ -133,7 +134,7 @@ class MainVM(
 	}
 
 	fun postPersonConversation(user: User) {
-		val chatBody = SignalBody(
+		val chatBody = ConversationSignalR(
 			user.id,
 			user.name,
 			user.avatarId

@@ -30,10 +30,8 @@ lifecycle = "2.8.3"
 
 [libraries]
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "annotation" }
-firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-database = { module = "com.google.firebase:firebase-database" }
-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 
 kotlin-bom = { module = "org.jetbrains.kotlin:kotlin-bom", version.ref = "kotlinBom" }
@@ -71,7 +69,7 @@ glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "gl
 glide-integration = { group = "com.github.bumptech.glide", name = "okhttp3-integration", version.ref = "glide" }
 glide-compiler = { module = "com.github.bumptech.glide:ksp", version.ref = "glide" }
 
-autoimageslider = { module = "com.github.smarteist:autoimageslider", version.ref = "autoimageslider" }
+autoimageslider = { module = "com.github.koai-dev:Android-Image-Slider", version.ref = "autoimageslider" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

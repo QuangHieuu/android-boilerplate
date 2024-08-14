@@ -4,6 +4,7 @@ import android.content.res.Resources
 import android.graphics.Rect
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.MotionEvent
@@ -14,6 +15,7 @@ import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
@@ -54,6 +56,7 @@ import boilerplate.ui.conversationDetail.adpater.MessageAdapter
 import boilerplate.ui.conversationDetail.adpater.ReactionAdapter
 import boilerplate.ui.conversationDetail.adpater.SimpleMessageEvent
 import boilerplate.ui.conversationInform.ConversationInformFragment
+import boilerplate.ui.file.FileFragment
 import boilerplate.utils.InternetManager
 import boilerplate.utils.StringUtil
 import boilerplate.utils.SystemUtil
@@ -72,10 +75,11 @@ import boilerplate.utils.extension.openDialog
 import boilerplate.utils.extension.sendResult
 import boilerplate.utils.extension.show
 import boilerplate.utils.extension.showDialog
+import boilerplate.utils.extension.showFail
 import boilerplate.utils.extension.showKeyboard
-import boilerplate.utils.extension.showSnackBarFail
-import boilerplate.utils.extension.showSnackBarSuccess
-import boilerplate.utils.extension.showSnackBarWarning
+import boilerplate.utils.extension.showSuccess
+import boilerplate.utils.extension.showWarning
+import boilerplate.utils.keyboard.InsetsWithKeyboardAnimationCallback
 import boilerplate.widget.chatBox.SimpleBoxListener
 import boilerplate.widget.recyclerview.EndlessListener
 import com.google.gson.Gson
@@ -129,6 +133,12 @@ class ConversationDetailFragment :
 	private var _pointClickY = 0
 
 	override fun initialize() {
+		val insetsWithKeyboardAnimationCallback = InsetsWithKeyboardAnimationCallback(binding.chatBox)
+		ViewCompat.setWindowInsetsAnimationCallback(
+			binding.chatBox,
+			insetsWithKeyboardAnimationCallback
+		)
+
 		metrics = Resources.getSystem().displayMetrics
 
 		fadeIn = AnimationUtils.loadAnimation(context, R.anim.fade_in)
@@ -297,7 +307,7 @@ class ConversationDetailFragment :
 				_adapter.markImportant(it)
 			}
 			pinMessageState.observe(this@ConversationDetailFragment) {
-				binding.root.showSnackBarSuccess(message = it)
+				binding.root.showSuccess(message = it)
 			}
 			withdrawMessageState.observe(this@ConversationDetailFragment) {
 				if (it.code == 1) {
@@ -314,7 +324,7 @@ class ConversationDetailFragment :
 						}
 					}
 				} else {
-					binding.root.showSnackBarFail(it.message)
+					binding.root.showFail(it.message)
 				}
 			}
 
@@ -415,6 +425,10 @@ class ConversationDetailFragment :
 			override fun mentionUser(userId: String) {
 				openDialog(ContactDetailFragment.newInstance(userId))
 			}
+
+			override fun openFile(file: AttachedFile) {
+				open(FileFragment.newInstance(viewModel.gson.toJson(file)))
+			}
 		})
 	}
 
@@ -458,9 +472,6 @@ class ConversationDetailFragment :
 			}
 
 			override fun onPickImageClick() {
-			}
-
-			override fun onEditFocus(focus: Boolean) {
 			}
 
 			override fun onOpenRecord() {
@@ -652,7 +663,7 @@ class ConversationDetailFragment :
 								binding.chatBox.finishSendingMessage()
 							} else {
 								binding.chatBox.finishSendWhenError()
-								binding.root.showSnackBarFail(R.string.error_general)
+								binding.root.showFail(R.string.error_general)
 							}
 						}
 					}
@@ -660,7 +671,7 @@ class ConversationDetailFragment :
 
 				override fun sendMessageError(string: String) {
 					with(binding) {
-						root.showSnackBarFail(string.ifEmpty { getString(R.string.error_general) })
+						root.showFail(string.ifEmpty { getString(R.string.error_general) })
 						chatBox.finishSendWhenError()
 					}
 				}
@@ -706,7 +717,7 @@ class ConversationDetailFragment :
 
 				override fun deleteGroup(conversationId: String) {
 					checkCurrentConversation(conversationId) {
-						binding.root.showSnackBarSuccess(R.string.success_delete_group)
+						binding.root.showSuccess(R.string.success_delete_group)
 					}
 				}
 
@@ -754,7 +765,7 @@ class ConversationDetailFragment :
 					checkCurrentConversation(leaveGroup.conversationId) {
 						if (viewModel.user.id == leaveGroup.conversationId) {
 							_isLeaveGroup = true
-							binding.root.showSnackBarWarning(R.string.warning_remove_out_of_group)
+							binding.root.showWarning(R.string.warning_remove_out_of_group)
 							popFragment()
 						} else {
 							viewModel.conversation.postValue(leaveGroup.conversation)
@@ -880,7 +891,7 @@ class ConversationDetailFragment :
 			PopupMessagePinBinding.inflate(layoutInflater, binding.root as ViewGroup, false)
 		val popupWindow = PopupWindow(
 			bind.root,
-			if (context?.isTablet() == true) metrics.widthPixels / 2 else ViewGroup.LayoutParams.MATCH_PARENT,
+			if (isTablet()) metrics.widthPixels / 2 else ViewGroup.LayoutParams.MATCH_PARENT,
 			ViewGroup.LayoutParams.WRAP_CONTENT
 		)
 
@@ -950,7 +961,7 @@ class ConversationDetailFragment :
 
 		val popupWindow = PopupWindow(
 			view.root,
-			if (context?.isTablet() == true) metrics.widthPixels / 2 else ViewGroup.LayoutParams.MATCH_PARENT,
+			if (isTablet()) metrics.widthPixels / 2 else ViewGroup.LayoutParams.MATCH_PARENT,
 			view.root.layoutParams.height
 		).apply {
 			inputMethodMode = PopupWindow.INPUT_METHOD_NEEDED

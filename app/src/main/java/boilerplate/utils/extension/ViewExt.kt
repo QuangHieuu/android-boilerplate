@@ -4,9 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Rect
-import android.graphics.drawable.Drawable
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,7 +23,6 @@ import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import boilerplate.R
 import boilerplate.constant.AccountManager
 import boilerplate.constant.Constants.KEY_AUTH
@@ -35,14 +34,12 @@ import boilerplate.model.file.AttachedFile
 import boilerplate.model.file.ExtensionType
 import boilerplate.model.message.Message
 import boilerplate.utils.ClickUtil
+import boilerplate.utils.ImageUtil
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.Headers
 import com.bumptech.glide.load.model.LazyHeaders
-import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.snackbar.BaseTransientBottomBar.ANIMATION_MODE_SLIDE
 import com.google.android.material.snackbar.Snackbar
 import java.net.MalformedURLException
@@ -99,42 +96,42 @@ fun View.showSnackBar(
 	layout.addView(binding.root)
 }.show()
 
-fun View.showSnackBarSuccess(
+fun View.showSuccess(
 	message: String? = ""
 ) = showSnackBar(
 	message,
 	R.color.color_toast_success
 )
 
-fun View.showSnackBarSuccess(
+fun View.showSuccess(
 	@StringRes message: Int = R.string.no_text
 ) = showSnackBar(
 	message,
 	R.color.color_toast_success
 )
 
-fun View.showSnackBarFail(
+fun View.showFail(
 	message: String? = ""
 ) = showSnackBar(
 	message,
 	R.color.color_toast_fail
 )
 
-fun View.showSnackBarFail(
+fun View.showFail(
 	@StringRes message: Int = R.string.no_text
 ) = showSnackBar(
 	message,
 	R.color.color_toast_fail
 )
 
-fun View.showSnackBarWarning(
+fun View.showWarning(
 	message: String? = ""
 ) = showSnackBar(
 	message,
 	R.color.color_toast_warning
 )
 
-fun View.showSnackBarWarning(
+fun View.showWarning(
 	@StringRes message: Int = R.string.no_text
 ) = showSnackBar(
 	message,
@@ -180,7 +177,13 @@ fun EditText.showKeyboard() {
 }
 
 fun ImageView.loadAvatar(url: String? = "") {
-	loadImage(url, requestOptions = RequestOptions().error(R.drawable.ic_avatar).circleCrop())
+	loadImage(
+		url, requestOptions = RequestOptions()
+			.override(ImageUtil.AVATAR_MAX_SIZE)
+			.placeholder(R.drawable.ic_avatar)
+			.error(R.drawable.ic_avatar)
+			.circleCrop()
+	)
 }
 
 fun ImageView.loadImage(
@@ -191,11 +194,6 @@ fun ImageView.loadImage(
 ) {
 	if (url.isNullOrEmpty()) {
 		return
-	}
-	val loading = CircularProgressDrawable(context).apply {
-		setCenterRadius(25f)
-		setStrokeWidth(5f)
-		setColorSchemeColors(ContextCompat.getColor(context, R.color.colorPrimary))
 	}
 	val isGif = ExtensionType.isFileGIF(type)
 
@@ -212,60 +210,23 @@ fun ImageView.loadImage(
 			.asGif()
 			.load(glideUrl)
 			.apply(requestOptions)
-			.into(object : CustomTarget<GifDrawable>() {
-				override fun onLoadFailed(errorDrawable: Drawable?) {
-					loading.stop()
-					setImageDrawable(errorDrawable)
-				}
-
-				override fun onLoadStarted(placeholder: Drawable?) {
-					loading.start()
-					setImageDrawable(loading)
-				}
-
-				override fun onResourceReady(
-					resource: GifDrawable,
-					transition: Transition<in GifDrawable>?
-				) {
-					loading.stop()
-					resource.start()
-					setImageDrawable(resource)
-				}
-
-				override fun onLoadCleared(placeholder: Drawable?) {
-					setImageResource(R.drawable.bg_corner_white)
-				}
-			})
+			.into(this)
 	} else {
 		Glide
 			.with(context)
+			.asDrawable()
 			.load(glideUrl)
 			.apply(requestOptions)
-			.into(object : CustomTarget<Drawable>() {
-				override fun onLoadFailed(errorDrawable: Drawable?) {
-					setImageDrawable(errorDrawable)
-					loading.stop()
-				}
-
-				override fun onLoadStarted(placeholder: Drawable?) {
-					setImageDrawable(placeholder)
-					loading.start()
-				}
-
-				override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
-					loading.stop()
-					setImageDrawable(resource)
-				}
-
-				override fun onLoadCleared(placeholder: Drawable?) {
-					setImageResource(R.drawable.bg_corner_white)
-				}
-			})
+			.into(this)
 	}
 }
 
 fun View.click(block: ((v: View) -> Unit)?) {
 	block.notNull { setOnClickListener(ClickUtil.onClick { v -> it(v) }) }
+}
+
+fun View.performClick(view: View) {
+	setOnClickListener { view.performClick() }
 }
 
 fun PopupWindow.dimBehind() {
@@ -440,15 +401,15 @@ fun EditText.addListener(
 	})
 }
 
-fun DialogFragment.setWidthPercent(
-	widthPercent: Int = 60,
-	heightPercent: Int = 60
-) {
-	val w = widthPercent.toFloat() / 100
-	val h = heightPercent.toFloat() / 100
-	val dm = Resources.getSystem().displayMetrics
-	val rect = dm.run { Rect(0, 0, widthPixels, heightPixels) }
-	val width = rect.width() * w
-	val height = rect.height() * h
-	dialog?.window?.setLayout(width.toInt(), height.toInt())
+fun DialogFragment.setWidthPercent(widthPercent: Int? = 60, heightPercent: Int? = 60) {
+	try {
+		val w = widthPercent!!.toFloat() / 100
+		val h = heightPercent!!.toFloat() / 100
+		val dm = Resources.getSystem().displayMetrics
+		val rect = dm.run { Rect(0, 0, widthPixels, heightPixels) }
+		val width = rect.width() * w
+		val height = rect.height() * h
+		dialog?.let { it.window?.setLayout(width.toInt(), height.toInt()) }
+	} catch (e: Exception) {
+	}
 }

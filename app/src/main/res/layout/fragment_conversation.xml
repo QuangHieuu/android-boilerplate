@@ -101,5 +101,5 @@
         app:backgroundTint="@color/colorPrimary"
         app:fabCustomSize="@dimen/dp_50"
         app:pressedTranslationZ="@dimen/dp_12"
-        app:rippleColor="@color/colorWhite" />
+        app:rippleColor="@color/transparent" />
 </RelativeLayout>

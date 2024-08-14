@@ -194,7 +194,7 @@ class ConversationVH(
 				tvContent.setTextColor(_readColor)
 				tvUnread.gone()
 				rlConversationItem.setBackgroundColor(
-					if (con.isSelected && _context.isTablet()) _selectedBackground
+					if (con.isSelected && isTablet()) _selectedBackground
 					else _readBackground
 				)
 			} else {

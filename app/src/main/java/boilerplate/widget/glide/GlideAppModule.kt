@@ -34,8 +34,7 @@ class GlideAppModule : AppGlideModule() {
 			setDefaultRequestOptions(
 				RequestOptions()
 					.override(ImageUtil.IMAGE_MAX_SIZE)
-					.diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-					.encodeFormat(Bitmap.CompressFormat.PNG)
+					.diskCacheStrategy(DiskCacheStrategy.ALL)
 					.optionalFitCenter()
 					.dontAnimate()
 			)

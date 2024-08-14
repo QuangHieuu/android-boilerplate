@@ -15,7 +15,6 @@ import boilerplate.utils.extension.withScheduler
 import io.reactivex.rxjava3.core.Flowable
 
 class DashboardVM(
-	private val schedulerProvider: BaseSchedulerProvider,
 	private val dashboardRepo: DashboardRepository
 ) : BaseViewModel() {
 	private val _banners by lazy { MutableLiveData<ArrayList<Banner>>() }

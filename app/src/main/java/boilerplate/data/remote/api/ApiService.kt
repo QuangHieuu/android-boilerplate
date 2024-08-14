@@ -6,7 +6,7 @@ import boilerplate.data.remote.api.response.ResponseItems
 import boilerplate.data.remote.api.response.Responses
 import boilerplate.model.conversation.Conversation
 import boilerplate.model.conversation.ConversationConfig
-import boilerplate.model.conversation.SignalBody
+import boilerplate.model.conversation.ConversationSignalR
 import boilerplate.model.dashboard.Banner
 import boilerplate.model.dashboard.Dashboard
 import boilerplate.model.dashboard.Statical
@@ -24,6 +24,7 @@ import boilerplate.model.user.User
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Single
 import okhttp3.MultipartBody
+import okhttp3.ResponseBody
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.Field
@@ -37,6 +38,8 @@ import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
+import retrofit2.http.QueryMap
+import retrofit2.http.Url
 
 interface LoginService {
 	@Headers(
@@ -76,6 +79,25 @@ interface UserService {
 
 	@PATCH("nhanvien")
 	fun patchUser(@Body user: UpdateBody): Flowable<Response<Any>>
+
+	@GET("phongban/{departmentId}")
+	fun getDepartments(@Path("departmentId") id: String): Flowable<Response<Department>>
+
+	@GET("nhanvien/timkiem")
+	fun getSearchUser(
+		@Query("excludeDonViId") companyId: String?,
+		@Query("textSearch") text: String,
+		@Query("page") page: Int,
+		@Query("limit") limit: Int,
+	): Flowable<ResponseItems<User>>
+
+	@GET("donvi/{companyId}/nhanvien/timkiem")
+	fun getSearchContact(
+		@Path("companyId") id: String,
+		@Query("textSearch") text: String,
+		@Query("page") page: Int,
+		@Query("limit") limit: Int
+	): Flowable<ResponseItems<User>>
 }
 
 interface DashboardService {
@@ -104,6 +126,9 @@ interface DashboardService {
 }
 
 interface ConversationService {
+
+	@GET("hoithoai/timkiem")
+	fun getSearchConversations(@QueryMap data: Map<String, Any>): Flowable<ResponseItems<Conversation>>
 
 	@GET("hoithoai?ghim=false")
 	fun getConversations(
@@ -153,7 +178,7 @@ interface ConversationService {
 	@PUT("hoithoai")
 	fun putUpdateGroup(
 		@Query("connectionId") id: String?,
-		@Body body: SignalBody
+		@Body body: ConversationSignalR
 	): Flowable<ResponseItems<Any>>
 
 	/**
@@ -205,7 +230,7 @@ interface ConversationService {
 	@POST("hoithoaicanhan")
 	fun postPersonConversation(
 		@Query("connectionId") id: String,
-		@Body body: SignalBody
+		@Body body: ConversationSignalR
 	): Flowable<Response<Conversation>>
 
 	@POST("tinnhan/ghim")
@@ -253,6 +278,12 @@ interface ConversationService {
 
 	@PUT("tinnhan")
 	fun putEditMessage(@Body message: Message): Flowable<Response<Any>>
+
+	@PUT("nhomlienlac/{groupId}")
+	fun putEditGroup(
+		@Path("groupId") id: String?,
+		@Body body: ConversationSignalR
+	): Flowable<Response<Conversation>>
 }
 
 interface FileService {
@@ -271,6 +302,9 @@ interface FileService {
 		@Query("userName") userName: String?,
 		@Part file: MultipartBody.Part
 	): Flowable<Responses<UploadFile>>
+
+	@GET
+	fun downloadFile(@Url fileUrl: String): Flowable<ResponseBody>
 }
 
 interface ApiService :

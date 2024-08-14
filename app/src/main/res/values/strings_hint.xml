@@ -3,4 +3,5 @@
     <string name="hint_password">Nhập mật khẩu</string>
 
     <string name="hint_input_message">Nhập tin nhắn…</string>
+    <string name="hint_input_group_name">Nhập tên nhóm</string>
 </resources>

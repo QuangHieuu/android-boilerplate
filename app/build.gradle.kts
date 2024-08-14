@@ -7,14 +7,14 @@ plugins {
 
 android {
     namespace = "boilerplate"
-    compileSdk = 34
+    compileSdk = 35
     applicationVariants.all {
         resValue("string", "versionName", versionName)
     }
     defaultConfig {
-        applicationId = "gg.darsitec.eoffice"
+        applicationId = "com.greenglobal.eoffice"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
         multiDexEnabled = true
@@ -54,7 +54,6 @@ dependencies {
 
     implementation(files("libs/jsoup-1.16.1.jar"))
 
-    implementation(project(":excel-to-pdf"))
     implementation(project(":signalr-client-sdk"))
 
     implementation(libs.androidx.annotation)

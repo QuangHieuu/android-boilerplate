@@ -11,7 +11,6 @@ import boilerplate.data.remote.repository.auth.LoginRepository
 import boilerplate.data.remote.repository.conversation.ConversationRepository
 import boilerplate.model.device.Device
 import boilerplate.model.user.User
-import boilerplate.utils.extension.BaseSchedulerProvider
 import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.result
 import boilerplate.utils.extension.withScheduler
@@ -20,7 +19,6 @@ import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Single
 
 class StartVM(
-	private val schedulerProvider: BaseSchedulerProvider,
 	private val tokenImpl: TokenRepository,
 	private val userImpl: UserRepository,
 	private val serverImpl: ServerRepository,

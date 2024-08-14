@@ -9,14 +9,12 @@ import boilerplate.data.remote.repository.file.FileRepository
 import boilerplate.model.user.UpdateBody
 import boilerplate.model.user.User
 import boilerplate.utils.FileUtils
-import boilerplate.utils.extension.BaseSchedulerProvider
 import boilerplate.utils.extension.loading
 import boilerplate.utils.extension.result
 import boilerplate.utils.extension.withScheduler
 import io.reactivex.rxjava3.core.Flowable
 
 class ContactEditVM(
-	private val schedulerProvider: BaseSchedulerProvider,
 	private val userRepo: UserRepository,
 	private val loginRepo: LoginRepository,
 	private val fileRepo: FileRepository,

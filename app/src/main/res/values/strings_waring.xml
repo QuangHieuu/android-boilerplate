@@ -32,4 +32,8 @@
     <string name="warning_edit_message_description">
         Anh/chị chỉ có thể chỉnh sửa tin nhắn trong %d phút.
     </string>
+    <string name="warning_limit_members">
+        Anh/chị không được gửi quá số người theo chính sách (&lt;= %d)
+    </string>
+    <string name="warning_input_name_group">Vui lòng nhập tên nhóm</string>
 </resources>

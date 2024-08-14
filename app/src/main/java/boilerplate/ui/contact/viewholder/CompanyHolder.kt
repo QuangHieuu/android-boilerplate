@@ -12,12 +12,15 @@ import boilerplate.model.user.Company
 import boilerplate.model.user.Department
 import boilerplate.ui.contact.listener.SimpleListener
 import boilerplate.utils.extension.click
+import boilerplate.utils.extension.performClick
+import boilerplate.utils.extension.show
 import java.util.Locale
 
 class CompanyHolder(
 	private val _binding: ItemContactCompanyBinding,
 	private val _listener: SimpleListener,
 	private val _isCheck: Boolean = false,
+	private val _onlyConversation: Boolean = false,
 	private val _context: Context = _binding.root.context
 ) : RecyclerView.ViewHolder(_binding.root) {
 
@@ -26,7 +29,7 @@ class CompanyHolder(
 	fun setData(any: Any) {
 		if (any is Company) {
 			with(_binding) {
-				val paddingLevel = getPaddingLevel(any.contactLevel)
+				val paddingLevel = getPaddingLevel(any.childLevel)
 				lnContactCompany.setPadding(
 					_padding * paddingLevel,
 					lnContactCompany.paddingTop,
@@ -45,6 +48,15 @@ class CompanyHolder(
 						ContextCompat.getColor(_context, R.color.color_212121)
 					)
 				}
+
+				checkbox.apply {
+					show(_isCheck)
+					isChecked = any.isChecked
+					isEnabled = !_onlyConversation
+					click { _listener.onCompanySelected(any) }
+				}
+
+				tvName.click { _listener.onExpandCompany(any) }
 			}
 		}
 		if (any is Department) {
@@ -52,7 +64,7 @@ class CompanyHolder(
 			val countAvail = SpannableStringBuilder()
 
 			with(_binding) {
-				val paddingLevel = getPaddingLevel(any.contactLevel)
+				val paddingLevel = getPaddingLevel(any.childLevel)
 				lnContactCompany.setPadding(
 					_padding * paddingLevel,
 					lnContactCompany.paddingTop,
@@ -61,12 +73,7 @@ class CompanyHolder(
 				)
 				imgDropDown.setImageResource(if (any.isExpanding) R.drawable.ic_minus_circle else R.drawable.ic_add_circle)
 
-				var count = 0
-				for (user in any.users ?: arrayListOf()) {
-					if (user.isOnline()) {
-						count += 1
-					}
-				}
+				val count = any.users.filter { user -> user.isOnline() }.size
 				countAvail.append(
 					String.format(
 						Locale.getDefault(),
@@ -106,11 +113,23 @@ class CompanyHolder(
 						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
 					)
 				}
+
+				checkbox.apply {
+					show(_isCheck)
+					isEnabled = if (_onlyConversation) {
+						false
+					} else {
+						any.isEnable
+					}
+					isChecked = any.isChecked
+					click { _listener.onDepartmentSelected(any) }
+				}
+
 				tvName.text = name.append("\u0020").append(countAvail)
 				tvName.click { _listener.onExpandDepartment(any) }
 			}
-			_binding.imgDropDown.click { _binding.tvName.performClick() }
 		}
+		_binding.imgDropDown.performClick(_binding.tvName)
 	}
 }
 

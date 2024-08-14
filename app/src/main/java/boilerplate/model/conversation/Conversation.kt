@@ -5,8 +5,10 @@ import boilerplate.data.remote.api.ApiUrl
 import boilerplate.model.ExpandModel
 import boilerplate.model.message.Message
 import boilerplate.model.user.User
+import boilerplate.utils.DateTimeUtil
 import boilerplate.utils.ImageUtil
 import com.google.gson.annotations.SerializedName
+import java.util.Calendar
 import java.util.Locale
 
 class Conversation(
@@ -155,3 +157,82 @@ data class AddMember(
 	val conversationId: String,
 	val addMember: ArrayList<Member>
 )
+
+data class Search(
+	private val data: HashMap<String, Any> = HashMap()
+) {
+	constructor(withDay: Boolean) : this() {
+		setPage(1)
+		setLimit(10)
+		if (withDay) {
+			setFrom(DateTimeUtil.getCurrentDateWith(Calendar.MONTH, -3, DateTimeUtil.FORMAT_REVERT))
+			setTo(DateTimeUtil.getCurrentDate(DateTimeUtil.FORMAT_REVERT))
+		}
+	}
+
+	fun getData(): Map<String, Any> {
+		return data.toMap()
+	}
+
+	fun setPage(page: Int) {
+		data["page"] = page
+	}
+
+	fun setLimit(limit: Int) {
+		data["limit"] = limit
+	}
+
+	fun setTextSearch(textSearch: String) {
+		data["searchText"] = textSearch
+	}
+
+	fun setFrom(from: String) {
+		data["tuNgay"] = from
+	}
+
+	fun setTo(to: String) {
+		data["denNgay"] = to
+	}
+
+	fun setOneToOne(oneToOne: Boolean) {
+		data["hoiThoaiMotMot"] = oneToOne
+	}
+
+	fun setMore(more: Boolean) {
+		data["hoiThoaiNhieuNguoi"] = more
+	}
+
+	fun setName(setName: Boolean) {
+		data["isDatTen"] = setName
+	}
+
+	fun setImportant(important: Boolean) {
+		data["isQuanTrong"] = important
+	}
+
+	fun setUserId(userId: String) {
+		data["nhanVienId"] = userId
+	}
+
+	fun getPage(): Int {
+		val a: Any? = data["page"]
+		return a as Int
+	}
+
+	fun getTo(): String {
+		val a: Any? = data["denNgay"]
+		if (a != null) {
+			return a as String
+		}
+		return DateTimeUtil.getCurrentDate()
+	}
+
+	fun getFrom(): String {
+		val a: Any? = data["tuNgay"]
+		if (a != null) {
+			return a as String
+		}
+		return DateTimeUtil.getCurrentDateWith(Calendar.MONTH, -1)
+	}
+}
+

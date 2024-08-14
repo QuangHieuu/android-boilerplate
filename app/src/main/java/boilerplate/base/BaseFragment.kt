@@ -1,30 +1,25 @@
 package boilerplate.base
 
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.core.view.WindowCompat
 import androidx.core.view.contains
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
 import boilerplate.R
 import boilerplate.utils.extension.Permission
 import boilerplate.utils.extension.addTo
 import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.removeSelf
-import boilerplate.utils.extension.showSnackBarFail
+import boilerplate.utils.extension.showFail
 import boilerplate.widget.loading.LoadingScreen
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
-import kotlinx.coroutines.launch
 import java.lang.reflect.ParameterizedType
 
 abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
@@ -70,6 +65,8 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
 			.invoke(null, layoutInflater, container, false)
 			.let { it as AC }
 			.apply { _binding = this }.root.apply {
+				isClickable = true
+				isFocusable = true
 				setBackgroundColor(ContextCompat.getColor(context, R.color.colorAppBackground))
 			}
 	}
@@ -90,7 +87,7 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
 				}
 			}
 			error.observe(viewLifecycleOwner) {
-				binding.root.showSnackBarFail(it)
+				binding.root.showFail(it)
 			}
 		}
 
@@ -109,7 +106,6 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
 			clear()
 			dispose()
 		}
-		clearAdjustSoftInput()
 		super.onDestroyView()
 	}
 
@@ -127,37 +123,6 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
 
 	protected fun launchDisposable(vararg job: Disposable) {
 		_disposable.addAll(*job)
-	}
-
-	protected fun adjustSoftInput() {
-		lifecycleScope.launch {
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-				requireActivity().window?.let {
-					WindowCompat.setDecorFitsSystemWindows(it, false)
-				}
-			} else {
-				@Suppress("DEPRECATION")
-				requireActivity().window
-					.setSoftInputMode(
-						WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE
-							or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
-					)
-			}
-		}
-	}
-
-	private fun clearAdjustSoftInput() {
-		lifecycleScope.launch {
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-				requireActivity().window?.let {
-					WindowCompat.setDecorFitsSystemWindows(it, true)
-				}
-			} else {
-				requireActivity().window.setSoftInputMode(
-					WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING
-				)
-			}
-		}
 	}
 
 	fun permission(permissions: Array<String>, grand: () -> Unit) {

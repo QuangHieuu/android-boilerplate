@@ -3,54 +3,47 @@ package boilerplate.model.user
 import boilerplate.model.ExpandModel
 import com.google.gson.annotations.SerializedName
 
-class Department : ExpandModel() {
+data class Department(
 	@SerializedName("phong_ban_id")
-	var id: String? = null
-		get() = if (field == null) "".also { field = it } else field
-
+	var id: String = "",
 	@SerializedName("ten_phong_ban")
-	var name: String? = null
-		get() = if (field == null) "".also { field = it } else field
-		private set
-
+	var name: String = "",
 	@SerializedName("ma_phong_ban")
-	var shortName: String? = null
-		get() = if (field == null) "".also { field = it } else field
-
+	var shortName: String = "",
 	@SerializedName("phong_ban_cha")
-	var parentDepartment: String? = null
-		get() = if (field == null) "".also { field = it } else field
-		private set
+	var parentDepartment: String = "",
+	@SerializedName("total_nhan_vien")
+	var totalUser: Int = 0,
+	@SerializedName("trang_thai")
+	var status: Int = 0,
+	@SerializedName("ma_ky_so")
+	var signCode: String = "",
+	@SerializedName("is_active")
+	var isActive: Boolean = false,
+	@SerializedName("phong_ban_lanh_dao")
+	var isLeaderDepartment: Boolean = false,
+	@SerializedName("thoi_gian_duyet")
+	var approveTime: String = ""
+) : ExpandModel() {
+	@SerializedName("nguoi_ky")
+	private var _signer: User? = null
+	val signer: User
+		get() = _signer ?: User().also { _signer = it }
 
 	@SerializedName("ds_phong_ban_con")
-	var childDepartments: ArrayList<Department>? = null
-		get() = if (field == null) ArrayList<Department>().also { field = it } else field
-		private set
+	private var _childDepartments: ArrayList<Department>? = null
+	val childDepartments: ArrayList<Department>
+		get() = _childDepartments ?: arrayListOf<Department>().also { _childDepartments = it }
 
 	@SerializedName("ds_nhan_vien")
-	var users: ArrayList<User>? = null
-		get() = if (field == null) ArrayList<User>().also { field = it } else field
+	private var _users: ArrayList<User>? = null
+	val users: ArrayList<User>
+		get() = _users ?: arrayListOf<User>().also { _users = it }
 
-	@SerializedName("total_nhan_vien")
-	var totalUser: Int = 0
+	fun setUser(list: ArrayList<User>) {
+		_users = list
+	}
 
-	@SerializedName("trang_thai")
-	var status = 0
-
-	@SerializedName("nguoi_ky")
-	var signer: User? = null
-
-	@SerializedName("ma_ky_so")
-	var signCode: String? = null
-
-	@SerializedName("is_active")
-	var isActive = false
-
-	@SerializedName("phong_ban_lanh_dao")
-	var isLeaderDepartment = false
-	var loai = 0
-	var stt = 0
-
-	@SerializedName("thoi_gian_duyet")
-	var approveTime: String? = null
+	var loai: Int = 0
+	var stt: Int = 0
 }
