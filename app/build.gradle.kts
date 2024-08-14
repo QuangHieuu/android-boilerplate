@@ -12,7 +12,7 @@ android {
         resValue("string", "versionName", versionName)
     }
     defaultConfig {
-        applicationId = "com.greenglobal.eoffice"
+        applicationId = "gg.darsitec.eoffice"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

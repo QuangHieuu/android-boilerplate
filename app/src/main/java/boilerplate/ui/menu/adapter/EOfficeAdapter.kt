@@ -14,7 +14,7 @@ import boilerplate.utils.extension.show
 import boilerplate.widget.holder.TitleVH
 
 class EOfficeAdapter(
-	val _listener: OnMenuListener
+	private val _listener: OnMenuListener
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 	interface OnMenuListener {
 		fun onChosen(menu: EOfficeMenu)

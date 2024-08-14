@@ -25,7 +25,6 @@ class StartActivity : BaseActivity<ActivityStartBinding, StartVM>() {
 
 	private lateinit var splashScreen: SplashScreen
 
-
 	override fun onCreate(savedInstanceState: Bundle?) {
 		splashScreen = installSplashScreen().apply {
 			setKeepOnScreenCondition { true }
@@ -78,7 +77,7 @@ class StartActivity : BaseActivity<ActivityStartBinding, StartVM>() {
 					delay(1000)
 					it.notNull {
 						if (state.value != StartVM.STATE_LOGIN) {
-							goTo(MainActivity::class).also { finish() }
+							goTo(MainActivity::class).also { finishAfterTransition() }
 						}
 					}
 				}

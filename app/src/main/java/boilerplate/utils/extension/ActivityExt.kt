@@ -25,7 +25,8 @@ enum class AnimateType {
 const val ANIMATION_DELAY: Long = 200
 
 fun <T : Activity> AppCompatActivity.goTo(
-	cls: KClass<T>, bundle: Bundle? = null,
+	cls: KClass<T>,
+	bundle: Bundle? = null,
 	parcel: Parcelable? = null
 ) {
 	intent = Intent(this, cls.java)

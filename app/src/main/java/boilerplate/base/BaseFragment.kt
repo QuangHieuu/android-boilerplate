@@ -105,12 +105,12 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
 		_blockGrand = null
 		_request.unregister()
 		_listRequest.clear()
-		super.onDestroyView()
-		clearAdjustSoftInput()
 		_disposable.apply {
 			clear()
 			dispose()
 		}
+		clearAdjustSoftInput()
+		super.onDestroyView()
 	}
 
 	protected abstract fun initialize()

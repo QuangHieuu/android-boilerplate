@@ -4,7 +4,10 @@ import android.app.job.JobInfo
 import android.app.job.JobScheduler
 import android.content.ComponentName
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -15,7 +18,13 @@ import androidx.window.layout.WindowInfoTracker
 import boilerplate.R
 import boilerplate.base.BaseActivity
 import boilerplate.databinding.ActivityMainBinding
+import boilerplate.model.file.MimeType
 import boilerplate.service.network.NetworkSchedulerService
+import boilerplate.service.notify.FirebaseMessageService
+import boilerplate.service.notify.FirebaseMessageService.Companion.CONVERSATION_ID
+import boilerplate.service.notify.FirebaseMessageService.Companion.MEETING_ID
+import boilerplate.service.notify.FirebaseMessageService.Companion.ROLE
+import boilerplate.service.notify.FirebaseMessageService.Companion.WORK_MANAGE_ID
 import boilerplate.service.signalr.SignalRManager
 import boilerplate.service.signalr.SignalRService
 import boilerplate.ui.dashboard.DashboardFragment
@@ -25,9 +34,11 @@ import boilerplate.ui.main.tab.HomeTabIndex
 import boilerplate.ui.splash.StartActivity
 import boilerplate.utils.InternetManager
 import boilerplate.utils.extension.AnimateType
+import boilerplate.utils.extension.PERMISSION_NOTIFY
 import boilerplate.utils.extension.gone
 import boilerplate.utils.extension.isAppInBackground
 import boilerplate.utils.extension.isTablet
+import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.replaceFragmentInActivity
 import boilerplate.utils.extension.show
 import boilerplate.utils.extension.startActivityAtRoot
@@ -62,6 +73,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
 				scheduleJob()
 			}
 			lifecycle.withStarted {
+				requestPermissionNotify()
 				splitScreen()
 			}
 		}
@@ -78,16 +90,26 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
 	override fun onStop() {
 		super.onStop()
 		_isBackFromBackground = baseContext.isAppInBackground()
+		SignalRManager.stopSignal()
 	}
 
 	override fun onDestroy() {
-		super.onDestroy()
-
-		SignalRManager.stopSignal()
 		SignalRManager.unbindServices(this@MainActivity, _serviceIntent)
+
+		super.onDestroy()
+	}
+
+	override fun onNewIntent(intent: Intent) {
+		super.onNewIntent(intent)
+		Log.d("SSS", "onNewIntent: " + intent)
+
+		handleDataFromApp(intent)
 	}
 
 	override fun initialize() {
+		Log.d("SSS", "initialize: " + intent)
+
+		handleDataFromApp(intent)
 		initHomepage()
 	}
 
@@ -212,4 +234,52 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
 		}
 	}
 
+	private fun requestPermissionNotify() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			permission(PERMISSION_NOTIFY) {}
+		}
+	}
+
+	private fun handleDataFromApp(intent: Intent) {
+		val action = intent.action
+		val bundle = intent.extras
+		if (action == null || action == Intent.ACTION_MAIN) {
+			return
+		}
+		when (action) {
+			Intent.ACTION_SEND -> {
+				intent.type.notNull { type ->
+					val sharedText = if (bundle != null) bundle.getString(Intent.EXTRA_TEXT, "") else ""
+					val imageUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+						intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
+					} else {
+						intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
+					}
+					if (type.contains(MimeType.TEXT.type)) {
+
+
+						return
+					}
+					if (type.startsWith(MimeType.IMAGE.type) ||
+						type.startsWith(MimeType.VIDEO.type) ||
+						type.startsWith(MimeType.AUDIO.type) ||
+						type.startsWith(MimeType.APPLICATION.type)
+					) {
+
+
+						return
+					}
+				}
+			}
+
+			FirebaseMessageService.ACTION_NOTIFY -> {
+				val conversationId = intent.getStringExtra(CONVERSATION_ID)
+				val workId = intent.getStringExtra(WORK_MANAGE_ID)
+				val roleId = intent.getStringExtra(ROLE)
+				val meetingId = intent.getStringExtra(MEETING_ID)
+			}
+		}
+
+		intent.setAction(Intent.ACTION_MAIN)
+	}
 }

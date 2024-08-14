@@ -1,5 +1,7 @@
 package boilerplate.utils
 
+import android.app.ActivityManager
+import android.app.ActivityManager.RunningAppProcessInfo
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -52,16 +54,6 @@ object SystemUtil {
 			else -> resources.getDimension(R.dimen.dp_14)
 		}
 		return mainSize.toTextSize()
-	}
-
-	@JvmStatic
-	fun setAppPlaySound(isPlay: Boolean) {
-		userImpl.saveSystemSound(isPlay)
-	}
-
-	@JvmStatic
-	fun getAppPlaySound(): Boolean {
-		return userImpl.getSystemSound()
 	}
 
 	fun copy(context: Context, srcUri: Uri?, dstFile: File?) {
@@ -360,5 +352,22 @@ object SystemUtil {
 		if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
 			Toast.makeText(context, "Đã sao chép", Toast.LENGTH_SHORT).show()
 		}
+	}
+
+	fun isAppIsInBackground(context: Context): Boolean {
+		var isInBackground = true
+		val am = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+		for (processInfo in am.runningAppProcesses) {
+			if (processInfo.importance == RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+				for (activeProcess in processInfo.pkgList) {
+					if (activeProcess == context.packageName) {
+						isInBackground = false
+						break
+					}
+				}
+				break
+			}
+		}
+		return isInBackground
 	}
 }

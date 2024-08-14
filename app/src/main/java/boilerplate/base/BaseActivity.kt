@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,12 +12,16 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.viewbinding.ViewBinding
 import boilerplate.R
 import boilerplate.service.signalr.SignalRManager.INTENT_FILTER_SIGNALR
 import boilerplate.ui.conversationDetail.ConversationDetailFragment
+import boilerplate.utils.extension.Permission
 import boilerplate.utils.extension.findFragmentByTag
 import boilerplate.utils.extension.hideKeyboard
 import boilerplate.utils.extension.isTablet
@@ -32,7 +37,11 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 	private var _binding: AC? = null
 	protected val binding: AC get() = _binding!!
 
-	private val compositeDisposable = CompositeDisposable()
+	private val _disposable = CompositeDisposable()
+
+	private lateinit var _request: ActivityResultLauncher<Array<String>>
+	private var _blockGrand: (() -> Unit)? = null
+	private val _listRequest: ArrayList<Permission> = arrayListOf()
 
 	private val backPress by lazy {
 		object : OnBackPressedCallback(true) {
@@ -58,6 +67,19 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
+		_request = registerForActivityResult(
+			ActivityResultContracts.RequestMultiplePermissions()
+		) { result ->
+			result.notNull {
+				for (entry in it.entries) {
+					_listRequest.removeIf { per -> per.name == entry.key && entry.value }
+				}
+				if (_listRequest.isEmpty()) {
+					_blockGrand.notNull { it() }
+					_blockGrand = null
+				}
+			}
+		}
 		super.onCreate(savedInstanceState)
 		setContentView(
 			@Suppress("UNCHECKED_CAST")
@@ -80,12 +102,16 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 	}
 
 	override fun onDestroy() {
-		super.onDestroy()
-		compositeDisposable.apply {
+		_blockGrand = null
+		_request.unregister()
+		_listRequest.clear()
+
+		_disposable.apply {
 			clear()
 			dispose()
 		}
 		LocalBroadcastManager.getInstance(application).unregisterReceiver(invalidTokeReceiver)
+		super.onDestroy()
 	}
 
 	protected abstract fun initialize()
@@ -97,7 +123,7 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 	protected abstract fun callApi()
 
 	protected fun launchDisposable(job: () -> Disposable) {
-		compositeDisposable.add(job())
+		_disposable.add(job())
 	}
 
 	override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
@@ -173,5 +199,25 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 
 	protected open fun handleLogout() {
 
+	}
+
+	fun permission(permissions: Array<String>, grand: () -> Unit) {
+		_blockGrand = grand
+		for (permission in permissions) {
+			if (isGranted(permission)) {
+				continue
+			}
+			_listRequest.add(Permission(permission, false))
+		}
+		if (_listRequest.isEmpty()) {
+			_blockGrand.notNull { it() }
+			_blockGrand = null
+		} else {
+			_request.launch(_listRequest.map { it.name }.toTypedArray())
+		}
+	}
+
+	private fun isGranted(permission: String): Boolean {
+		return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
 	}
 }
