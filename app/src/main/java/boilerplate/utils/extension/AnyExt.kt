@@ -1,21 +1,20 @@
 package boilerplate.utils.extension
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.ActivityManager
 import android.app.ActivityManager.RunningAppProcessInfo
+import android.app.Application
 import android.content.Context
-import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Build
-import android.os.Bundle
 import android.view.View
 import android.view.WindowInsets
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import boilerplate.service.signalr.SignalRManager
-import boilerplate.service.signalr.SignalRResult
+import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 
 fun <T> ArrayList<T>?.ifEmpty(): ArrayList<T> = this ?: arrayListOf()
@@ -48,22 +47,8 @@ operator fun <T> MutableLiveData<MutableList<T>>.plusAssign(values: List<T>) {
 	this.value = value
 }
 
-
 fun <T> String.convertJsonToObject(classType: Class<T>): T {
 	return Gson().fromJson(this, classType)
-}
-
-fun Context.sendResult(key: SignalRResult?, value: String) {
-	key.notNull {
-		Intent(SignalRManager.INTENT_FILTER_SIGNALR)
-			.apply {
-				putExtra(SignalRManager.SIGNALR_BUNDLE, Bundle().apply {
-					putString(SignalRManager.SIGNALR_KEY, it.key)
-					putString(SignalRManager.SIGNALR_DATA, value)
-				})
-			}
-			.let { LocalBroadcastManager.getInstance(this).sendBroadcast(it) }
-	}
 }
 
 @SuppressLint("InternalInsetResource", "DiscouragedApi")
@@ -74,10 +59,10 @@ fun AppCompatActivity.statusBarHeight(): Int {
 		return statusBarHeight
 	}
 	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-		val windowInsets: WindowInsets = window.decorView.getRootWindowInsets()
+		val windowInsets: WindowInsets = window.decorView.rootWindowInsets
 		return windowInsets.getInsets(WindowInsets.Type.statusBars()).top
 	} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-		val windowInsets: WindowInsets = window.decorView.getRootWindowInsets()
+		val windowInsets: WindowInsets = window.decorView.rootWindowInsets
 		val displayCutout = windowInsets.displayCutout
 		if (displayCutout != null) {
 			return displayCutout.safeInsetTop
@@ -109,8 +94,16 @@ fun Context.isAppInBackground(): Boolean {
 	return isInBackground
 }
 
-fun Context.isTablet(): Boolean = Configuration.SCREENLAYOUT_SIZE_LARGE <=
-	(resources.configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK)
+fun Application.isTablet(): Boolean = resources.isTablet()
+
+fun Fragment.isTablet(): Boolean = resources.isTablet()
+
+fun Activity.isTablet(): Boolean = resources.isTablet()
+
+fun RecyclerView.ViewHolder.isTablet(): Boolean = itemView.resources.isTablet()
+
+fun Resources.isTablet(): Boolean = Configuration.SCREENLAYOUT_SIZE_LARGE <=
+	(configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK)
 
 fun Float.toTextSize(): Float {
 	val displayMetrics = Resources.getSystem().displayMetrics

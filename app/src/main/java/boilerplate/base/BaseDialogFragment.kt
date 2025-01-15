@@ -3,42 +3,30 @@ package boilerplate.base
 import android.app.Dialog
 import android.content.DialogInterface
 import android.content.pm.PackageManager
-import android.os.Build
+import android.graphics.Rect
 import android.os.Bundle
-import android.view.KeyEvent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
+import android.widget.EditText
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.core.view.WindowCompat
 import androidx.core.view.contains
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
 import boilerplate.R
-import boilerplate.utils.extension.Permission
-import boilerplate.utils.extension.addTo
-import boilerplate.utils.extension.isTablet
-import boilerplate.utils.extension.notNull
-import boilerplate.utils.extension.removeSelf
-import boilerplate.utils.extension.setWidthPercent
-import boilerplate.utils.extension.showSnackBarFail
-import boilerplate.widget.loading.LoadingScreen
+import boilerplate.utils.extension.*
+import boilerplate.widget.customText.AppEditText
+import boilerplate.widget.loading.LoadingLayout
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
-import kotlinx.coroutines.launch
 import java.lang.reflect.ParameterizedType
-
 
 abstract class BaseDialogFragment<AC : ViewBinding, VM : BaseViewModel> : DialogFragment() {
 	private var _binding: AC? = null
 	protected val binding: AC
 		get() = checkNotNull(_binding) { "View not create" }
 
-	private val _loadingScreen: LoadingScreen by lazy { LoadingScreen(requireActivity()) }
+	private val _loadingLayout: LoadingLayout by lazy { LoadingLayout(requireActivity()) }
 	private val _disposable: CompositeDisposable by lazy { CompositeDisposable() }
 
 	protected abstract val viewModel: VM
@@ -76,12 +64,48 @@ abstract class BaseDialogFragment<AC : ViewBinding, VM : BaseViewModel> : Dialog
 			.invoke(null, layoutInflater, container, false)
 			.let { it as AC }
 			.apply { _binding = this }.root.apply {
+				isClickable = true
+				isFocusable = true
 				setBackgroundColor(ContextCompat.getColor(context, R.color.colorAppBackground))
 			}
 	}
 
 	override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-		val dialog = super.onCreateDialog(savedInstanceState).apply {
+		return object : Dialog(requireActivity()) {
+			override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+				if (ev.action == MotionEvent.ACTION_UP) {
+					val view = currentFocus
+					if (view != null) {
+						val consumed = super.dispatchTouchEvent(ev)
+						val viewTmp = currentFocus
+						val viewNew: View = viewTmp ?: view
+						if (viewNew == view) {
+							val rect = Rect()
+							val coordinates = IntArray(2)
+							view.getLocationOnScreen(coordinates)
+							rect.set(
+								coordinates[0],
+								coordinates[1],
+								coordinates[0] + view.width,
+								coordinates[1] + view.height
+							)
+							val x = ev.x.toInt()
+							val y = ev.y.toInt()
+							if (rect.contains(x, y)) {
+								return consumed
+							}
+						} else if (viewNew is EditText) {
+							return consumed
+						}
+						if (view is AppEditText && view.isFocusableInTouchMode) {
+							view.hideKeyboard()
+						}
+						return consumed
+					}
+				}
+				return super.dispatchTouchEvent(ev)
+			}
+		}.apply {
 			setOnKeyListener { v: DialogInterface?, keyCode: Int, event: KeyEvent ->
 				if ((keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP)) {
 					dismiss()
@@ -93,7 +117,6 @@ abstract class BaseDialogFragment<AC : ViewBinding, VM : BaseViewModel> : Dialog
 			setCanceledOnTouchOutside(false)
 			setCancelable(false)
 		}
-		return dialog
 	}
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -104,16 +127,16 @@ abstract class BaseDialogFragment<AC : ViewBinding, VM : BaseViewModel> : Dialog
 			loading.observe(viewLifecycleOwner) { show ->
 				if (view is ViewGroup) {
 					if (show && isVisible) {
-						if (!view.contains(_loadingScreen)) {
-							_loadingScreen.addTo(view)
+						if (!view.contains(_loadingLayout)) {
+							_loadingLayout.addTo(view)
 						}
 					} else {
-						_loadingScreen.removeSelf()
+						_loadingLayout.removeSelf()
 					}
 				}
 			}
 			error.observe(viewLifecycleOwner) {
-				binding.root.showSnackBarFail(it)
+				binding.root.showFail(it)
 			}
 		}
 		initialize()
@@ -128,7 +151,6 @@ abstract class BaseDialogFragment<AC : ViewBinding, VM : BaseViewModel> : Dialog
 		_request.unregister()
 		_listRequest.clear()
 		super.onDestroyView()
-		clearAdjustSoftInput()
 		_disposable.apply {
 			clear()
 			dispose()
@@ -143,43 +165,8 @@ abstract class BaseDialogFragment<AC : ViewBinding, VM : BaseViewModel> : Dialog
 
 	protected abstract fun callApi()
 
-	protected fun popFragment() {
-		parentFragmentManager.popBackStack()
-	}
-
 	protected fun launchDisposable(vararg job: Disposable) {
 		_disposable.addAll(*job)
-	}
-
-	protected fun adjustSoftInput() {
-		lifecycleScope.launch {
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-				requireActivity().window?.let {
-					WindowCompat.setDecorFitsSystemWindows(it, false)
-				}
-			} else {
-				@Suppress("DEPRECATION")
-				requireActivity().window
-					.setSoftInputMode(
-						WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE
-							or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
-					)
-			}
-		}
-	}
-
-	private fun clearAdjustSoftInput() {
-		lifecycleScope.launch {
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-				requireActivity().window?.let {
-					WindowCompat.setDecorFitsSystemWindows(it, true)
-				}
-			} else {
-				requireActivity().window.setSoftInputMode(
-					WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING
-				)
-			}
-		}
 	}
 
 	fun permission(permissions: Array<String>, grand: () -> Unit) {
@@ -206,10 +193,10 @@ abstract class BaseDialogFragment<AC : ViewBinding, VM : BaseViewModel> : Dialog
 	}
 
 	protected fun handleBack() {
-		if (context?.isTablet() == true) {
+		if (isTablet()) {
 			dismiss()
 		} else {
-			popFragment()
+			parentFragmentManager.popBackStack()
 		}
 	}
 }

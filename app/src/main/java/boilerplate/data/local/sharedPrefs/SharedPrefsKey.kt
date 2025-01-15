@@ -11,15 +11,6 @@ object SharedPrefsKey {
 	const val DEVICE_ID = "DEVICE_ID"
 	const val DEVICE_TOKEN = "DEVICE_TOKEN"
 
-	const val USER_DATA = "USER_DATA"
 	const val USER_NAME_LOGIN: String = "USER_NAME_LOGIN"
 	const val USER_PASSWORD_LOGIN: String = "USER_PASSWORD_LOGIN"
-	const val USER_ROLE = "USER_ROLE"
-	const val USER_ROLE_PERMISSION = "USER_ROLE_PERMISSION"
-	const val USER_COMPANY_DATA = "USER_COMPANY_DATA"
-	const val USER_CONVERSATION_CONFIG = "USER_CONVERSATION_CONFIG"
-
-	const val SOUND: String = "SOUND"
-	const val SIZE: String = "size"
-
 }

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Rect
-import android.graphics.drawable.Drawable
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -16,37 +15,25 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.ProgressBar
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import boilerplate.R
-import boilerplate.constant.AccountManager
 import boilerplate.constant.Constants.KEY_AUTH
-import boilerplate.databinding.ItemFileBinding
-import boilerplate.databinding.ItemFileSurveyBinding
-import boilerplate.databinding.ItemLinkBinding
 import boilerplate.databinding.ViewToastBinding
-import boilerplate.model.file.AttachedFile
 import boilerplate.model.file.ExtensionType
-import boilerplate.model.message.Message
 import boilerplate.utils.ClickUtil
+import boilerplate.utils.ImageUtil
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.Headers
 import com.bumptech.glide.load.model.LazyHeaders
-import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.snackbar.BaseTransientBottomBar.ANIMATION_MODE_SLIDE
 import com.google.android.material.snackbar.Snackbar
-import java.net.MalformedURLException
-import java.net.URL
 
 
 fun View.show(b: Boolean = true) {
@@ -99,42 +86,42 @@ fun View.showSnackBar(
 	layout.addView(binding.root)
 }.show()
 
-fun View.showSnackBarSuccess(
+fun View.showSuccess(
 	message: String? = ""
 ) = showSnackBar(
 	message,
 	R.color.color_toast_success
 )
 
-fun View.showSnackBarSuccess(
+fun View.showSuccess(
 	@StringRes message: Int = R.string.no_text
 ) = showSnackBar(
 	message,
 	R.color.color_toast_success
 )
 
-fun View.showSnackBarFail(
+fun View.showFail(
 	message: String? = ""
 ) = showSnackBar(
 	message,
 	R.color.color_toast_fail
 )
 
-fun View.showSnackBarFail(
+fun View.showFail(
 	@StringRes message: Int = R.string.no_text
 ) = showSnackBar(
 	message,
 	R.color.color_toast_fail
 )
 
-fun View.showSnackBarWarning(
+fun View.showWarning(
 	message: String? = ""
 ) = showSnackBar(
 	message,
 	R.color.color_toast_warning
 )
 
-fun View.showSnackBarWarning(
+fun View.showWarning(
 	@StringRes message: Int = R.string.no_text
 ) = showSnackBar(
 	message,
@@ -180,22 +167,23 @@ fun EditText.showKeyboard() {
 }
 
 fun ImageView.loadAvatar(url: String? = "") {
-	loadImage(url, requestOptions = RequestOptions().error(R.drawable.ic_avatar).circleCrop())
+	loadImage(
+		url, requestOptions = RequestOptions()
+			.override(ImageUtil.AVATAR_MAX_SIZE)
+			.placeholder(R.drawable.ic_avatar)
+			.error(R.drawable.ic_avatar)
+			.circleCrop()
+	)
 }
 
 fun ImageView.loadImage(
 	url: String? = "",
-	accessToken: String? = AccountManager.getToken(),
+	accessToken: String? = "",
 	type: String? = "",
 	requestOptions: RequestOptions = RequestOptions().error(R.drawable.bg_error)
 ) {
 	if (url.isNullOrEmpty()) {
 		return
-	}
-	val loading = CircularProgressDrawable(context).apply {
-		setCenterRadius(25f)
-		setStrokeWidth(5f)
-		setColorSchemeColors(ContextCompat.getColor(context, R.color.colorPrimary))
 	}
 	val isGif = ExtensionType.isFileGIF(type)
 
@@ -212,55 +200,14 @@ fun ImageView.loadImage(
 			.asGif()
 			.load(glideUrl)
 			.apply(requestOptions)
-			.into(object : CustomTarget<GifDrawable>() {
-				override fun onLoadFailed(errorDrawable: Drawable?) {
-					loading.stop()
-					setImageDrawable(errorDrawable)
-				}
-
-				override fun onLoadStarted(placeholder: Drawable?) {
-					loading.start()
-					setImageDrawable(loading)
-				}
-
-				override fun onResourceReady(
-					resource: GifDrawable,
-					transition: Transition<in GifDrawable>?
-				) {
-					loading.stop()
-					resource.start()
-					setImageDrawable(resource)
-				}
-
-				override fun onLoadCleared(placeholder: Drawable?) {
-					setImageResource(R.drawable.bg_corner_white)
-				}
-			})
+			.into(this)
 	} else {
 		Glide
 			.with(context)
+			.asDrawable()
 			.load(glideUrl)
 			.apply(requestOptions)
-			.into(object : CustomTarget<Drawable>() {
-				override fun onLoadFailed(errorDrawable: Drawable?) {
-					setImageDrawable(errorDrawable)
-					loading.stop()
-				}
-
-				override fun onLoadStarted(placeholder: Drawable?) {
-					setImageDrawable(placeholder)
-					loading.start()
-				}
-
-				override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
-					loading.stop()
-					setImageDrawable(resource)
-				}
-
-				override fun onLoadCleared(placeholder: Drawable?) {
-					setImageResource(R.drawable.bg_corner_white)
-				}
-			})
+			.into(this)
 	}
 }
 
@@ -268,16 +215,6 @@ fun View.click(block: ((v: View) -> Unit)?) {
 	block.notNull { setOnClickListener(ClickUtil.onClick { v -> it(v) }) }
 }
 
-fun PopupWindow.dimBehind() {
-	val container = contentView.rootView
-	val context = contentView.context
-	val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-	val p = container.layoutParams as WindowManager.LayoutParams
-	p.flags =
-		WindowManager.LayoutParams.FLAG_DIM_BEHIND or WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
-	p.dimAmount = 0.3f
-	wm.updateViewLayout(container, p)
-}
 //fun View.clicks(isCheckNetwork: Boolean): Observable<View> {
 //    val source: ObservableOnSubscribe<View> = ObservableOnSubscribe { emitter ->
 //        emitter.setCancellable {
@@ -301,6 +238,21 @@ fun PopupWindow.dimBehind() {
 //    )
 //}
 
+fun View.performClick(view: View) {
+	setOnClickListener { view.performClick() }
+}
+
+fun PopupWindow.dimBehind() {
+	val container = contentView.rootView
+	val context = contentView.context
+	val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+	val p = container.layoutParams as WindowManager.LayoutParams
+	p.flags =
+		WindowManager.LayoutParams.FLAG_DIM_BEHIND or WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
+	p.dimAmount = 0.3f
+	wm.updateViewLayout(container, p)
+}
+
 fun View.removeSelf() {
 	val parent = parent as? ViewGroup ?: return
 	parent.removeView(this)
@@ -319,105 +271,6 @@ fun View.addTo(parent: ViewGroup?) {
 
 inline fun View.launch(delay: Long = 0, crossinline r: () -> Unit) {
 	postDelayed({ r() }, delay)
-}
-
-fun LinearLayout.addSurvey(
-	file: AttachedFile,
-	sizeText: Float = 0f,
-	openFile: (file: AttachedFile) -> Unit
-) {
-	val binding =
-		ItemFileSurveyBinding.inflate(LayoutInflater.from(context), rootView as ViewGroup, false)
-	with(binding) {
-		root.setBackgroundResource(R.drawable.bg_message_survey)
-
-		tvFileName.apply {
-			if (sizeText != 0f) {
-				textSize = sizeText
-			}
-			text = file.displayTitle
-		}
-
-		tvTitle.apply {
-			if (sizeText != 0f) {
-				textSize = sizeText
-			}
-		}
-
-		if (file.isSurveyBreakfast) {
-			tvTitle.text = context.getString(R.string.breakfast_file)
-			tvTitle.setTextColor(ContextCompat.getColor(context, R.color.color_FF951A))
-			imgIcon.setImageResource(R.drawable.ic_breakfast)
-		} else {
-			tvTitle.text = context.getString(R.string.survey_file)
-			tvTitle.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary))
-			imgIcon.setImageResource(R.drawable.ic_survey_file)
-		}
-	}
-	binding.root.apply {
-		click { openFile(file) }
-	}.let { this.addView(it) }
-}
-
-fun LinearLayout.addFile(
-	file: AttachedFile,
-	showClear: Boolean = false,
-	sizeText: Float = 0f,
-	padding: Int = 5,
-	openFile: (file: AttachedFile) -> Unit
-) {
-	val name: String = file.getDisplayName(context)
-	val size: String = file.getFileSize(context)
-	val binding =
-		ItemFileBinding.inflate(LayoutInflater.from(context), rootView as ViewGroup, false)
-	with(binding) {
-		imgClear.show(showClear)
-
-		tvFileName.apply {
-			if (sizeText != 0f) {
-				textSize = sizeText
-			}
-			text = name
-		}
-		tvFileSize.apply {
-			show(size.isNotEmpty() && !size.startsWith("0"))
-			if (isVisible()) {
-				if (sizeText != 0f) {
-					textSize = sizeText
-				}
-				text = size
-			}
-		}
-		imgIcon.setImageResource(ExtensionType.getFileIcon(file.fileName))
-	}
-	binding.root.apply {
-		click { openFile(file) }
-		if (padding != 0) {
-			setPadding(0, padding / 2, 0, padding / 2)
-		}
-	}.let { this.addView(it) }
-}
-
-fun LinearLayout.addLink(message: Message, openFile: () -> Unit) {
-	val binding =
-		ItemLinkBinding.inflate(LayoutInflater.from(context), rootView as ViewGroup, false)
-
-	with(binding) {
-		try {
-			val url = URL(message.content)
-			val host = url.host
-
-			tvTitle.apply {
-				show()
-				text = host
-			}
-			tvLink.text = url.toString()
-		} catch (ignore: MalformedURLException) {
-			tvTitle.gone()
-			tvLink.text = message.content
-		}
-	}
-	addView(binding.root.apply { click { openFile() } })
 }
 
 fun EditText.addListener(
@@ -440,15 +293,15 @@ fun EditText.addListener(
 	})
 }
 
-fun DialogFragment.setWidthPercent(
-	widthPercent: Int = 60,
-	heightPercent: Int = 60
-) {
-	val w = widthPercent.toFloat() / 100
-	val h = heightPercent.toFloat() / 100
-	val dm = Resources.getSystem().displayMetrics
-	val rect = dm.run { Rect(0, 0, widthPixels, heightPixels) }
-	val width = rect.width() * w
-	val height = rect.height() * h
-	dialog?.window?.setLayout(width.toInt(), height.toInt())
+fun DialogFragment.setWidthPercent(widthPercent: Int = 60, heightPercent: Int = 60) {
+	try {
+		val w = widthPercent.toFloat() / 100
+		val h = heightPercent.toFloat() / 100
+		val dm = Resources.getSystem().displayMetrics
+		val rect = dm.run { Rect(0, 0, widthPixels, heightPixels) }
+		val width = rect.width() * w
+		val height = rect.height() * h
+		dialog?.let { it.window?.setLayout(width.toInt(), height.toInt()) }
+	} catch (_: Exception) {
+	}
 }

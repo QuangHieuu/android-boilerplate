@@ -1,12 +1,7 @@
 package boilerplate.data.remote.api.middleware
 
-import androidx.annotation.NonNull
 import boilerplate.data.remote.api.error.RetrofitException
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.core.Maybe
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.core.*
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.HttpException
@@ -17,7 +12,6 @@ import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
 class RxErrorHandlingCallAdapterFactory private constructor() : CallAdapter.Factory() {
-
 	private val original: RxJava3CallAdapterFactory = RxJava3CallAdapterFactory.create()
 
 	override fun get(
@@ -42,16 +36,17 @@ class RxErrorHandlingCallAdapterFactory private constructor() : CallAdapter.Fact
 			return wrapped.responseType()
 		}
 
-		override fun adapt(@NonNull call: Call<R>): Any? {
+		override fun adapt(call: Call<R>): Any {
 			val rawType = getRawType(returnType)
 
+			val isObservable = rawType != Observable::class.java
 			val isFlowable = rawType == Flowable::class.java
 			val isSingle = rawType == Single::class.java
 			val isMaybe = rawType == Maybe::class.java
 			val isCompletable = rawType == Completable::class.java
 
-			if (rawType != Observable::class.java && !isFlowable && !isSingle && !isMaybe) {
-				return null
+			if (!isObservable && !isFlowable && !isSingle && !isMaybe) {
+				throw IllegalStateException("Must return Operator")
 			}
 			if (returnType !is ParameterizedType) {
 				val name = if (isFlowable)
@@ -67,8 +62,6 @@ class RxErrorHandlingCallAdapterFactory private constructor() : CallAdapter.Fact
 						+ "<? extends Foo>"
 				)
 			}
-
-
 			if (isFlowable) {
 				return (wrapped.adapt(
 					call
@@ -115,9 +108,7 @@ class RxErrorHandlingCallAdapterFactory private constructor() : CallAdapter.Fact
 	}
 
 	companion object {
-
 		private val TAG = RxErrorHandlingCallAdapterFactory::class.java.name
-
 		fun create(): CallAdapter.Factory {
 			return RxErrorHandlingCallAdapterFactory()
 		}

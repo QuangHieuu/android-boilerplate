@@ -5,7 +5,7 @@ import android.content.res.Resources
 import boilerplate.data.local.sharedPrefs.SharedPrefsApi
 import boilerplate.data.local.sharedPrefs.SharedPrefsImpl
 import boilerplate.data.local.sharedPrefs.SharedPrefsKey
-import boilerplate.data.remote.api.ApiUrl
+import boilerplate.data.remote.api.ApiDomain
 import boilerplate.utils.extension.isTablet
 import com.google.gson.Gson
 import okhttp3.Cache
@@ -22,8 +22,8 @@ val contextRequireModule = module {
 fun provideSharedPrefsApi(app: Application, gson: Gson): SharedPrefsApi {
 	return SharedPrefsImpl(app, gson).also { server ->
 		server.get(SharedPrefsKey.SERVER, String::class.java)
-			.ifEmpty { ApiUrl.DEFAULT }
-			.also { ApiUrl.setHost(it) }
+			.ifEmpty { ApiDomain.DEFAULT }
+			.also { ApiDomain.setHost(it) }
 	}
 }
 

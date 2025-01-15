@@ -28,22 +28,4 @@ class ApiRequest(
 			.build()
 			.create(ApiService::class.java)
 	}
-
-	val login get() = createRequest(ApiUrl.HOST_SIGN_IN)
-
-	val eOffice get() = createRequest(ApiUrl.HOST_MAIN + ApiUrl.API)
-
-	fun getEOffice(version: String): ApiService =
-		createRequest(ApiUrl.HOST_MAIN + ApiUrl.API, version)
-
-	val chat get() = createRequest(ApiUrl.HOST_CHAT + ApiUrl.API)
-
-	val notify get() = createRequest(ApiUrl.HOST_NOTIFICATION + ApiUrl.API)
-
-	val file get() = createRequest(ApiUrl.HOST_FILE + ApiUrl.API)
-
-	val firebase get() = createRequest(ApiUrl.FIREBASE_URL_VERSON)
-
-	val calender get() = createRequest(ApiUrl.HOST_MEETING_CALENDAR + ApiUrl.API)
-
 }

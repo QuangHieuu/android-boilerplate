@@ -2,7 +2,6 @@ package boilerplate.widget.glide
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.util.Log
 import boilerplate.utils.ImageUtil
@@ -25,7 +24,6 @@ import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 
-
 @GlideModule
 class GlideAppModule : AppGlideModule() {
 	override fun applyOptions(context: Context, builder: GlideBuilder) {
@@ -34,8 +32,7 @@ class GlideAppModule : AppGlideModule() {
 			setDefaultRequestOptions(
 				RequestOptions()
 					.override(ImageUtil.IMAGE_MAX_SIZE)
-					.diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-					.encodeFormat(Bitmap.CompressFormat.PNG)
+					.diskCacheStrategy(DiskCacheStrategy.ALL)
 					.optionalFitCenter()
 					.dontAnimate()
 			)

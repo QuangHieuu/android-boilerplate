@@ -1,6 +1,6 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.App" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.App" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
@@ -16,6 +16,9 @@
         <item name="toolbarStyle">@style/Widget.Toolbar</item>
         <item name="snackbarStyle">@style/SnackBar</item>
         <item name="materialButtonStyle">@style/CustomMaterialButton</item>
+
+        //Android 15
+        <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:ignore="NewApi">true</item>
     </style>
 
     <style name="CustomMaterialButton" parent="Theme.MaterialComponents" />
@@ -57,6 +60,13 @@
         <item name="subtitleCentered">true</item>
         <item name="subtitleTextStyle">@style/StyleRegular</item>
         <item name="subtitleTextColor">@color/color_A2FFFFFF</item>
+    </style>
+
+    <style name="AppToolbarButtonStyle">
+        <item name="width">@dimen/dp_48</item>
+        <item name="height">@dimen/dp_48</item>
+        <item name="padding">@dimen/dp_12</item>
+        <item name="background">@color/transparent</item>
     </style>
 
     <style name="AppToolbar.Title" parent="AppToolbar">
@@ -101,5 +111,14 @@
     <style name="PopupWindowAnimation" parent="android:Animation">
         <item name="android:windowEnterAnimation">@anim/fade_in</item>
         <item name="android:windowExitAnimation">@anim/fade_out</item>
+    </style>
+
+
+    <style name="ButtonCancel" parent="StyleRegular">
+        <item name="android:background">@drawable/bg_button_cancel</item>
+        <item name="android:textSize">@dimen/dp_14</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/color_606060</item>
     </style>
 </resources>

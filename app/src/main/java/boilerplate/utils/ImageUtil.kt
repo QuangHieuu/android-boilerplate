@@ -10,6 +10,7 @@ object ImageUtil {
 	private const val TAG = "ImageUtil"
 	const val IMAGE_THUMB_SIZE = 200
 	const val IMAGE_MAX_SIZE = 1024
+	const val AVATAR_MAX_SIZE = 480
 	const val REQUIRED_SIZE = 100
 
 	@Throws(FileNotFoundException::class)

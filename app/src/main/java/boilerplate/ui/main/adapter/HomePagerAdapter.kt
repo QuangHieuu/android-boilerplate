@@ -17,12 +17,9 @@ import boilerplate.R
 import boilerplate.databinding.ViewItemTabBinding
 import boilerplate.utils.extension.gone
 import boilerplate.utils.extension.show
-import boilerplate.widget.customText.TextViewFont
+import boilerplate.widget.customText.AppTextView
 import com.google.android.material.tabs.TabLayout
 
-/**
- * Created by dungvhp on 4/26/17.
- */
 class HomePagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
 	FragmentStateAdapter(fragmentManager, lifecycle) {
 	private val mFragments = ArrayList<Pair<Int, Fragment>>()
@@ -72,8 +69,8 @@ class HomePagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
 		val view: View = LayoutInflater.from(context)
 			.inflate(R.layout.view_item_tab, root, false)
 		val icon = view.findViewById<ImageView>(R.id.img_icon)
-		val textViewFont: TextViewFont = view.findViewById(R.id.tv_title)
-		textViewFont.text = title
+		val appTextView: AppTextView = view.findViewById(R.id.tv_title)
+		appTextView.text = title
 		icon.setImageResource(drawable)
 		return view
 	}
@@ -102,7 +99,7 @@ fun TabLayout.Tab.customTab(
 
 		if (count > 0) {
 			tvCount.show()
-			tvCount.text = count.toString()
+			tvCount.text = String.format(count.toString())
 		}
 	}
 	return binding.root

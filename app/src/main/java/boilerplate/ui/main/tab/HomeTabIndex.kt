@@ -3,12 +3,7 @@ package boilerplate.ui.main.tab
 import android.util.Pair
 import androidx.fragment.app.Fragment
 import boilerplate.R
-import boilerplate.ui.contact.ContactFragment
-import boilerplate.ui.conversation.ConversationFragment
-import boilerplate.ui.dashboard.DashboardFragment
 import boilerplate.ui.empty.EmptyFragment
-import boilerplate.ui.menu.MenuFragment
-import boilerplate.ui.setting.SettingFragment
 
 object HomeTabIndex {
 
@@ -70,12 +65,12 @@ object HomeTabIndex {
 		val fragments = ArrayList<Pair<Int, Fragment>>()
 
 		if (tablet) {
-			fragments.add(Pair(ID_HOME_MENU, MenuFragment.newInstance()))
+			fragments.add(Pair(ID_HOME_MENU, EmptyFragment.newInstance()))
 			tabIcon.add(R.drawable.state_ic_tab_menu)
 			tabTitle.add("eOffice")
 			tabPosition.add(POSITION_HOME_MENU)
 		} else {
-			fragments.add(Pair(ID_HOME_DASHBOARD, DashboardFragment.newInstance()))
+			fragments.add(Pair(ID_HOME_DASHBOARD, EmptyFragment.newInstance()))
 			tabIcon.add(R.drawable.state_ic_tab_home)
 			tabTitle.add("Trang chủ")
 			tabPosition.add(POSITION_HOME_DASHBOARD)
@@ -86,17 +81,17 @@ object HomeTabIndex {
 		tabTitle.add("Lịch họp")
 		tabPosition.add(POSITION_CALENDAR_TAB)
 
-		fragments.add(Pair(ID_CONTACT_TAB, ContactFragment.newInstance()))
+		fragments.add(Pair(ID_CONTACT_TAB, EmptyFragment.newInstance()))
 		tabIcon.add(R.drawable.state_ic_tab_contact)
 		tabTitle.add("Danh bạ")
 		tabPosition.add(POSITION_CONTACT_TAB)
 
-		fragments.add(Pair(ID_MESSAGE_TAB, ConversationFragment.newInstance()))
+		fragments.add(Pair(ID_MESSAGE_TAB, EmptyFragment.newInstance()))
 		tabIcon.add(R.drawable.state_ic_tab_chat)
 		tabTitle.add("Tin nhắn")
 		tabPosition.add(POSITION_MESSAGE_TAB)
 
-		fragments.add(Pair(ID_SETTING_TAB, SettingFragment.newInstance()))
+		fragments.add(Pair(ID_SETTING_TAB, EmptyFragment.newInstance()))
 		tabIcon.add(R.drawable.state_ic_tab_setting)
 		tabTitle.add("Tiện ích")
 		tabPosition.add(POSITION_SETTING_TAB)

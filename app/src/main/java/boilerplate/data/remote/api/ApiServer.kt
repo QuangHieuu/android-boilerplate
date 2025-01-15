@@ -1,7 +1,6 @@
 package boilerplate.data.remote.api
 
 enum class ApiServer(val serverName: String, val displayName: String) {
-	DARSITEC_TEST("DARSITEC_TEST", "darsitec test"),
 	LIVE("LIVE", "LIVE");
 
 	companion object {
@@ -20,7 +19,6 @@ enum class ApiServer(val serverName: String, val displayName: String) {
 
 		fun listServer(): ArrayList<ApiServer> {
 			val list = ArrayList<ApiServer>()
-			list.add(DARSITEC_TEST)
 			list.add(LIVE)
 			return list
 		}

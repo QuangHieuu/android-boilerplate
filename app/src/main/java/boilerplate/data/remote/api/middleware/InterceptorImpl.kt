@@ -31,9 +31,7 @@ class InterceptorImpl(private var token: TokenRepository) : Interceptor {
 	}
 
 	private fun initializeHeader(chain: Interceptor.Chain): Request.Builder {
-
 		val originRequest = chain.request()
-
 		val builder = originRequest.newBuilder()
 			.addHeader("Accept", "application/json")
 			.addHeader("Content-Type", "application/json")

@@ -8,7 +8,7 @@
     android:minWidth="50dp"
     tools:ignore="SpUsage,HardcodedText">
 
-    <androidx.appcompat.widget.AppCompatImageView
+    <boilerplate.widget.image.AppImageView
         android:id="@+id/img_icon"
         android:layout_width="@dimen/dp_32"
         android:layout_height="0dp"
@@ -22,7 +22,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
 
-    <boilerplate.widget.customText.TextViewFont
+    <boilerplate.widget.customText.AppTextView
         android:id="@+id/tv_count"
         style="@style/StyleRegular"
         android:layout_width="@dimen/dp_20"
@@ -41,14 +41,14 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.08" />
 
-    <boilerplate.widget.customText.TextViewFont
+    <boilerplate.widget.customText.AppTextView
         android:id="@+id/tv_title"
         style="@style/StyleMedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:maxLines="1"
-        android:textColor="@drawable/state_textview"
+        android:textColor="@drawable/state_text_color"
         android:textSize="@dimen/dp_11"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

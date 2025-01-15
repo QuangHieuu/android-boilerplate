@@ -1,9 +1,5 @@
 <resources>
-    <string name="app_name">GG-eOffice</string>
-    <string name="app_name_long">Green global eOffice</string>
-    <string name="app_name_short">Green global</string>
-    <string name="app_description_long">EOffice 1.0 - Phần mềm văn phòng số</string>
-    <string name="app_description">NỀN TẢNG VĂN PHÒNG SỐ</string>
-    <string name="copy_right">© 2024 CÔNG TY CỔ PHẦN CÔNG NGHỆ  \nTHÔNG TIN TOÀN CẦU XANH</string>
-    <string name="copy_build_version">B1.0</string>
+    <string name="app_name">Android Boilerplate</string>
+    <string name="app_description">Android Boilerplate for demo</string>
+    <string name="copy_right">copy right</string>
 </resources>

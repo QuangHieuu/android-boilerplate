@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.KeyEvent
@@ -19,9 +18,10 @@ import boilerplate.R
 import boilerplate.constant.Constants
 import kotlin.reflect.KClass
 
-fun <T : Fragment> Fragment.findOwner(tag: KClass<T>): Fragment {
+fun <T : Fragment> Fragment.findOwner(): Fragment {
 	val fragment =
-		requireActivity().supportFragmentManager.findFragmentByTag(tag.java.simpleName)
+		requireActivity().supportFragmentManager.findFragmentByTag(this.javaClass.simpleName)
+			?: parentFragmentManager.findFragmentByTag(this.javaClass.simpleName)
 			?: if (context == null) {
 				throw IllegalStateException(
 					"Fragment $this is not attached to any Fragment or host"
@@ -34,42 +34,32 @@ fun <T : Fragment> Fragment.findOwner(tag: KClass<T>): Fragment {
 	return fragment
 }
 
-fun Fragment.openDialog(
-	fragment: DialogFragment,
-	asDialog: Boolean = context?.isTablet() ?: false,
-	addToBackStack: Boolean = true,
-	animateType: AnimateType = AnimateType.SLIDE_TO_LEFT,
-	@IdRes containerId: Int = R.id.app_container,
-	tag: String = fragment::class.java.simpleName,
-) {
-	if (asDialog) {
-		val fm = requireActivity().supportFragmentManager
-		if (fm.isExistFragment(fragment)) {
-			fm.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-		}
-		fragment.show(fm, tag)
-	} else {
-		fragment.showsDialog = false
-		open(fragment, false, addToBackStack, animateType, containerId, tag)
-	}
-}
-
 fun Fragment.open(
+	isChild: Boolean = true,
 	fragment: Fragment,
+	asDialog: Boolean = isTablet(),
 	split: Boolean = false,
 	addToBackStack: Boolean = true,
 	animateType: AnimateType = AnimateType.SLIDE_TO_LEFT,
 	@IdRes containerId: Int = R.id.app_container,
 	tag: String = fragment::class.java.simpleName,
 ) {
-	val fm = requireActivity().supportFragmentManager
+	val fm = if (isChild) childFragmentManager else requireActivity().supportFragmentManager
+	if (asDialog && fragment is DialogFragment) {
+		if (fm.isExistFragment(fragment)) {
+			fm.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+		}
+		fragment.show(fm, tag)
+		return
+	}
+	if (fragment is DialogFragment) {
+		fragment.showsDialog = false
+	}
 	fm.transact({
-		hide(this@open)
 		if (addToBackStack) {
 			addToBackStack(tag)
 		}
-		val isTablet = context?.isTablet()
-		if (isTablet == true && split) {
+		if (isTablet() && split) {
 			if (fm.isExistFragment(fragment)) {
 				fm.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE)
 			}
@@ -178,32 +168,4 @@ fun <VB : ViewBinding> Fragment.showDialog(
 	}
 	viewInit(binding, dialog)
 	dialog.show()
-}
-
-fun Fragment.callPhone(phone: String?) {
-	try {
-		startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phone")))
-	} catch (_: NullPointerException) {
-		view?.showSnackBarFail(R.string.error_no_phone_number)
-	}
-}
-
-fun Fragment.sendSms(phone: String?) {
-	try {
-		startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("sms:$phone")).apply {
-			putExtra("sms_body", "")
-		})
-	} catch (_: NullPointerException) {
-		view?.showSnackBarFail(R.string.error_no_phone_number)
-	}
-}
-
-fun Fragment.sendEmail(email: String?) {
-	if (!email.isNullOrEmpty()) {
-		Intent(Intent.ACTION_SEND)
-			.apply { setType("text/html") }
-			.let { startActivity(Intent.createChooser(it, "Send Email")) }
-	} else {
-		view?.showSnackBarFail(R.string.error_no_phone_number)
-	}
 }

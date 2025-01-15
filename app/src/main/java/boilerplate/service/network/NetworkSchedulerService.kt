@@ -6,9 +6,7 @@ import android.app.job.JobService
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
-import boilerplate.service.signalr.SignalRManager
 import boilerplate.utils.InternetManager
-
 
 @SuppressLint("SpecifyJobSchedulerIdRange")
 class NetworkSchedulerService : JobService(), ConnectivityReceiver.ConnectivityReceiverListener {
@@ -45,11 +43,7 @@ class NetworkSchedulerService : JobService(), ConnectivityReceiver.ConnectivityR
 	override fun onNetworkConnectionChanged() {
 		with(InternetManager.isConnected()) {
 			if (this) {
-				if (!_lastConnected) {
-					SignalRManager.reconnectSignal()
-				}
 			} else {
-
 			}
 			_lastConnected = this
 		}

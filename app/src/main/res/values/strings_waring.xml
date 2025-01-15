@@ -1,35 +1,3 @@
 <resources>
-    <string name="warning_input_group_name">Vui lòng nhập tên nhóm</string>
-    <string name="warning_no_member_group">Chưa có liên lạc nào trong nhóm</string>
-
-    <string name="warning_update_message_offline">Đang gửi tin nhắn : %s</string>
-
-    <string name="warning_confirm_delete_conversation">Anh/chị có muốn xóa hội thoại này không?</string>
-    <string name="warning_remove_out_of_group">Anh/Chị đã bị mời ra khỏi nhóm</string>
-
-    <string name="warning_dialog_turn_off_notify">Toàn bộ thông báo tin nhắn của hội thoại sẽ được tắt cho đến khi được mở lại.</string>
-    <string name="warning_disable_chat_box">Hội thoại đã tắt tính năng phản hồi.\nChỉ lãnh đạo nhóm và người chỉ định mới được trao đổi tin nhắn.</string>
-    <string name="warning_file_maximum">Dung lượng file bạn tải lên vượt quá 25 MB. Vui lòng chọn file khác.</string>
-
-    <string name="warning_remove_pin">Anh/Chị có muốn bỏ ghim tin nhắn này không?</string>
-
-    <string name="warning_main_leave_conversation">Rời nhóm sẽ xóa hội thoại và toàn bộ tin nhắn của nhóm. Quyền quản lý sẽ được giao cho thành viên khác.\nAnh/Chị có muốn rời nhóm không?</string>
-    <string name="warning_member_leave_conversation">Rời nhóm sẽ xóa hội thoại và toàn bộ tin nhắn của nhóm.\nAnh/Chị có muốn rời nhóm không?</string>
-    <string name="warning_turn_off_notify">Toàn bộ thông báo tin nhắn của hội thoại sẽ được tắt cho đến khi được mở lại.</string>
-
-    <string name="warning_change_inform">Anh chị có chắc muốn đổi tên nhóm?\nKhi xác nhận tên nhóm mới sẽ hiển thị với tất cả thành viên</string>
-
-    <string name="warning_dismiss_conversation">
-        Tất cả thành viên sẽ bị mời ra khỏi nhóm và xóa toàn bộ tin nhắn. Nhóm giải tán sẽ KHÔNG THỂ khôi phục.\n
-        Anh/Chị có muốn giải tán nhóm không?
-    </string>
-
-    <string name="warning_allow_approved_description">Tồn tại thành viên trong danh sách chờ duyệt, cần thực hiện xử lý trước khi tắt tính năng này</string>
-
-    <string name="warning_withdraw_description">
-        Anh/chị chỉ có thể thu hồi tin nhắn trong %d phút
-    </string>
-    <string name="warning_edit_message_description">
-        Anh/chị chỉ có thể chỉnh sửa tin nhắn trong %d phút.
-    </string>
+    <string name="warning_update">Cảnh báo cập nhật</string>
 </resources>

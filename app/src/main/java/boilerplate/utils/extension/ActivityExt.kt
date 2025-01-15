@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityOptionsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import boilerplate.constant.Constants.EXTRA_ARGS
@@ -25,13 +26,23 @@ enum class AnimateType {
 const val ANIMATION_DELAY: Long = 200
 
 fun <T : Activity> AppCompatActivity.goTo(
-	cls: KClass<T>, bundle: Bundle? = null,
-	parcel: Parcelable? = null
+	cls: KClass<T>,
+	bundle: Bundle? = null,
+	parcel: Parcelable? = null,
+	isFinish: Boolean = false
 ) {
 	intent = Intent(this, cls.java)
 	if (bundle != null) intent.putExtra(EXTRA_ARGS, bundle)
 	if (parcel != null) intent.putExtra(EXTRA_ARGS, parcel)
-	startActivity(intent)
+	startActivity(
+		intent,
+		ActivityOptionsCompat
+			.makeCustomAnimation(this, android.R.anim.fade_in, android.R.anim.fade_out)
+			.toBundle()
+	)
+	if (isFinish) {
+		finishAfterTransition()
+	}
 }
 
 fun AppCompatActivity.replaceFragmentInActivity(

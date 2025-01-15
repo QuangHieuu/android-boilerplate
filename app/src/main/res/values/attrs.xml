@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <declare-styleable name="TextViewFont">
+    <declare-styleable name="AppTextView">
         <attr name="customTypeface" format="reference" />
         <attr name="require_title" format="boolean" />
     </declare-styleable>
 
-    <declare-styleable name="TextViewExpand" parent="TextViewFont">
+    <declare-styleable name="AppTextViewExpand" parent="AppTextView">
         <attr name="customTypeface" />
         <attr name="require_title" />
         <attr name="max_line" format="integer" />
@@ -15,7 +15,7 @@
         <attr name="android:textSize" format="dimension" />
     </declare-styleable>
 
-    <declare-styleable name="EditTextFont">
+    <declare-styleable name="AppEditText">
         <attr name="customEditTypeface" format="string" />
     </declare-styleable>
 
@@ -38,7 +38,14 @@
         <attr name="backIcon" format="reference" />
     </declare-styleable>
 
-    <declare-styleable name="RoundedImageView">
+    <declare-styleable name="AppToolbarButton">
+        <attr name="width" format="dimension" />
+        <attr name="height" format="dimension" />
+        <attr name="padding" format="dimension" />
+        <attr name="background" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="AppImageView">
         <attr name="radius" format="dimension" />
         <attr name="topLeftRadius" format="dimension" />
         <attr name="topRightRadius" format="dimension" />
