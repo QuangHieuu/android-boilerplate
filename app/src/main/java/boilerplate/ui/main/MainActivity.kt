@@ -40,6 +40,8 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
 
 	private var _isBackFromBackground = false
 
+	override fun getContainerId(): Int = R.id.app_container
+
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 
@@ -47,11 +49,11 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
 			binding.tabLayoutHome.show(isKeyboardHide)
 		}
 		ViewCompat.setOnApplyWindowInsetsListener(
-			binding.appContainer,
+			binding.frameTablet,
 			insetsWithKeyboardCallback
 		)
 		ViewCompat.setWindowInsetsAnimationCallback(
-			binding.appContainer,
+			binding.frameTablet,
 			insetsWithKeyboardCallback
 		)
 
@@ -100,9 +102,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
 				}
 			}
 			currentSelected.observe(this@MainActivity) {
-				binding.frameDashboard.apply {
-					if (it == HomeTabIndex.POSITION_HOME_DASHBOARD && isTablet()) show() else gone()
-				}
+				binding.frameDashboard.show(it == HomeTabIndex.POSITION_HOME_DASHBOARD && isTablet())
 				if (it != HomeTabIndex.POSITION_HOME_DASHBOARD) {
 					binding.viewPagerHome.setCurrentItem(HomeTabIndex.getCurrentTabIndex(it), false)
 				}

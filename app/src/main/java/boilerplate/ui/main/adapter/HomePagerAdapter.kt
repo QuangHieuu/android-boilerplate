@@ -66,8 +66,8 @@ class HomePagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
 		title: String,
 		drawable: Int
 	): View {
-		val view: View = LayoutInflater.from(context)
-			.inflate(R.layout.view_item_tab, root, false)
+		val view: View =
+			LayoutInflater.from(context).inflate(R.layout.view_item_tab, root, false)
 		val icon = view.findViewById<ImageView>(R.id.img_icon)
 		val appTextView: AppTextView = view.findViewById(R.id.tv_title)
 		appTextView.text = title

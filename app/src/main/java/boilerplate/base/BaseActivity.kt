@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,12 +12,18 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.viewbinding.ViewBinding
+import boilerplate.R
+import boilerplate.constant.Constants.LAYOUT_INVALID
 import boilerplate.utils.extension.*
 import boilerplate.widget.customText.AppEditText
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -38,8 +45,8 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 		object : OnBackPressedCallback(true) {
 			override fun handleOnBackPressed() {
 				val stack = supportFragmentManager.backStackEntryCount
-				val fullScreen = supportFragmentManager.findFragmentById(boilerplate.R.id.app_container)
-				val splitScreen = supportFragmentManager.findFragmentById(boilerplate.R.id.frame_tablet)
+				val fullScreen = supportFragmentManager.findFragmentById(R.id.app_container)
+				val splitScreen = supportFragmentManager.findFragmentById(R.id.frame_tablet)
 				if (isTablet()) {
 					if (splitScreen != null) {
 						if (stack > 1 || fullScreen != null) {
@@ -80,6 +87,23 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 				.let { it as AC }
 				.apply { _binding = this }.root
 		)
+		enableEdgeToEdge(
+			statusBarStyle = SystemBarStyle.auto(
+				ContextCompat.getColor(baseContext, R.color.colorPrimary),
+				ContextCompat.getColor(baseContext, R.color.colorPrimary)
+			),
+			navigationBarStyle = SystemBarStyle.auto(Color.BLACK, Color.BLACK)
+		)
+
+		with(getContainerId()) {
+			if (this != LAYOUT_INVALID) {
+				ViewCompat.setOnApplyWindowInsetsListener(findViewById(this)) { v, insets ->
+					val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+					v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+					insets
+				}
+			}
+		}
 
 		onBackPressedDispatcher.addCallback(this@BaseActivity, backPress)
 
@@ -113,6 +137,8 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 	protected fun launchDisposable(job: () -> Disposable) {
 		_disposable.add(job())
 	}
+
+	open fun getContainerId(): Int = LAYOUT_INVALID
 
 	override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
 		if (ev.action == MotionEvent.ACTION_UP) {

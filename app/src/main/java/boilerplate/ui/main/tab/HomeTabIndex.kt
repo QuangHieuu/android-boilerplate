@@ -4,6 +4,7 @@ import android.util.Pair
 import androidx.fragment.app.Fragment
 import boilerplate.R
 import boilerplate.ui.empty.EmptyFragment
+import boilerplate.ui.home.HomeFragment
 
 object HomeTabIndex {
 
@@ -70,7 +71,7 @@ object HomeTabIndex {
 			tabTitle.add("eOffice")
 			tabPosition.add(POSITION_HOME_MENU)
 		} else {
-			fragments.add(Pair(ID_HOME_DASHBOARD, EmptyFragment.newInstance()))
+			fragments.add(Pair(ID_HOME_DASHBOARD, HomeFragment.newInstance()))
 			tabIcon.add(R.drawable.state_ic_tab_home)
 			tabTitle.add("Trang chủ")
 			tabPosition.add(POSITION_HOME_DASHBOARD)
