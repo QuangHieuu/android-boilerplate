@@ -4,27 +4,28 @@ import android.app.job.JobInfo
 import android.app.job.JobScheduler
 import android.content.ComponentName
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.view.ViewCompat
+import androidx.core.splashscreen.SplashScreen
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.*
 import androidx.window.layout.WindowInfoTracker
 import boilerplate.R
 import boilerplate.base.BaseActivity
+import boilerplate.base.PagerAdapterBuilder
 import boilerplate.databinding.ActivityMainBinding
 import boilerplate.model.file.MimeType
 import boilerplate.service.network.NetworkSchedulerService
-import boilerplate.ui.main.adapter.HomePagerAdapter
-import boilerplate.ui.main.adapter.customTab
 import boilerplate.ui.main.tab.HomeTabIndex
 import boilerplate.ui.splash.StartActivity
 import boilerplate.utils.InternetManager
 import boilerplate.utils.extension.*
-import boilerplate.utils.keyboard.InsetsWithKeyboardCallback
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -34,31 +35,45 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
 	}
 
 	override val viewModel: MainVM by viewModel()
-
+	private lateinit var _splashScreen: SplashScreen
 	private lateinit var _windowInfoTracker: WindowInfoTracker
-	private lateinit var _homeAdapter: HomePagerAdapter
+	private lateinit var _homeAdapter: PagerAdapterBuilder
 
 	private var _isBackFromBackground = false
 
 	override fun getContainerId(): Int = R.id.app_container
 
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
+	override fun getWindowInsets(): View = binding.frameTablet
 
-		val insetsWithKeyboardCallback = InsetsWithKeyboardCallback(window) { isKeyboardHide ->
-			binding.tabLayoutHome.show(isKeyboardHide)
+	override fun onConfigurationChanged(newConfig: Configuration) {
+		super.onConfigurationChanged(newConfig)
+
+		setPageData()
+	}
+
+	override fun onCreate(savedInstanceState: Bundle?) {
+		_splashScreen = installSplashScreen().apply {
+			setKeepOnScreenCondition { true }
 		}
-		ViewCompat.setOnApplyWindowInsetsListener(
-			binding.frameTablet,
-			insetsWithKeyboardCallback
-		)
-		ViewCompat.setWindowInsetsAnimationCallback(
-			binding.frameTablet,
-			insetsWithKeyboardCallback
-		)
+		super.onCreate(savedInstanceState)
 
 		_windowInfoTracker = WindowInfoTracker.getOrCreate(this@MainActivity)
 		_isBackFromBackground = false
+
+		lifecycleScope.launch {
+			lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+				_windowInfoTracker.windowLayoutInfo(this@MainActivity).collect {
+					splitScreen()
+				}
+			}
+		}
+
+		lifecycleScope.launch(Dispatchers.IO) {
+			lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+				if (_isBackFromBackground && InternetManager.isConnected()) {
+				}
+			}
+		}
 
 		lifecycleScope.launch {
 			lifecycle.withCreated {
@@ -66,14 +81,6 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
 			}
 			lifecycle.withStarted {
 				requestPermissionNotify()
-				splitScreen()
-			}
-		}
-
-		lifecycleScope.launch {
-			lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-				if (_isBackFromBackground && InternetManager.isConnected()) {
-				}
 			}
 		}
 	}
@@ -89,8 +96,10 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
 	}
 
 	override fun initialize() {
+		_splashScreen.setKeepOnScreenCondition { false }
 		handleDataFromApp(intent)
-		initHomepage()
+
+		createPage()
 	}
 
 	override fun onSubscribeObserver() {
@@ -117,37 +126,31 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
 	override fun callApi() {
 	}
 
-	override fun handleLogout() {
+	override fun onLogout() {
 	}
 
-	private fun initHomepage() {
+	override fun onKeyboardCallBack(isKeyboardShow: Boolean) {
+		binding.tabLayoutHome.show(isKeyboardShow)
+	}
+
+	private fun createPage() {
 		with(binding) {
-			_homeAdapter = HomePagerAdapter(supportFragmentManager, lifecycle)
-			viewPagerHome.apply {
-				setAdapter(_homeAdapter)
-				setUserInputEnabled(false)
-				setOffscreenPageLimit(4)
-			}
-
-			HomeTabIndex.setupFragment(isTablet()).let {
-				_homeAdapter.addFragment(it)
-				viewModel.tabPosition.postValue(HomeTabIndex.tabPosition)
-			}
-
-			TabLayoutMediator(
-				tabLayoutHome,
-				viewPagerHome,
-				true,
-				false
-			) { tab: TabLayout.Tab, position: Int ->
-				tab.setCustomView(
-					tab.customTab(
-						HomeTabIndex.tabTitle[position],
-						HomeTabIndex.tabIcon[position]
-					)
-				)
-			}.attach()
+			_homeAdapter = PagerAdapterBuilder(this@MainActivity, viewPagerHome, tabLayoutHome)
+				.offsetScreenLimit(4)
+				.userInputEnable(false)
+				.customTab(autoRefresh = true, smoothScroll = false)
 		}
+		setPageData()
+	}
+
+	private fun setPageData() {
+		val fragments = HomeTabIndex.setupFragment(isTablet())
+		_homeAdapter
+			.detach()
+			.fragment(fragments)
+			.tabIcon(HomeTabIndex.tabIcon)
+			.tabTitle(HomeTabIndex.tabTitle)
+			.build()
 	}
 
 	private fun scheduleJob() {
@@ -172,8 +175,8 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
 		}
 	}
 
-	private fun splitScreen() {
-		binding.frameTablet.apply { if (isTablet()) show() else gone() }
+	private suspend fun splitScreen() = coroutineScope {
+		binding.frameTablet.show(isTablet())
 		with(binding.appContainer) {
 			val set = ConstraintSet()
 			set.clone(this)

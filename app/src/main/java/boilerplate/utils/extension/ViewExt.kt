@@ -21,6 +21,7 @@ import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
+import androidx.viewbinding.ViewBinding
 import boilerplate.R
 import boilerplate.constant.Constants.KEY_AUTH
 import boilerplate.databinding.ViewToastBinding
@@ -211,8 +212,9 @@ fun ImageView.loadImage(
 	}
 }
 
-fun View.click(block: ((v: View) -> Unit)?) {
-	block.notNull { setOnClickListener(ClickUtil.onClick { v -> it(v) }) }
+fun <T : View> T.click(function: ((v: View) -> Unit)?): T {
+	function.notNull { ClickUtil.onClick(block = it) }
+	return this
 }
 
 //fun View.clicks(isCheckNetwork: Boolean): Observable<View> {
@@ -238,7 +240,7 @@ fun View.click(block: ((v: View) -> Unit)?) {
 //    )
 //}
 
-fun View.performClick(view: View) {
+fun View.performClickOn(view: View) {
 	setOnClickListener { view.performClick() }
 }
 
@@ -304,4 +306,11 @@ fun DialogFragment.setWidthPercent(widthPercent: Int = 60, heightPercent: Int = 
 		dialog?.let { it.window?.setLayout(width.toInt(), height.toInt()) }
 	} catch (_: Exception) {
 	}
+}
+
+inline fun <T : ViewBinding> ViewGroup.viewBinding(factory: (LayoutInflater, ViewGroup, Boolean) -> T) =
+	factory(LayoutInflater.from(context), this, false)
+
+fun <T : View> T.themeWrapper(): T {
+	return this
 }

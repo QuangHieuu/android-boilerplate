@@ -17,7 +17,9 @@ import android.view.animation.Transformation
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.content.withStyledAttributes
 import androidx.core.text.util.LinkifyCompat
+import androidx.core.view.isGone
 import boilerplate.R
 import boilerplate.utils.extension.click
 import boilerplate.utils.extension.toTextSize
@@ -67,7 +69,7 @@ open class AppTextViewExpand @JvmOverloads constructor(
 
 	private fun initView(attrs: AttributeSet?) {
 		if (attrs != null) {
-			context.obtainStyledAttributes(attrs, R.styleable.AppTextViewExpand, 0, 0).apply {
+			context.withStyledAttributes(attrs, R.styleable.AppTextViewExpand, 0, 0) {
 				maxLines = getInt(R.styleable.AppTextViewExpand_max_line, MAX_LINES_ON_SHRINK)
 				isShowText = getBoolean(R.styleable.AppTextViewExpand_show_text_collapse, true)
 				isEnableCollapse = getBoolean(R.styleable.AppTextViewExpand_enable_collapse, true)
@@ -81,7 +83,7 @@ open class AppTextViewExpand @JvmOverloads constructor(
 					R.font.roboto_regular
 				)
 				typeface = ResourcesCompat.getFont(context, typefaceAssetPath)!!
-			}.recycle()
+			}
 		}
 	}
 
@@ -122,7 +124,7 @@ open class AppTextViewExpand @JvmOverloads constructor(
 
 	override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-		if (visibility == View.GONE || !isNeedReMeasure) {
+		if (isGone || !isNeedReMeasure) {
 			return
 		}
 		isNeedReMeasure = false

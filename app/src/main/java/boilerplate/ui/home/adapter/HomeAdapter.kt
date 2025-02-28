@@ -1,24 +1,36 @@
 package boilerplate.ui.home.adapter
 
-import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import boilerplate.databinding.ItemHomeAdapterBinding
+import boilerplate.base.BaseRcvAdapter
+import boilerplate.base.BaseVH
+import boilerplate.base.HolderBuilder
+import boilerplate.base.build
+import boilerplate.databinding.HolderHomeBinding
+import boilerplate.utils.extension.viewBinding
 
-class HomeAdapter : RecyclerView.Adapter<HomeVH>() {
-	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeVH {
-		return HomeVH(
-			ItemHomeAdapterBinding
-				.inflate(LayoutInflater.from(parent.context), parent, false)
-		)
+object HomeViewType {
+	const val TYPE_HOME = 0
+}
+
+class HomeAdapter : BaseRcvAdapter<Any>() {
+	override fun onBuildHolder(): List<HolderBuilder<Any>> {
+		return builder {
+			build(HomeViewType.TYPE_HOME, HomeVH::holder, { position, any -> true })
+		}
 	}
 
-	override fun getItemCount(): Int = 5
-
-	override fun onBindViewHolder(holder: HomeVH, position: Int) {
+	override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 	}
 }
 
-class HomeVH(binding: ItemHomeAdapterBinding) : RecyclerView.ViewHolder(binding.root) {
+class HomeVH(
+	parent: ViewGroup
+) : BaseVH<HolderHomeBinding>(parent.viewBinding(HolderHomeBinding::inflate)) {
 
+	companion object {
+		fun holder(parent: ViewGroup): HomeVH {
+			return HomeVH(parent)
+		}
+	}
 }

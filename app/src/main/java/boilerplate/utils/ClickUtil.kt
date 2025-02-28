@@ -6,39 +6,29 @@ import android.view.View
 import boilerplate.utils.extension.ANIMATION_DELAY
 
 open class ClickUtil(
-	private var longClick: Long,
-	private val mListener: OnClick
+	private val longClick: Long,
+	private val block: (v: View) -> Unit
 ) : View.OnClickListener {
-	interface OnClick {
-		fun onClick(v: View)
+	private val _handler = Handler(Looper.getMainLooper())
+	private val _clickLockRunnable = Runnable { _isLocked = false }
+	private var _isLocked = false
+
+	@Synchronized
+	fun isLocked(longClick: Long): Boolean {
+		if (_isLocked) return true
+		_handler.postDelayed(_clickLockRunnable, longClick)
+		_isLocked = true
+		return false
 	}
 
 	override fun onClick(v: View) {
 		if (!isLocked(longClick)) {
-			mListener.onClick(v)
+			block(v)
 		}
 	}
 
 	companion object {
-		fun onClick(
-			time: Long = ANIMATION_DELAY,
-			block: (v: View) -> Unit
-		): View.OnClickListener = ClickUtil(time, object : OnClick {
-			override fun onClick(v: View) {
-				block(v)
-			}
-		})
-
-		private val mHandler = Handler(Looper.getMainLooper())
-		private val mClickLockRunnable = Runnable { sIsLocked = false }
-		private var sIsLocked = false
-
-		@Synchronized
-		fun isLocked(longClick: Long): Boolean {
-			if (sIsLocked) return true
-			mHandler.postDelayed(mClickLockRunnable, longClick)
-			sIsLocked = true
-			return false
-		}
+		fun onClick(time: Long = ANIMATION_DELAY, block: (v: View) -> Unit): View.OnClickListener =
+			ClickUtil(time, block)
 	}
 }

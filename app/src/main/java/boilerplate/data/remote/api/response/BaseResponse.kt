@@ -1,20 +1,25 @@
 package boilerplate.data.remote.api.response
 
-data class Response<T>(
-	var result: T? = null,
-	var message: String = "",
+import boilerplate.model.BaseModel
+
+abstract class ResMessage {
+	var message: String = ""
 	var status: Int = 0
-)
+}
 
-data class Responses<T>(
+abstract class Response<T : BaseModel>(
+	var result: T? = null,
+) : ResMessage()
+
+abstract class Responses<T>(
 	var result: ArrayList<T> = arrayListOf()
-)
+) : ResMessage()
 
-data class ResponseItems<T>(
+abstract class ResponseItems<T>(
 	var result: Items<T>? = null,
-)
+) : ResMessage()
 
-data class Items<T>(
+abstract class Items<T>(
 	var items: ArrayList<T> = arrayListOf(),
 	var total: Int = 0
-)
+) : ResMessage()

@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
+import java.lang.ref.WeakReference
 
 fun <T> ArrayList<T>?.ifEmpty(): ArrayList<T> = this ?: arrayListOf()
 
@@ -33,7 +34,7 @@ val <T> List<T>.lastIndex: Int
 
 fun MutableList<Any>.swap(index1: Int, index2: Int) {
 
-	val tmp = this[index1]
+	val tmp: WeakReference<Any> = WeakReference(this[index1])
 
 	this[index1] = this[index2]
 

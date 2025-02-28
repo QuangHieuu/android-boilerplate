@@ -6,11 +6,14 @@ import android.app.job.JobService
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
+import android.os.Build
+import androidx.annotation.RequiresApi
 import boilerplate.utils.InternetManager
 
 @SuppressLint("SpecifyJobSchedulerIdRange")
-class NetworkSchedulerService : JobService(), ConnectivityReceiver.ConnectivityReceiverListener {
+abstract class NetWorkJobService : JobService(), ConnectivityReceiver.ConnectivityReceiverListener
 
+class NetworkSchedulerService : NetWorkJobService() {
 	private var _receiver: ConnectivityReceiver? = null
 	private var _isRegister = false
 	private var _lastConnected = true
@@ -47,5 +50,9 @@ class NetworkSchedulerService : JobService(), ConnectivityReceiver.ConnectivityR
 			}
 			_lastConnected = this
 		}
+	}
+
+	@RequiresApi(Build.VERSION_CODES.P)
+	override fun onNetworkChanged(params: JobParameters) {
 	}
 }

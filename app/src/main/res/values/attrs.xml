@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <declare-styleable name="DefaultStylesTheme">
+        <attr name="AppToolbarStyle" format="reference" />
+        <attr name="AppToolbarButtonStyle" format="reference" />
+    </declare-styleable>
 
     <declare-styleable name="AppTextView">
         <attr name="customTypeface" format="reference" />
@@ -36,13 +40,13 @@
         <attr name="subTitleTextAppearance" format="reference" />
         <attr name="menu" format="reference" />
         <attr name="backIcon" format="reference" />
+        <attr name="hasBackNavigate" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="AppToolbarButton">
-        <attr name="width" format="dimension" />
-        <attr name="height" format="dimension" />
+        <attr name="android:layout_width" />
+        <attr name="android:layout_height" />
         <attr name="padding" format="dimension" />
-        <attr name="background" format="reference" />
     </declare-styleable>
 
     <declare-styleable name="AppImageView">
