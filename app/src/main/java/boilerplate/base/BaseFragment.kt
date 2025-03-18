@@ -19,7 +19,7 @@ import io.reactivex.rxjava3.disposables.Disposable
 import java.lang.reflect.ParameterizedType
 
 abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
-	protected val TAG = this.javaClass.simpleName
+	open val TAG = this.javaClass.simpleName
 
 	private var _binding: AC? = null
 	protected val binding: AC

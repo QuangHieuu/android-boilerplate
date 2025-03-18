@@ -1,29 +1,36 @@
 package boilerplate.ui.empty
 
+import androidx.core.os.bundleOf
 import boilerplate.base.BaseFragment
-import boilerplate.databinding.ActivityEmptyBinding
+import boilerplate.databinding.FragmentEmptyBinding
 import boilerplate.ui.main.MainVM
-import boilerplate.widget.toolbar.backPress
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
-class EmptyFragment : BaseFragment<ActivityEmptyBinding, MainVM>() {
+class EmptyFragment : BaseFragment<FragmentEmptyBinding, MainVM>() {
 	companion object {
-		fun newInstance(): EmptyFragment {
-			return EmptyFragment()
+		private const val KEY_STRING = "KEY_STRING"
+
+		fun newInstance(s: String = ""): EmptyFragment {
+			return EmptyFragment().apply {
+				arguments = bundleOf(
+					KEY_STRING to s
+				)
+			}
 		}
 	}
 
 	override val viewModel: MainVM by activityViewModel()
 
 	override fun initialize() {
-		binding.toolbar.backPress { }
 	}
 
 	override fun onSubscribeObserver() {
 	}
 
 	override fun registerEvent() {
+		val bundle = arguments ?: bundleOf()
 		with(binding) {
+			tvEmpty.text = bundle.getString(KEY_STRING, "")
 		}
 	}
 

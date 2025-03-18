@@ -8,6 +8,7 @@ import android.text.style.ForegroundColorSpan
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.content.withStyledAttributes
 import boilerplate.R
 
 class AppTextView @JvmOverloads constructor(
@@ -43,23 +44,23 @@ class AppTextView @JvmOverloads constructor(
 		if (attrs == null) {
 			return
 		}
-		val array = context.obtainStyledAttributes(attrs, R.styleable.AppTextView, 0, 0)
-		val typefaceAssetPath =
-			array.getResourceId(R.styleable.AppTextView_customTypeface, R.font.roboto_regular)
-		val typeface = ResourcesCompat.getFont(context, typefaceAssetPath)
-		setTypeface(typeface)
-		val requireTitle: Boolean = array.getBoolean(R.styleable.AppTextView_require_title, false)
-		if (requireTitle) {
-			val builder = SpannableStringBuilder(text)
-			builder.append(" *")
-			builder.setSpan(
-				ForegroundColorSpan(Color.RED),
-				builder.length - 1,
-				builder.length,
-				Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-			)
-			text = builder
+		context.withStyledAttributes(attrs, R.styleable.AppTextView, 0, 0) {
+			val typefaceAssetPath =
+				getResourceId(R.styleable.AppTextView_customTypeface, R.font.roboto_regular)
+			val typeface = ResourcesCompat.getFont(context, typefaceAssetPath)
+			setTypeface(typeface)
+			val requireTitle: Boolean = getBoolean(R.styleable.AppTextView_require_title, false)
+			if (requireTitle) {
+				val builder = SpannableStringBuilder(text)
+				builder.append(" *")
+				builder.setSpan(
+					ForegroundColorSpan(Color.RED),
+					builder.length - 1,
+					builder.length,
+					Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+				)
+				text = builder
+			}
 		}
-		array.recycle()
 	}
 }

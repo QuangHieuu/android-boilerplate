@@ -9,8 +9,16 @@
         <item name="colorSecondary">@color/colorPrimary</item>
         <item name="colorSecondaryVariant">@color/colorPrimaryDark</item>
         <item name="colorOnSecondary">@color/colorWhite</item>
+
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+
         <!-- Status bar color. -->
+        <item name="android:navigationBarColor">@color/colorWhite</item>
+        <!-- Optional: set to transparent if your app is drawing behind the status bar. -->
         <item name="android:statusBarColor">@color/colorPrimary</item>
+        <!-- Optional: set for a light status bar with dark content. -->
+        <item name="android:windowLightStatusBar">false</item>
+
         <!-- Customize your theme here. -->
 
         <item name="toolbarStyle">@style/Widget.Toolbar</item>
@@ -19,6 +27,9 @@
 
         //Android 15
         <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:ignore="NewApi">true</item>
+
+        <item name="AppToolbarStyle">@style/AppToolbar</item>
+        <item name="AppToolbarButtonStyle">@style/AppToolbarButton</item>
     </style>
 
     <style name="CustomMaterialButton" parent="Theme.MaterialComponents" />
@@ -50,10 +61,6 @@
     </style>
 
     <style name="AppToolbar" parent="Widget.Toolbar">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">?attr/actionBarSize</item>
-        <item name="android:background">@color/colorPrimary</item>
-
         <item name="titleCentered">true</item>
         <item name="titleTextStyle">@style/StyleMedium</item>
         <item name="titleTextColor">@color/colorWhite</item>
@@ -62,11 +69,19 @@
         <item name="subtitleTextColor">@color/color_A2FFFFFF</item>
     </style>
 
-    <style name="AppToolbarButtonStyle">
-        <item name="width">@dimen/dp_48</item>
-        <item name="height">@dimen/dp_48</item>
-        <item name="padding">@dimen/dp_12</item>
-        <item name="background">@color/transparent</item>
+    <style name="AppToolbarButton">
+        <item name="android:layout_height">@dimen/dp_40</item>
+        <item name="android:layout_width">@dimen/dp_40</item>
+    </style>
+
+    <style name="AppToolbarButton.BackIcon" parent="AppToolbarButton">
+        <item name="android:layout_height">@dimen/dp_40</item>
+        <item name="android:layout_width">@dimen/dp_40</item>
+        <item name="android:paddingStart">@dimen/dp_12</item>
+        <item name="android:paddingTop">@dimen/dp_10</item>
+        <item name="android:paddingEnd">@dimen/dp_12</item>
+        <item name="android:paddingBottom">@dimen/dp_10</item>
+        <item name="android:src">@drawable/ic_arrow_previous_white</item>
     </style>
 
     <style name="AppToolbar.Title" parent="AppToolbar">

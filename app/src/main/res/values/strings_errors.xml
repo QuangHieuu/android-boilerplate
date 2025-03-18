@@ -6,4 +6,5 @@
 
     <string name="error_update">Cập nhật thất bại</string>
 
+    <string name="error_empty">Dữ liệu trống</string>
 </resources>

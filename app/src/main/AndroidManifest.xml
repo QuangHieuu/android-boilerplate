@@ -47,10 +47,11 @@
             android:value="true" />
 
         <activity
-            android:name=".ui.splash.StartActivity"
-            android:configChanges="orientation"
+            android:name=".ui.main.MainActivity"
+            android:configChanges="orientation|smallestScreenSize|screenSize|screenLayout"
             android:exported="true"
-            android:launchMode="singleTask"
+            android:launchMode="singleInstance"
+            android:resizeableActivity="true"
             android:taskAffinity="task.main"
             android:theme="@style/Theme.App.Starting"
             android:windowSoftInputMode="adjustNothing">
@@ -58,15 +59,6 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".ui.main.MainActivity"
-            android:configChanges="orientation"
-            android:exported="true"
-            android:launchMode="singleTask"
-            android:taskAffinity="task.main"
-            android:theme="@style/Theme.App"
-            android:windowSoftInputMode="adjustNothing">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />

@@ -1,9 +1,9 @@
 package boilerplate.ui.main.tab
 
-import android.util.Pair
-import androidx.fragment.app.Fragment
 import boilerplate.R
+import boilerplate.base.PageData
 import boilerplate.ui.empty.EmptyFragment
+import boilerplate.ui.home.HomeFragment
 
 object HomeTabIndex {
 
@@ -15,8 +15,8 @@ object HomeTabIndex {
 	const val POSITION_MESSAGE_TAB: String = "POSITION_MESSAGE_TAB"
 	const val POSITION_SETTING_TAB: String = "POSITION_SETTING_TAB"
 
-	private var ID_HOME_DASHBOARD = 0
-	private const val ID_HOME_MENU = 0
+	private const val ID_HOME_DASHBOARD = 101
+	private const val ID_HOME_MENU = 102
 	private const val ID_WORK_MANAGER_TAB = 1
 	private const val ID_CALENDAR_TAB = 1
 	private const val ID_CONTACT_TAB = 2
@@ -57,41 +57,41 @@ object HomeTabIndex {
 	val contactPosition: Int
 		get() = tabPosition.indexOf(POSITION_CONTACT_TAB)
 
-	fun setupFragment(tablet: Boolean): ArrayList<Pair<Int, Fragment>> {
+	fun setupFragment(tablet: Boolean): ArrayList<PageData> {
 		tabIcon.clear()
 		tabTitle.clear()
 		tabPosition.clear()
 
-		val fragments = ArrayList<Pair<Int, Fragment>>()
+		val fragments = ArrayList<PageData>()
 
 		if (tablet) {
-			fragments.add(Pair(ID_HOME_MENU, EmptyFragment.newInstance()))
+			fragments.add(PageData(ID_HOME_MENU, EmptyFragment.newInstance("eOffice")))
 			tabIcon.add(R.drawable.state_ic_tab_menu)
 			tabTitle.add("eOffice")
 			tabPosition.add(POSITION_HOME_MENU)
 		} else {
-			fragments.add(Pair(ID_HOME_DASHBOARD, EmptyFragment.newInstance()))
+			fragments.add(PageData(ID_HOME_DASHBOARD, HomeFragment.newInstance()))
 			tabIcon.add(R.drawable.state_ic_tab_home)
 			tabTitle.add("Trang chủ")
 			tabPosition.add(POSITION_HOME_DASHBOARD)
 		}
 
-		fragments.add(Pair(ID_CALENDAR_TAB, EmptyFragment.newInstance()))
+		fragments.add(PageData(ID_CALENDAR_TAB, EmptyFragment.newInstance("Lịch họp")))
 		tabIcon.add(R.drawable.state_ic_tab_calendar)
 		tabTitle.add("Lịch họp")
 		tabPosition.add(POSITION_CALENDAR_TAB)
 
-		fragments.add(Pair(ID_CONTACT_TAB, EmptyFragment.newInstance()))
+		fragments.add(PageData(ID_CONTACT_TAB, EmptyFragment.newInstance("Danh bạ")))
 		tabIcon.add(R.drawable.state_ic_tab_contact)
 		tabTitle.add("Danh bạ")
 		tabPosition.add(POSITION_CONTACT_TAB)
 
-		fragments.add(Pair(ID_MESSAGE_TAB, EmptyFragment.newInstance()))
+		fragments.add(PageData(ID_MESSAGE_TAB, EmptyFragment.newInstance("Tin nhắn")))
 		tabIcon.add(R.drawable.state_ic_tab_chat)
 		tabTitle.add("Tin nhắn")
 		tabPosition.add(POSITION_MESSAGE_TAB)
 
-		fragments.add(Pair(ID_SETTING_TAB, EmptyFragment.newInstance()))
+		fragments.add(PageData(ID_SETTING_TAB, EmptyFragment.newInstance("Tiện ích")))
 		tabIcon.add(R.drawable.state_ic_tab_setting)
 		tabTitle.add("Tiện ích")
 		tabPosition.add(POSITION_SETTING_TAB)

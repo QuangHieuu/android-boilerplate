@@ -1,7 +1,6 @@
 package boilerplate.widget.customText
 
 import android.content.Context
-import android.content.res.TypedArray
 import android.os.Build
 import android.text.InputType
 import android.util.AttributeSet
@@ -11,6 +10,7 @@ import android.view.inputmethod.InputConnection
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.content.withStyledAttributes
 import androidx.core.view.ViewCompat
 import androidx.core.view.inputmethod.EditorInfoCompat
 import androidx.core.view.inputmethod.InputConnectionCompat
@@ -60,13 +60,12 @@ class AppEditText @JvmOverloads constructor(
 				ResourcesCompat.getDrawable(resources, R.drawable.bg_cursor, null)
 		}
 
-		val array: TypedArray =
-			context.obtainStyledAttributes(attrs, R.styleable.AppEditText, defStyle, 0)
-		val typefaceAssetPath: Int =
-			array.getResourceId(R.styleable.AppEditText_customEditTypeface, R.font.roboto_regular)
-		val typeface = ResourcesCompat.getFont(getContext(), typefaceAssetPath)
-		setTypeface(typeface)
-		array.recycle()
+		context.withStyledAttributes(attrs, R.styleable.AppEditText, defStyle, 0) {
+			val typefaceAssetPath: Int =
+				getResourceId(R.styleable.AppEditText_customEditTypeface, R.font.roboto_regular)
+			val typeface = ResourcesCompat.getFont(getContext(), typefaceAssetPath)
+			setTypeface(typeface)
+		}
 	}
 
 	override fun setInputType(type: Int) {

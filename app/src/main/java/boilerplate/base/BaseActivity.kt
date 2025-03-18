@@ -15,9 +15,14 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.viewbinding.ViewBinding
+import boilerplate.R
+import boilerplate.constant.Constants.LAYOUT_INVALID
 import boilerplate.utils.extension.*
+import boilerplate.utils.keyboard.InsetsWithKeyboardCallback
 import boilerplate.widget.customText.AppEditText
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -29,17 +34,15 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 	protected val binding: AC get() = _binding!!
 
 	private val _disposable = CompositeDisposable()
-
-	private lateinit var _request: ActivityResultLauncher<Array<String>>
 	private var _blockGrand: (() -> Unit)? = null
 	private val _listRequest: ArrayList<Permission> = arrayListOf()
 
-	private val backPress by lazy {
+	private val _backPress by lazy {
 		object : OnBackPressedCallback(true) {
 			override fun handleOnBackPressed() {
 				val stack = supportFragmentManager.backStackEntryCount
-				val fullScreen = supportFragmentManager.findFragmentById(boilerplate.R.id.app_container)
-				val splitScreen = supportFragmentManager.findFragmentById(boilerplate.R.id.frame_tablet)
+				val fullScreen = supportFragmentManager.findFragmentById(R.id.app_container)
+				val splitScreen = supportFragmentManager.findFragmentById(R.id.frame_tablet)
 				if (isTablet()) {
 					if (splitScreen != null) {
 						if (stack > 1 || fullScreen != null) {
@@ -56,6 +59,20 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 			}
 		}
 	}
+
+	private val _invalidTokeReceiver = object : BroadcastReceiver() {
+		override fun onReceive(context: Context?, intent: Intent?) {
+			intent.notNull {
+				val bundle: Bundle = it.getBundleExtra(BaseApp.APP_FILTER_INVALID) ?: Bundle()
+				val data = bundle.getBoolean(BaseApp.APP_FILTER_INVALID, false)
+				if (data) {
+					onLogout()
+				}
+			}
+		}
+	}
+
+	private lateinit var _request: ActivityResultLauncher<Array<String>>
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		_request = registerForActivityResult(
@@ -81,7 +98,29 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 				.apply { _binding = this }.root
 		)
 
-		onBackPressedDispatcher.addCallback(this@BaseActivity, backPress)
+		val insetsWithKeyboardCallback = InsetsWithKeyboardCallback(window) { show ->
+			onKeyboardCallBack(show)
+		}
+		ViewCompat.setOnApplyWindowInsetsListener(
+			getWindowInsets(),
+			insetsWithKeyboardCallback
+		)
+		ViewCompat.setWindowInsetsAnimationCallback(
+			getWindowInsets(),
+			insetsWithKeyboardCallback
+		)
+
+		with(getContainerId()) {
+			if (this != LAYOUT_INVALID) {
+				ViewCompat.setOnApplyWindowInsetsListener(findViewById(this)) { v, insets ->
+					val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+					v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+					insets
+				}
+			}
+		}
+
+		onBackPressedDispatcher.addCallback(this@BaseActivity, _backPress)
 
 		initialize()
 		baseObserver()
@@ -98,20 +137,8 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 			clear()
 			dispose()
 		}
-		LocalBroadcastManager.getInstance(application).unregisterReceiver(invalidTokeReceiver)
+		LocalBroadcastManager.getInstance(application).unregisterReceiver(_invalidTokeReceiver)
 		super.onDestroy()
-	}
-
-	protected abstract fun initialize()
-
-	protected abstract fun onSubscribeObserver()
-
-	protected abstract fun registerOnClick()
-
-	protected abstract fun callApi()
-
-	protected fun launchDisposable(job: () -> Disposable) {
-		_disposable.add(job())
 	}
 
 	override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
@@ -148,37 +175,25 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 		return super.dispatchTouchEvent(ev)
 	}
 
-	private fun baseObserver() {
-		with(viewModel) {
-			error.observe(this@BaseActivity) {
-				binding.root.showFail(it)
-			}
-		}
+	protected abstract fun initialize()
+
+	protected abstract fun onSubscribeObserver()
+
+	protected abstract fun registerOnClick()
+
+	protected abstract fun callApi()
+
+	protected fun launchDisposable(job: () -> Disposable) {
+		_disposable.add(job())
 	}
 
-	private fun closeView(stack: Int) {
-		if (stack == 0) {
-			finish()
-		} else {
-			supportFragmentManager.popBackStack()
-		}
-	}
+	protected open fun onLogout() {}
 
-	private val invalidTokeReceiver = object : BroadcastReceiver() {
-		override fun onReceive(context: Context?, intent: Intent?) {
-			intent.notNull {
-				val bundle: Bundle = it.getBundleExtra(BaseApp.APP_FILTER_INVALID) ?: Bundle()
-				val data = bundle.getBoolean(BaseApp.APP_FILTER_INVALID, false)
-				if (data) {
-					handleLogout()
-				}
-			}
-		}
-	}
+	protected open fun onKeyboardCallBack(isKeyboardShow: Boolean) {}
 
-	protected open fun handleLogout() {
+	open fun getContainerId(): Int = LAYOUT_INVALID
 
-	}
+	open fun getWindowInsets(): View = binding.root
 
 	fun permission(permissions: Array<String>, grand: () -> Unit) {
 		_blockGrand = grand
@@ -193,6 +208,22 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 			_blockGrand = null
 		} else {
 			_request.launch(_listRequest.map { it.name }.toTypedArray())
+		}
+	}
+
+	private fun baseObserver() {
+		with(viewModel) {
+			error.observe(this@BaseActivity) {
+				binding.root.showFail(it)
+			}
+		}
+	}
+
+	private fun closeView(stack: Int) {
+		if (stack == 0) {
+			finish()
+		} else {
+			supportFragmentManager.popBackStack()
 		}
 	}
 
