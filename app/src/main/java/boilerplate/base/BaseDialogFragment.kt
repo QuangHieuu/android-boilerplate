@@ -15,6 +15,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.viewbinding.ViewBinding
 import boilerplate.R
 import boilerplate.utils.extension.*
+import boilerplate.utils.keyboard.hideKeyboard
 import boilerplate.widget.customText.AppEditText
 import boilerplate.widget.loading.LoadingLayout
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -106,7 +107,7 @@ abstract class BaseDialogFragment<AC : ViewBinding, VM : BaseViewModel> : Dialog
 				return super.dispatchTouchEvent(ev)
 			}
 		}.apply {
-			setOnKeyListener { v: DialogInterface?, keyCode: Int, event: KeyEvent ->
+			setOnKeyListener { _: DialogInterface?, keyCode: Int, event: KeyEvent ->
 				if ((keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP)) {
 					dismiss()
 					return@setOnKeyListener true

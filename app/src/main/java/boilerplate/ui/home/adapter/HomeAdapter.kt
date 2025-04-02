@@ -7,6 +7,7 @@ import boilerplate.base.BaseVH
 import boilerplate.base.HolderBuilder
 import boilerplate.base.build
 import boilerplate.databinding.HolderHomeBinding
+import boilerplate.model.User
 import boilerplate.utils.extension.viewBinding
 
 object HomeViewType {
@@ -16,11 +17,14 @@ object HomeViewType {
 class HomeAdapter : BaseRcvAdapter<Any>() {
 	override fun onBuildHolder(): List<HolderBuilder<Any>> {
 		return builder {
-			build(HomeViewType.TYPE_HOME, HomeVH::holder, { position, any -> true })
+			build(HomeViewType.TYPE_HOME, HomeVH::holder, { _, _ -> true })
 		}
 	}
 
-	override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+	override fun onBindHolder(holder: RecyclerView.ViewHolder, position: Int) {
+		when (holder) {
+			is HomeVH -> holder.onBind(dataList[position] as User)
+		}
 	}
 }
 
@@ -32,5 +36,9 @@ class HomeVH(
 		fun holder(parent: ViewGroup): HomeVH {
 			return HomeVH(parent)
 		}
+	}
+
+	fun onBind(user: User) {
+		binding.tvTitle.text = user.name
 	}
 }

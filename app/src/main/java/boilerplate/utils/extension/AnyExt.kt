@@ -8,10 +8,14 @@ import android.app.Application
 import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.os.Build
 import android.view.View
 import android.view.WindowInsets
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.createBitmap
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
@@ -109,4 +113,13 @@ fun Resources.isTablet(): Boolean = Configuration.SCREENLAYOUT_SIZE_LARGE <=
 fun Float.toTextSize(): Float {
 	val displayMetrics = Resources.getSystem().displayMetrics
 	return this / displayMetrics.density
+}
+
+fun Context.getBitmapFromDrawable(drawableId: Int): Bitmap? {
+	val drawable = ContextCompat.getDrawable(this, drawableId) ?: return null
+	val bitmap = createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight)
+	val canvas = Canvas(bitmap)
+	drawable.setBounds(0, 0, canvas.width, canvas.height)
+	drawable.draw(canvas)
+	return bitmap
 }

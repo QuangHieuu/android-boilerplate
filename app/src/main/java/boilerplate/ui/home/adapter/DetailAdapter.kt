@@ -20,7 +20,7 @@ class DetailAdapter : BaseRcvAdapter<Any>() {
 		}
 	}
 
-	override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+	override fun onBindHolder(holder: RecyclerView.ViewHolder, position: Int) {
 		when (holder) {
 			is UserVH -> holder.onBind(dataList[position] as User)
 		}

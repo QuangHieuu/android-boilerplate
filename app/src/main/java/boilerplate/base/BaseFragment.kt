@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.core.view.contains
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
@@ -17,6 +18,12 @@ import boilerplate.widget.loading.LoadingLayout
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import java.lang.reflect.ParameterizedType
+
+
+fun <T : BaseFragment<*, *>> T.putBundle(vararg pairs: Pair<String, Any?>): T {
+	arguments = bundleOf(*pairs)
+	return this
+}
 
 abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
 	open val TAG = this.javaClass.simpleName
@@ -114,10 +121,6 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
 	protected abstract fun registerEvent()
 
 	protected abstract fun callApi()
-
-	protected open fun popFragment() {
-		parentFragmentManager.popBackStack()
-	}
 
 	protected fun launchDisposable(vararg job: Disposable) {
 		_disposable.addAll(*job)

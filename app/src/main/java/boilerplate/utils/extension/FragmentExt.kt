@@ -7,7 +7,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.KeyEvent
-import androidx.annotation.IdRes
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
@@ -18,7 +19,7 @@ import boilerplate.R
 import boilerplate.constant.Constants
 import kotlin.reflect.KClass
 
-fun <T : Fragment> Fragment.findOwner(): Fragment {
+fun Fragment.findOwner(): Fragment {
 	val fragment =
 		requireActivity().supportFragmentManager.findFragmentByTag(this.javaClass.simpleName)
 			?: parentFragmentManager.findFragmentByTag(this.javaClass.simpleName)
@@ -35,16 +36,16 @@ fun <T : Fragment> Fragment.findOwner(): Fragment {
 }
 
 fun Fragment.open(
-	isChild: Boolean = true,
 	fragment: Fragment,
 	asDialog: Boolean = isTablet(),
-	split: Boolean = false,
-	addToBackStack: Boolean = true,
+	split: Boolean = isTablet(),
 	animateType: AnimateType = AnimateType.SLIDE_TO_LEFT,
-	@IdRes containerId: Int = R.id.app_container,
-	tag: String = fragment::class.java.simpleName,
+	sharedElement: View
 ) {
-	val fm = if (isChild) childFragmentManager else requireActivity().supportFragmentManager
+	val containerId = requireActivity().window.findViewById<ViewGroup>(android.R.id.content).id
+	val fm = requireActivity().supportFragmentManager
+	val tag: String = this::class.java.simpleName
+
 	if (asDialog && fragment is DialogFragment) {
 		if (fm.isExistFragment(fragment)) {
 			fm.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE)
@@ -56,9 +57,9 @@ fun Fragment.open(
 		fragment.showsDialog = false
 	}
 	fm.transact({
-		if (addToBackStack) {
-			addToBackStack(tag)
-		}
+		addSharedElement(sharedElement, sharedElement.transitionName)
+		setReorderingAllowed(true)
+		addToBackStack(tag)
 		if (isTablet() && split) {
 			if (fm.isExistFragment(fragment)) {
 				fm.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE)
@@ -81,33 +82,23 @@ fun <T : Activity> Fragment.goTo(
 }
 
 fun Fragment.clearAllFragment() {
-	parentFragmentManager.notNull { fm ->
+	childFragmentManager.notNull { fm ->
 		for (i in 1 until fm.backStackEntryCount) {
 			fm.popBackStack()
 		}
 	}
 }
 
-fun Fragment.isCanPopBackStack(): Boolean {
-	parentFragmentManager.notNull {
-		val isShowPreviousPage = it.backStackEntryCount > 0
-		if (isShowPreviousPage) {
-			it.popBackStackImmediate()
-		}
-		return isShowPreviousPage
-	}
-	return false
+fun Fragment.popFragment() {
+	childFragmentManager.popBackStack()
 }
 
-/**
- * Runs a FragmentTransaction, then calls commitAllowingStateLoss().
- */
 inline fun FragmentManager.transact(
 	action: FragmentTransaction.() -> Unit,
 	animate: AnimateType = AnimateType.SLIDE_TO_LEFT,
 ) {
 	beginTransaction().apply {
-		setCustomAnimations(this, animate)
+//		setCustomAnimations(this, animate)
 		action()
 	}.commitAllowingStateLoss()
 }

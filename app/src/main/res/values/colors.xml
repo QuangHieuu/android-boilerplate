@@ -14,8 +14,6 @@
 
     <color name="colorBlack20">#20202020</color>
     <color name="colorBlack40">#40202020</color>
-    <color name="colorBlack">#202020</color>
-    <color name="colorWhite">#FFFFFF</color>
     <color name="colorHint">#59081C36</color>
     <color name="colorStroke">#E4E4E4</color>
     <color name="colorAppBackground">#F3F6FC</color>
@@ -26,12 +24,13 @@
     <color name="color_toast_warning">#d19330</color>
     <color name="color_toast_fail">#DC374D</color>
 
-    <!--work-->
-    <color name="color_work_yellow">#d19330</color>
-    <color name="color_work_jade">#32d5c2</color>
-    <color name="color_work_blue">#326ef6</color>
-    <color name="color_work_green">#5ba83e</color>
-    <color name="color_work_red">#f60a18</color>
+    <color name="color_black">#202020</color>
+    <color name="color_white">#FFFFFF</color>
+    <color name="color_yellow">#d19330</color>
+    <color name="color_jade">#32d5c2</color>
+    <color name="color_blue">#326ef6</color>
+    <color name="color_green">#5ba83e</color>
+    <color name="color_red">#f60a18</color>
 
     <color name="color_conversation_unread">#ECF6FA</color>
     <color name="color_conversation_quote">#F1F1F1</color>

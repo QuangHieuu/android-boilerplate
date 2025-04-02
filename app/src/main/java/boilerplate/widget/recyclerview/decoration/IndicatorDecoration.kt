@@ -1,8 +1,7 @@
-package boilerplate.widget.recyclerview
+package boilerplate.widget.recyclerview.decoration
 
 import android.content.res.Resources
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -10,80 +9,111 @@ import android.view.animation.Interpolator
 import androidx.annotation.ColorInt
 import androidx.annotation.Dimension
 import androidx.annotation.IntDef
+import androidx.core.graphics.toColorInt
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
+import boilerplate.base.BaseRcvAdapter
+import boilerplate.widget.recyclerview.layoutManager.LoopingLayoutManager
 import kotlin.math.max
 
 
-class IndicatorBuilder(
-	private val _recyclerView: RecyclerView
+fun RecyclerView.LayoutManager?.getOrientation(): Int {
+	return when (this) {
+		is LinearLayoutManager -> orientation
+		is LoopingLayoutManager -> orientation
+		else -> RecyclerView.VERTICAL
+	}
+}
+
+fun RecyclerView.LayoutManager?.findFirstVisibleItemPosition(): Int {
+	return when (this) {
+		is LinearLayoutManager -> findFirstVisibleItemPosition()
+		is LoopingLayoutManager -> findFirstVisibleItemPosition()
+		else -> RecyclerView.NO_POSITION
+	}
+}
+
+fun RecyclerView.LayoutManager?.findLastVisibleItemPosition(): Int {
+	return when (this) {
+		is LinearLayoutManager -> findLastVisibleItemPosition()
+		is LoopingLayoutManager -> findLastVisibleItemPosition()
+		else -> RecyclerView.NO_POSITION
+	}
+}
+
+class IndicatorBuilder<T : BaseRcvAdapter<*>>(
+	private val _recyclerView: RecyclerView,
+	private val _adapter: T
 ) {
 	private val _instance = IndicatorDecoration()
 
 	private var _snapHelper: SnapHelper = LinearSnapHelper()
 
 	init {
-		(_recyclerView.layoutManager as? LinearLayoutManager)?.let { orientation(it.orientation) }
+		_recyclerView.adapter = _adapter
+		_instance.attachAdapter = _adapter
+
+		orientation(_recyclerView.layoutManager.getOrientation())
 	}
 
-	fun paddingBottom(@Dimension padding: Float): IndicatorBuilder {
-		_instance.paddingBottom = padding
+	fun isUnderView(): IndicatorBuilder<T> {
+		_instance.isUnderView = true
 		return this
 	}
 
-	fun indicatorTextSize(@Dimension size: Float): IndicatorBuilder {
+	fun indicatorTextSize(@Dimension size: Float): IndicatorBuilder<T> {
 		_instance.paint.textSize = size
 		return this
 	}
 
-	fun indicatorType(@IndicatorType type: Int): IndicatorBuilder {
+	fun indicatorType(@IndicatorType type: Int): IndicatorBuilder<T> {
 		_instance.indicatorType = type
 		return this
 	}
 
-	fun indicatorCircleEffect(@CircleEffect effect: Int): IndicatorBuilder {
+	fun indicatorCircleEffect(@CircleEffect effect: Int): IndicatorBuilder<T> {
 		_instance.circleEffect = effect
 		return this
 	}
 
-	fun indicatorWidth(@Dimension height: Float): IndicatorBuilder {
+	fun indicatorWidth(@Dimension height: Float): IndicatorBuilder<T> {
 		_instance.indicatorWidth = height
 		return this
 	}
 
-	fun smallIndicatorWidth(@Dimension height: Float): IndicatorBuilder {
+	fun smallIndicatorWidth(@Dimension height: Float): IndicatorBuilder<T> {
 		_instance.smallIndicatorWidth = height
 		return this
 	}
 
-	fun indicatorPadding(@Dimension padding: Float): IndicatorBuilder {
+	fun indicatorPadding(@Dimension padding: Float): IndicatorBuilder<T> {
 		_instance.indicatorPadding = padding
 		return this
 	}
 
-	fun activeColor(@ColorInt color: Int): IndicatorBuilder {
+	fun activeColor(@ColorInt color: Int): IndicatorBuilder<T> {
 		_instance.paintActive.color = color
 		return this
 	}
 
-	fun inactiveColor(@ColorInt color: Int): IndicatorBuilder {
+	fun inactiveColor(@ColorInt color: Int): IndicatorBuilder<T> {
 		_instance.paintInActive.color = color
 		return this
 	}
 
-	fun orientation(orientation: Int): IndicatorBuilder {
+	fun orientation(orientation: Int): IndicatorBuilder<T> {
 		_instance.orientation = orientation
 		return this
 	}
 
-	fun snapHelper(snapHelper: SnapHelper): IndicatorBuilder {
+	fun snapHelper(snapHelper: SnapHelper): IndicatorBuilder<T> {
 		_snapHelper = snapHelper
 		return this
 	}
 
-	fun build(): IndicatorBuilder {
+	fun build(): IndicatorBuilder<T> {
 		with(_recyclerView) {
 			_snapHelper.attachToRecyclerView(this)
 			addItemDecoration(_instance)
@@ -123,6 +153,8 @@ annotation class IndicatorType {
 private class IndicatorDecoration : RecyclerView.ItemDecoration() {
 	private val density = Resources.getSystem().displayMetrics.density
 
+	var attachAdapter: BaseRcvAdapter<*>? = null
+
 	@Dimension
 	var indicatorWidth: Float = 6F * density
 		get() {
@@ -135,7 +167,7 @@ private class IndicatorDecoration : RecyclerView.ItemDecoration() {
 	@Dimension
 	var smallIndicatorWidth: Float = 0f
 		get() {
-			return if (field == 0f) indicatorWidth - 3f else field
+			return if (field == 0f) indicatorWidth - 5f else field
 		}
 
 	@Dimension
@@ -158,6 +190,7 @@ private class IndicatorDecoration : RecyclerView.ItemDecoration() {
 	var orientation: Int = RecyclerView.HORIZONTAL
 	var indicatorTexts: ArrayList<String> = arrayListOf()
 	var interpolator: Interpolator = AccelerateDecelerateInterpolator()
+	var isUnderView = false
 
 	val paint: Paint = Paint().apply {
 		isAntiAlias = true
@@ -165,35 +198,40 @@ private class IndicatorDecoration : RecyclerView.ItemDecoration() {
 		strokeWidth = 2f * density
 	}
 	val paintActive = Paint(paint).apply {
-		color = Color.parseColor("#03A959")
+		color = "#000000".toColorInt()
 	}
 	val paintInActive = Paint(paint).apply {
-		color = Color.parseColor("#FFFFFF")
+		color = "#FFFFFF".toColorInt()
 	}
 
+	private val rectSize: Float = 15 * density
 	private val circleRadius: Float
 		get() {
 			return indicatorWidth / 2
 		}
 	private val smallCircleRadius: Float
-		get() = smallIndicatorWidth / 2
+		get() = smallIndicatorWidth / 2.5f
 
 	private val indicatorDistanceItem: Float
 		get() {
-			return indicatorWidth + indicatorPadding
+			return indicatorWidth + indicatorPadding + if (circleEffect == CircleEffect.RECT) rectSize else 0f
 		}
 
 	override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
 		super.onDrawOver(c, parent, state)
 
-		if (parent.adapter == null || parent.layoutManager == null) {
+		if (parent.adapter == null || parent.layoutManager == null || attachAdapter == null) {
 			return
 		}
-		val totalWidth: Float
+
+		if (isUnderView) {
+			parent.setPadding(0, 0, 0, paddingBottom.toInt() * 2)
+		}
+
 		val indicatorStartX: Float
 		val indicatorPosY: Float
 
-		val itemCount = parent.adapter!!.itemCount
+		val itemCount = attachAdapter!!.dataList.size
 
 		if (indicatorTexts.isEmpty()) {
 			for (i in 0 until itemCount) {
@@ -202,7 +240,8 @@ private class IndicatorDecoration : RecyclerView.ItemDecoration() {
 		}
 
 		val lastItem = max(0, itemCount - 1)
-		totalWidth = indicatorWidth * lastItem
+		val totalWidth =
+			indicatorWidth.plus(if (circleEffect == CircleEffect.RECT) rectSize else 0f).times(lastItem)
 
 		val paddingBetweenItems = indicatorPadding * lastItem
 		val indicatorTotalWidth = (totalWidth + paddingBetweenItems) / 2
@@ -247,11 +286,12 @@ private class IndicatorDecoration : RecyclerView.ItemDecoration() {
 	) {
 		var start = indicatorPosY
 		for (i in 0 until itemCount) {
-			drawIndicator(c, indicatorStartX, start, i, itemCount, g = true)
+			drawIndicator(c, indicatorStartX, start, i, i - 1, itemCount, g = true)
 			start += indicatorDistanceItem
 		}
 
-		val layoutManager = parent.layoutManager as LinearLayoutManager
+		val layoutManager = parent.layoutManager!!
+		val lastActivePosition = layoutManager.findLastVisibleItemPosition()
 		val activePosition = layoutManager.findFirstVisibleItemPosition()
 		if (activePosition == RecyclerView.NO_POSITION) {
 			return
@@ -264,18 +304,16 @@ private class IndicatorDecoration : RecyclerView.ItemDecoration() {
 			val partialLength =
 				progress * if (indicatorType == IndicatorType.CIRCLE) indicatorDistanceItem else indicatorWidth
 			val highlightStart = indicatorPosY + indicatorDistanceItem * activePosition
-			if (progress == 0f) {
-				drawIndicator(c, indicatorStartX, highlightStart, activePosition, itemCount, 0f)
-			} else {
-				drawIndicator(
-					c,
-					indicatorStartX,
-					highlightStart + partialLength,
-					activePosition,
-					itemCount,
-					partialLength
-				)
-			}
+			val change = if (progress == 0f) 0f else partialLength
+			drawIndicator(
+				c,
+				highlightStart + change,
+				indicatorPosY,
+				activePosition,
+				lastActivePosition,
+				itemCount,
+				change
+			)
 		}
 	}
 
@@ -288,11 +326,12 @@ private class IndicatorDecoration : RecyclerView.ItemDecoration() {
 	) {
 		var start = indicatorStartX
 		for (i in 0 until itemCount) {
-			drawIndicator(c, start, indicatorPosY, i, itemCount, g = true)
+			drawIndicator(c, start, indicatorPosY, i, -1, itemCount, g = true)
 			start += indicatorDistanceItem
 		}
 
-		val layoutManager = parent.layoutManager as LinearLayoutManager
+		val layoutManager = parent.layoutManager!!
+		val lastActivePosition = layoutManager.findLastVisibleItemPosition()
 		val activePosition = layoutManager.findFirstVisibleItemPosition()
 		if (activePosition == RecyclerView.NO_POSITION) {
 			return
@@ -305,18 +344,16 @@ private class IndicatorDecoration : RecyclerView.ItemDecoration() {
 			val partialLength =
 				progress * if (indicatorType == IndicatorType.CIRCLE) indicatorDistanceItem else indicatorWidth
 			val highlightStart = indicatorStartX + indicatorDistanceItem * activePosition
-			if (progress == 0f) {
-				drawIndicator(c, highlightStart, indicatorPosY, activePosition, itemCount, 0f)
-			} else {
-				drawIndicator(
-					c,
-					highlightStart + partialLength,
-					indicatorPosY,
-					activePosition,
-					itemCount,
-					partialLength
-				)
-			}
+			val change = if (progress == 0f) 0f else partialLength
+			drawIndicator(
+				c,
+				highlightStart + change,
+				indicatorPosY,
+				activePosition,
+				lastActivePosition,
+				itemCount,
+				change
+			)
 		}
 	}
 
@@ -326,6 +363,7 @@ private class IndicatorDecoration : RecyclerView.ItemDecoration() {
 	 * @param b x or moving x if orientation == RecyclerView.HORIZONTAL
 	 * @param c y or moving y if orientation == RecyclerVIew.VERTICAL
 	 * @param d active position
+	 * @param l last active position
 	 * @param e partial length between drawer
 	 * @param f number of item in recycler view
 	 * @param g is current draw inactive indicator
@@ -336,14 +374,15 @@ private class IndicatorDecoration : RecyclerView.ItemDecoration() {
 		b: Float,
 		c: Float,
 		d: Int,
+		l: Int,
 		e: Int,
 		f: Float = 0f,
 		g: Boolean = false
 	) {
 		when (indicatorType) {
-			IndicatorType.CIRCLE -> drawCircleEffect(a, b, c, d, e, f, g)
+			IndicatorType.CIRCLE -> drawCircleEffect(a, b, c, d, l, e, f, g)
 			IndicatorType.TEXT -> a.drawText(indicatorTexts[d], b, c, checkDrawInActive(g))
-			IndicatorType.LINE -> drawLine(a, b, c, d, e, f, g)
+			IndicatorType.LINE -> drawLine(a, b, c, d, l, e, f, g)
 		}
 	}
 
@@ -351,7 +390,8 @@ private class IndicatorDecoration : RecyclerView.ItemDecoration() {
 		c: Canvas,
 		x: Float,
 		y: Float,
-		highlightPosition: Int,
+		activePosition: Int,
+		lastActivePosition: Int,
 		itemCount: Int,
 		partialLength: Float = 0f,
 		isDrawNormal: Boolean = false
@@ -361,9 +401,10 @@ private class IndicatorDecoration : RecyclerView.ItemDecoration() {
 				c,
 				x,
 				y,
-				highlightPosition,
+				activePosition,
 				itemCount,
-				partialLength
+				partialLength,
+				isDrawNormal
 			)
 
 			CircleEffect.SMALL -> drawCircle(
@@ -378,7 +419,8 @@ private class IndicatorDecoration : RecyclerView.ItemDecoration() {
 				c,
 				x,
 				y,
-				highlightPosition,
+				activePosition,
+				lastActivePosition,
 				itemCount,
 				partialLength,
 				isDrawNormal
@@ -396,12 +438,13 @@ private class IndicatorDecoration : RecyclerView.ItemDecoration() {
 		highlightPosition: Int,
 		itemCount: Int,
 		partialLength: Float = 0f,
+		isDrawNormal: Boolean,
 	) {
 		val percent = partialLength * 6
 		var currentX = x - calculateOnHorizontal(partialLength)
 		var currentY = y - calculateOnVertical(partialLength)
 
-		c.drawCircle(currentX, currentY, circleRadius, paintActive)
+		c.drawCircle(currentX, currentY, circleRadius, checkDrawInActive(isDrawNormal))
 		c.drawArc(
 			RectF(
 				currentX - circleRadius,
@@ -437,12 +480,38 @@ private class IndicatorDecoration : RecyclerView.ItemDecoration() {
 		c: Canvas,
 		x: Float,
 		y: Float,
-		highlightPosition: Int,
+		activePosition: Int,
+		lastActivePosition: Int,
 		itemCount: Int,
 		partialLength: Float = 0f,
 		isDrawNormal: Boolean = false
 	) {
-
+		if (isDrawNormal) {
+			c.drawCircle(x, y, circleRadius, paintActive)
+		} else {
+			var center = x - partialLength
+			c.drawRoundRect(
+				center + (rectSize - partialLength / 2),
+				y - indicatorWidth / 2f,
+				center - (rectSize - partialLength / 2),
+				y + indicatorWidth / 2f,
+				circleRadius,
+				circleRadius,
+				paintActive
+			)
+			if (activePosition < itemCount - 1) {
+				center = calculatorDistance(activePosition, lastActivePosition, itemCount, center)
+				c.drawRoundRect(
+					center - partialLength / 2,
+					y - indicatorWidth / 2f,
+					center + partialLength / 2,
+					y + indicatorWidth / 2f,
+					circleRadius,
+					circleRadius,
+					paintActive
+				)
+			}
+		}
 	}
 
 	private fun drawCircle(
@@ -459,23 +528,37 @@ private class IndicatorDecoration : RecyclerView.ItemDecoration() {
 		c: Canvas,
 		x: Float,
 		y: Float,
-		highlightPosition: Int,
+		activePosition: Int,
+		lastActivePosition: Int,
 		itemCount: Int,
 		partialLength: Float = 0f,
 		isDrawNormal: Boolean = false
 	) {
-		var highlightStart = x - partialLength
-		c.drawLine(x, y, highlightStart + indicatorWidth, y, checkDrawInActive(isDrawNormal))
+		var start = x - partialLength
+		c.drawLine(x, y, start + indicatorWidth, y, checkDrawInActive(isDrawNormal))
 
-		if (highlightPosition < itemCount - 1) {
-			highlightStart += indicatorDistanceItem
+		if (activePosition < itemCount - 1) {
+			start = calculatorDistance(activePosition, lastActivePosition, itemCount, start)
 			c.drawLine(
-				highlightStart,
+				start,
 				y,
-				highlightStart + partialLength,
+				start + partialLength,
 				y,
 				checkDrawInActive(isDrawNormal)
 			)
 		}
+	}
+
+	private fun calculatorDistance(
+		activePosition: Int,
+		lastPosition: Int,
+		itemCount: Int,
+		currentDistance: Float,
+	): Float {
+		return currentDistance + if (lastPosition == itemCount - 1 && activePosition < lastPosition && activePosition == 0) {
+			(itemCount - 1)
+		} else {
+			1
+		} * indicatorDistanceItem
 	}
 }

@@ -95,7 +95,7 @@
         </activity>
 
         <meta-data
-            android:name="boilerplate.widget.glide.GlideAppModule"
+            android:name=".widget.glide.GlideAppModule"
             android:value="AppGlideModule" />
 
         <service

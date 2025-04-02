@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Rect
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -13,16 +14,22 @@ import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.viewbinding.ViewBinding
 import boilerplate.R
 import boilerplate.constant.Constants.LAYOUT_INVALID
-import boilerplate.utils.extension.*
+import boilerplate.utils.extension.Permission
+import boilerplate.utils.extension.isTablet
+import boilerplate.utils.extension.notNull
+import boilerplate.utils.extension.showFail
 import boilerplate.utils.keyboard.InsetsWithKeyboardCallback
+import boilerplate.utils.keyboard.hideKeyboard
 import boilerplate.widget.customText.AppEditText
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -39,9 +46,10 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 
 	private val _backPress by lazy {
 		object : OnBackPressedCallback(true) {
+			@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 			override fun handleOnBackPressed() {
 				val stack = supportFragmentManager.backStackEntryCount
-				val fullScreen = supportFragmentManager.findFragmentById(R.id.app_container)
+				val fullScreen: Fragment? = supportFragmentManager.findFragmentById(android.R.id.content)
 				val splitScreen = supportFragmentManager.findFragmentById(R.id.frame_tablet)
 				if (isTablet()) {
 					if (splitScreen != null) {

@@ -1,4 +1,4 @@
-package boilerplate.widget.recyclerview
+package boilerplate.widget.recyclerview.decoration
 
 import android.graphics.Rect
 import android.view.View

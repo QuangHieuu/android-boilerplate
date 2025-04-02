@@ -1,24 +1,27 @@
 package boilerplate.utils.extension
 
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Rect
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
-import android.view.inputmethod.InputMethodManager
+import android.text.Layout
+import android.text.StaticLayout
+import android.view.*
+import android.view.ViewGroup.MarginLayoutParams
+import android.view.animation.LinearInterpolator
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.EditText
 import android.widget.ImageView
 import android.widget.PopupWindow
 import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
+import androidx.core.animation.doOnEnd
+import androidx.core.animation.doOnRepeat
+import androidx.core.animation.doOnResume
+import androidx.core.animation.doOnStart
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.viewbinding.ViewBinding
@@ -147,26 +150,6 @@ fun WebView.loadWebViewUrl(url: String?, progressBar: ProgressBar?) {
 	loadUrl(url)
 }
 
-fun EditText.hideKeyboard() {
-	with(this) {
-		clearFocus()
-		val imm =
-			context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-		imm.hideSoftInputFromWindow(windowToken, 0)
-	}
-}
-
-fun EditText.showKeyboard() {
-	with(this) {
-		isFocusable = true
-		isFocusableInTouchMode = true
-		if (requestFocus()) {
-			val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-			imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
-		}
-	}
-}
-
 fun ImageView.loadAvatar(url: String? = "") {
 	loadImage(
 		url, requestOptions = RequestOptions()
@@ -213,7 +196,7 @@ fun ImageView.loadImage(
 }
 
 fun <T : View> T.click(function: ((v: View) -> Unit)?): T {
-	function.notNull { ClickUtil.onClick(block = it) }
+	function.notNull { setOnClickListener(ClickUtil.onClick(block = it)) }
 	return this
 }
 
@@ -275,26 +258,6 @@ inline fun View.launch(delay: Long = 0, crossinline r: () -> Unit) {
 	postDelayed({ r() }, delay)
 }
 
-fun EditText.addListener(
-	before: ((s: CharSequence) -> Unit)? = null,
-	change: ((s: CharSequence) -> Unit)? = null,
-	after: ((s: Editable) -> Unit)? = null
-) {
-	addTextChangedListener(object : TextWatcher {
-		override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-			before.notNull { it(s) }
-		}
-
-		override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-			change.notNull { it(s) }
-		}
-
-		override fun afterTextChanged(s: Editable) {
-			after.notNull { it(s) }
-		}
-	})
-}
-
 fun DialogFragment.setWidthPercent(widthPercent: Int = 60, heightPercent: Int = 60) {
 	try {
 		val w = widthPercent.toFloat() / 100
@@ -311,6 +274,139 @@ fun DialogFragment.setWidthPercent(widthPercent: Int = 60, heightPercent: Int = 
 inline fun <T : ViewBinding> ViewGroup.viewBinding(factory: (LayoutInflater, ViewGroup, Boolean) -> T) =
 	factory(LayoutInflater.from(context), this, false)
 
-fun <T : View> T.themeWrapper(): T {
-	return this
+/**
+ *
+ * @param [listString] default use [TextView.getText] to animation, can pass [String] or [Array]
+ * @param [container] default use self to calculate width and height of text in view
+ * @param [isFitHeight] default false for calculator width and height of text
+ * @param [mode] The type of repetition that will occur when repeatMode is nonzero.
+ * [ValueAnimator.RESTART] means the animation will start from the beginning on every new cycle.
+ * [ValueAnimator.REVERSE] means the animation will reverse directions on each iteration.
+ * @param[count] Sets how many times the animation should be repeated. If the repeat count is 0, the animation is never repeated.
+ * If the repeat count is greater than 0 or [ValueAnimator.INFINITE], the repeat mode will be taken into account.
+ *
+ */
+fun TextView.textWriter(
+	vararg listString: CharSequence = arrayOf(text),
+	container: View = this,
+	isFitHeight: Boolean = false,
+	mode: Int = ValueAnimator.RESTART,
+	count: Int = 0,
+	delay: Long = 25L,
+	period: Long = 2000L,
+): ValueAnimator {
+	hide()
+	if (isFitHeight) {
+
+		val frameLp = container.layoutParams as MarginLayoutParams
+		val frameHorizontalMargin = frameLp.marginStart + frameLp.marginEnd
+
+		val textLp = layoutParams as MarginLayoutParams
+		val textHorizontalMargin = textLp.marginStart + textLp.marginEnd
+
+		val frameHorizontalPadding = container.paddingStart + container.paddingEnd
+		val textHorizontalPadding = paddingStart + paddingEnd
+
+		val space = frameHorizontalMargin
+			.plus(textHorizontalMargin)
+			.plus(frameHorizontalPadding)
+			.plus(textHorizontalPadding)
+
+		val widthScreen = Resources.getSystem().displayMetrics.widthPixels.minus(space)
+
+		val alignment = when (gravity) {
+			Gravity.CENTER -> Layout.Alignment.ALIGN_CENTER
+			Gravity.END -> Layout.Alignment.ALIGN_OPPOSITE
+			else -> Layout.Alignment.ALIGN_NORMAL
+		}
+
+		val longestText = listString.maxBy { it.length }
+
+		val textVerticalPadding = paddingTop + paddingBottom
+		val frameVerticalPadding = container.paddingTop + container.paddingBottom
+
+		// calculate height use StaticLayout
+		val textHeight = StaticLayout.Builder
+			.obtain(longestText, 0, longestText.length, paint, widthScreen)
+			.setLineSpacing(lineSpacingExtra, lineSpacingMultiplier)
+			.setAlignment(alignment)
+			.build().height
+			.plus(textVerticalPadding)
+			.plus(frameVerticalPadding)
+
+		container.layoutParams.height = textHeight
+	}
+
+	var currentPosition = 0
+	var currentText = listString[currentPosition]
+	var textLength = currentText.length
+
+	fun setData() {
+		if (listString.isEmpty()) return
+		currentPosition += 1
+		if (currentPosition >= listString.size) {
+			currentPosition = 0
+		}
+		currentText = listString[currentPosition]
+		textLength = currentText.length
+	}
+
+	fun calculatorDuration(): Long {
+		return if (textLength % 2 == 0) {
+			textLength
+		} else {
+			textLength + 1
+		} * delay
+	}
+
+	return ValueAnimator.ofInt(0, textLength).apply {
+		interpolator = LinearInterpolator()
+		duration = calculatorDuration()
+		repeatMode = mode
+		repeatCount = if (mode == ValueAnimator.RESTART) 0 else count
+		addUpdateListener {
+			val process = it.animatedValue as Int
+			val animatedText = currentText.subSequence(0, process)
+			this@textWriter.text = animatedText
+		}
+		doOnStart {
+			if (!isShown) {
+				show()
+			}
+		}
+		when (mode) {
+			ValueAnimator.RESTART -> {
+				doOnEnd {
+					setData()
+					duration = calculatorDuration()
+					setIntValues(0, textLength)
+					postDelayed({
+						hide()
+						start()
+					}, period)
+				}
+			}
+
+			ValueAnimator.REVERSE -> {
+				var isRunReverse = false
+				doOnResume { isRunReverse = true }
+				doOnRepeat {
+					if (isRunReverse) {
+						cancel()
+						setData()
+						duration = calculatorDuration()
+						setIntValues(0, textLength)
+						isRunReverse = false
+						postDelayed({
+							hide()
+							start()
+						}, period)
+					} else {
+						pause()
+						postDelayed({ resume() }, period)
+					}
+				}
+			}
+		}
+	}
 }
