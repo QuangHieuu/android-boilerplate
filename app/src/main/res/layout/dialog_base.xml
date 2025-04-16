@@ -60,7 +60,7 @@
         android:layout_marginStart="@dimen/dp_10"
         android:background="@drawable/bg_button_red"
         android:gravity="center"
-        android:textColor="@color/colorWhite"
+        android:textColor="@color/color_white"
         android:textSize="@dimen/dp_14"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"

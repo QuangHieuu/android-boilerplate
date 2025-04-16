@@ -4,16 +4,16 @@
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
-        <item name="colorOnPrimary">@color/colorWhite</item>
+        <item name="colorOnPrimary">@color/color_white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/colorPrimary</item>
         <item name="colorSecondaryVariant">@color/colorPrimaryDark</item>
-        <item name="colorOnSecondary">@color/colorWhite</item>
+        <item name="colorOnSecondary">@color/color_white</item>
 
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
 
         <!-- Status bar color. -->
-        <item name="android:navigationBarColor">@color/colorWhite</item>
+        <item name="android:navigationBarColor">@color/color_white</item>
         <!-- Optional: set to transparent if your app is drawing behind the status bar. -->
         <item name="android:statusBarColor">@color/colorPrimary</item>
         <!-- Optional: set for a light status bar with dark content. -->
@@ -42,7 +42,7 @@
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
         <!-- Set the splash screen background, animated icon, and animation
         duration. -->
-        <item name="windowSplashScreenBackground">@color/colorWhite</item>
+        <item name="windowSplashScreenBackground">@color/color_white</item>
 
         <!-- Use windowSplashScreenAnimatedIcon to add a drawable or an animated
              drawable. One of these is required. -->
@@ -63,7 +63,7 @@
     <style name="AppToolbar" parent="Widget.Toolbar">
         <item name="titleCentered">true</item>
         <item name="titleTextStyle">@style/StyleMedium</item>
-        <item name="titleTextColor">@color/colorWhite</item>
+        <item name="titleTextColor">@color/color_white</item>
         <item name="subtitleCentered">true</item>
         <item name="subtitleTextStyle">@style/StyleRegular</item>
         <item name="subtitleTextColor">@color/color_A2FFFFFF</item>
@@ -92,7 +92,7 @@
 
     <style name="AppTextViewDefault" parent="TextAppearance.AppCompat">
         <item name="android:textSize">@dimen/dp_13</item>
-        <item name="android:textColor">@color/colorBlack</item>
+        <item name="android:textColor">@color/color_black</item>
         <item name="android:textColorHighlight">?android:textColorHighlight</item>
         <item name="android:textColorLink">?android:textColorLink</item>
         <item name="android:textColorHint">@color/colorHint</item>

@@ -42,7 +42,9 @@ abstract class BaseRcvAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder>
 
 	abstract fun onBuildHolder(): List<HolderBuilder<T>>
 
-	override fun getItemCount(): Int = setItemCount()
+	abstract fun onBindHolder(holder: RecyclerView.ViewHolder, position: Int)
+
+	override fun getItemCount(): Int = dataList.size
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 		for ((type, holder, _) in builders) {
@@ -55,6 +57,10 @@ abstract class BaseRcvAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder>
 		} else {
 			EmptyVH(parent)
 		}
+	}
+
+	override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+		onBindHolder(holder, position)
 	}
 
 	override fun getItemViewType(position: Int): Int {
@@ -73,8 +79,6 @@ abstract class BaseRcvAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder>
 		}
 		return super.getItemViewType(position)
 	}
-
-	protected open fun setItemCount(): Int = dataList.size
 
 	protected open fun hasPageLoading(): Boolean = false
 
@@ -129,4 +133,5 @@ class EmptyVH(
 
 class LoadingVH(
 	parent: ViewGroup,
-) : BaseVH<HolderLoadingBinding>(parent.viewBinding(HolderLoadingBinding::inflate))
+) : BaseVH<HolderLoadingBinding>(parent.viewBinding(HolderLoadingBinding::inflate)) {
+}

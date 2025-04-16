@@ -1,7 +1,7 @@
 package boilerplate.ui.empty
 
-import androidx.core.os.bundleOf
 import boilerplate.base.BaseFragment
+import boilerplate.base.putBundle
 import boilerplate.databinding.FragmentEmptyBinding
 import boilerplate.ui.main.MainVM
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
@@ -11,11 +11,9 @@ class EmptyFragment : BaseFragment<FragmentEmptyBinding, MainVM>() {
 		private const val KEY_STRING = "KEY_STRING"
 
 		fun newInstance(s: String = ""): EmptyFragment {
-			return EmptyFragment().apply {
-				arguments = bundleOf(
-					KEY_STRING to s
-				)
-			}
+			return EmptyFragment().putBundle(
+				KEY_STRING to s
+			)
 		}
 	}
 
@@ -28,9 +26,9 @@ class EmptyFragment : BaseFragment<FragmentEmptyBinding, MainVM>() {
 	}
 
 	override fun registerEvent() {
-		val bundle = arguments ?: bundleOf()
 		with(binding) {
-			tvEmpty.text = bundle.getString(KEY_STRING, "")
+			val string = arguments?.getString(KEY_STRING, "asd")
+			tvEmpty.text = string
 		}
 	}
 
