@@ -1,17 +1,15 @@
-package boilerplate.base
+package android.empty.base
 
+import android.empty.base.ViewType.VIEW_EMPTY
+import android.empty.base.ViewType.VIEW_LOADING
+import android.empty.refreshrecyclerview.databinding.HolderEmptyBinding
+import android.empty.refreshrecyclerview.databinding.HolderLoadingBinding
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
-import boilerplate.base.AppRcvViewType.VIEW_EMPTY
-import boilerplate.base.AppRcvViewType.VIEW_LOADING
-import boilerplate.databinding.HolderEmptyBinding
-import boilerplate.databinding.HolderLoadingBinding
-import boilerplate.model.DiffUtilCallback
-import boilerplate.utils.extension.viewBinding
 
-object AppRcvViewType {
+object ViewType {
 	const val VIEW_LOADING = -1
 	const val VIEW_EMPTY = -2
 }

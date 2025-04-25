@@ -7,8 +7,12 @@ import android.content.res.Resources
 import android.graphics.Rect
 import android.text.Layout
 import android.text.StaticLayout
-import android.view.*
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
+import android.view.WindowManager
 import android.view.animation.LinearInterpolator
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -24,7 +28,6 @@ import androidx.core.animation.doOnResume
 import androidx.core.animation.doOnStart
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
-import androidx.viewbinding.ViewBinding
 import boilerplate.R
 import boilerplate.constant.Constants.KEY_AUTH
 import boilerplate.databinding.ViewToastBinding
@@ -270,9 +273,6 @@ fun DialogFragment.setWidthPercent(widthPercent: Int = 60, heightPercent: Int = 
 	} catch (_: Exception) {
 	}
 }
-
-inline fun <T : ViewBinding> ViewGroup.viewBinding(factory: (LayoutInflater, ViewGroup, Boolean) -> T) =
-	factory(LayoutInflater.from(context), this, false)
 
 /**
  *

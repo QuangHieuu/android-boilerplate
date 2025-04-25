@@ -8,7 +8,7 @@
     android:padding="@dimen/dp_20"
     tools:ignore="HardcodedText,SpUsage">
 
-    <boilerplate.widget.customText.AppTextView
+    <boilerplate.widget.customtext.AppTextView
         android:id="@+id/tv_title"
         style="@style/StyleBold"
         android:layout_width="wrap_content"
@@ -20,7 +20,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <boilerplate.widget.customText.AppTextView
+    <boilerplate.widget.customtext.AppTextView
         android:id="@+id/tv_description"
         style="@style/StyleRegular"
         android:layout_width="wrap_content"

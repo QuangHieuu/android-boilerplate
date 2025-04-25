@@ -1,6 +1,7 @@
-package boilerplate.widget.recyclerview.decoration
+package android.empty.decoration
 
 import android.content.res.Resources
+import android.empty.layoutManager.LoopingLayoutManager
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
@@ -14,12 +15,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
-import boilerplate.base.BaseRcvAdapter
-import boilerplate.widget.recyclerview.layoutManager.LoopingLayoutManager
 import kotlin.math.max
 
 
-fun RecyclerView.LayoutManager?.getOrientation(): Int {
+private fun RecyclerView.LayoutManager?.getOrientation(): Int {
 	return when (this) {
 		is LinearLayoutManager -> orientation
 		is LoopingLayoutManager -> orientation
@@ -27,7 +26,7 @@ fun RecyclerView.LayoutManager?.getOrientation(): Int {
 	}
 }
 
-fun RecyclerView.LayoutManager?.findFirstVisibleItemPosition(): Int {
+private fun RecyclerView.LayoutManager?.findFirstVisibleItemPosition(): Int {
 	return when (this) {
 		is LinearLayoutManager -> findFirstVisibleItemPosition()
 		is LoopingLayoutManager -> findFirstVisibleItemPosition()
@@ -35,7 +34,7 @@ fun RecyclerView.LayoutManager?.findFirstVisibleItemPosition(): Int {
 	}
 }
 
-fun RecyclerView.LayoutManager?.findLastVisibleItemPosition(): Int {
+private fun RecyclerView.LayoutManager?.findLastVisibleItemPosition(): Int {
 	return when (this) {
 		is LinearLayoutManager -> findLastVisibleItemPosition()
 		is LoopingLayoutManager -> findLastVisibleItemPosition()
@@ -43,7 +42,7 @@ fun RecyclerView.LayoutManager?.findLastVisibleItemPosition(): Int {
 	}
 }
 
-class IndicatorBuilder<T : BaseRcvAdapter<*>>(
+class IndicatorBuilder<T : RecyclerView.Adapter<*>>(
 	private val _recyclerView: RecyclerView,
 	private val _adapter: T
 ) {
@@ -153,7 +152,7 @@ annotation class IndicatorType {
 private class IndicatorDecoration : RecyclerView.ItemDecoration() {
 	private val density = Resources.getSystem().displayMetrics.density
 
-	var attachAdapter: BaseRcvAdapter<*>? = null
+	var attachAdapter: RecyclerView.Adapter<*>? = null
 
 	@Dimension
 	var indicatorWidth: Float = 6F * density
@@ -231,7 +230,7 @@ private class IndicatorDecoration : RecyclerView.ItemDecoration() {
 		val indicatorStartX: Float
 		val indicatorPosY: Float
 
-		val itemCount = attachAdapter!!.dataList.size
+		val itemCount = attachAdapter!!.itemCount
 
 		if (indicatorTexts.isEmpty()) {
 			for (i in 0 until itemCount) {

@@ -16,7 +16,7 @@ import androidx.viewbinding.ViewBinding
 import boilerplate.R
 import boilerplate.utils.extension.*
 import boilerplate.utils.keyboard.hideKeyboard
-import boilerplate.widget.customText.AppEditText
+import boilerplate.widget.customtext.AppEditText
 import boilerplate.widget.loading.LoadingLayout
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable

@@ -1,4 +1,4 @@
-package boilerplate.widget.customText
+package boilerplate.widget.customtext
 
 import android.content.Context
 import android.graphics.Typeface

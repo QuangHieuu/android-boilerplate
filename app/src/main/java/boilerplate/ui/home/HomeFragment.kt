@@ -1,5 +1,7 @@
 package boilerplate.ui.home
 
+import android.empty.decoration.CircleEffect
+import android.empty.decoration.IndicatorBuilder
 import androidx.core.os.bundleOf
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.PagerSnapHelper
@@ -10,10 +12,6 @@ import boilerplate.model.User
 import boilerplate.ui.home.adapter.DetailAdapter
 import boilerplate.ui.home.adapter.HomeAdapter
 import boilerplate.ui.main.MainVM
-import boilerplate.widget.recyclerview.decoration.CircleEffect
-import boilerplate.widget.recyclerview.decoration.IndicatorBuilder
-import boilerplate.widget.recyclerview.decoration.IndicatorType
-import boilerplate.widget.recyclerview.edgeEffect.BouncyEdgeEffectFactory
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
@@ -32,18 +30,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, MainVM>() {
 	override val viewModel: MainVM by activityViewModel()
 
 	override fun initialize() {
-
-		binding.arcProgressBar.setPercent(40, animation = true)
-		binding.progressBar.setPercent(50, animation = true)
-
 		val homeAdapter = HomeAdapter()
-
-		binding.rcv.edgeEffectFactory = BouncyEdgeEffectFactory()
 
 		IndicatorBuilder(binding.rcv, homeAdapter)
 			.indicatorWidth(resources.getDimension(R.dimen.dp_12))
 			.indicatorCircleEffect(CircleEffect.RECT)
-			.indicatorType(IndicatorType.CIRCLE)
+			.indicatorType(android.empty.decoration.IndicatorType.CIRCLE)
 			.snapHelper(PagerSnapHelper())
 			.isUnderView()
 			.build()
@@ -57,8 +49,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, MainVM>() {
 				User(name = "5"),
 			)
 		)
-
-		binding.rcvLoading.adapter = detailAdapter
+		binding.refresh.adapter = detailAdapter
 		detailAdapter.submitData(
 			arrayListOf(
 				User(name = "1"),
@@ -78,6 +69,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, MainVM>() {
 	override fun callApi() {
 		lifecycleScope.launch {
 			delay(2000)
+//			binding.refresh.setRefreshing(false)
 			detailAdapter.hideLoading()
 			detailAdapter.submitData(
 				arrayListOf(

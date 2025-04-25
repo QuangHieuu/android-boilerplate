@@ -1,4 +1,4 @@
-package boilerplate.widget.customText
+package boilerplate.widget.customtext
 
 import android.content.ClipData
 import android.content.Intent
@@ -22,11 +22,7 @@ class KeyboardReceiver : OnReceiveContentListener {
 				val uri: Uri = clip.getItemAt(i).uri
 				if (!uri.toString().contains(FILE_PATH_SAMSUNG_CLIPBOARD)) {
 					LocalBroadcastManager.getInstance(view.context)
-						.sendBroadcast(Intent("KEYBOARD_CONTENT")
-							.apply {
-								putExtra("KEYBOARD_CONTENT", uri)
-							}
-						)
+						.sendBroadcast(Intent(KEYBOARD_CONTENT).apply { putExtra(KEYBOARD_CONTENT, uri) })
 				}
 			}
 		}
@@ -34,6 +30,7 @@ class KeyboardReceiver : OnReceiveContentListener {
 	}
 
 	companion object {
+		private const val KEYBOARD_CONTENT = "KEYBOARD_CONTENT"
 		val MIME_TYPES = arrayOf("image/*", "video/*")
 	}
 }

@@ -1,6 +1,9 @@
-package boilerplate.widget.recyclerview.layoutManager
+package android.empty.layoutManager
 
 import android.content.Context
+import android.empty.extension.loop
+import android.empty.extension.loopedDecrement
+import android.empty.extension.loopedIncrement
 import android.graphics.PointF
 import android.graphics.Rect
 import android.os.Parcel
@@ -16,9 +19,6 @@ import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import androidx.recyclerview.widget.RecyclerView.LayoutParams
-import boilerplate.utils.extension.loop
-import boilerplate.utils.extension.loopedDecrement
-import boilerplate.utils.extension.loopedIncrement
 import java.lang.Math.min
 import kotlin.math.abs
 import kotlin.math.max

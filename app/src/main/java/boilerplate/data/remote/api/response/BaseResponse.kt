@@ -1,6 +1,6 @@
 package boilerplate.data.remote.api.response
 
-import boilerplate.model.BaseModel
+import android.empty.base.BaseModel
 
 abstract class ResMessage {
 	var message: String = ""

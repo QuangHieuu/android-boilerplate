@@ -19,7 +19,7 @@
         android:elevation="@dimen/dp_20"
         android:src="@mipmap/ic_app_launcher" />
 
-    <boilerplate.widget.customText.AppTextView
+    <boilerplate.widget.customtext.AppTextView
         android:id="@+id/tv_cancel"
         style="@style/StyleMedium"
         android:layout_width="wrap_content"

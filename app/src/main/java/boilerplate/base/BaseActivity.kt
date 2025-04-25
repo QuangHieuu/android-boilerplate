@@ -30,7 +30,7 @@ import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.showFail
 import boilerplate.utils.keyboard.InsetsWithKeyboardCallback
 import boilerplate.utils.keyboard.hideKeyboard
-import boilerplate.widget.customText.AppEditText
+import boilerplate.widget.customtext.AppEditText
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import java.lang.reflect.ParameterizedType

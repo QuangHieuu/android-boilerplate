@@ -1,4 +1,4 @@
-package boilerplate.widget.customText
+package boilerplate.widget.customtext
 
 import android.graphics.RectF
 import android.text.Spannable
@@ -30,7 +30,9 @@ open class InternalLinkMovementMethod : LinkMovementMethod() {
 		}
 		val touchStartedOverAClickableSpan = clickableSpanUnderTouchOnActionDown != null
 		return when (event.action) {
-			MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> touchStartedOverAClickableSpan
+			MotionEvent.ACTION_DOWN,
+			MotionEvent.ACTION_MOVE -> touchStartedOverAClickableSpan
+
 			MotionEvent.ACTION_UP -> {
 				if (touchStartedOverAClickableSpan && clickableSpanUnderTouch === clickableSpanUnderTouchOnActionDown) {
 					dispatchUrlClick(textView, clickableSpanUnderTouch)

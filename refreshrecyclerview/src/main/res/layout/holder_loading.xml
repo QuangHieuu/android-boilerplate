@@ -8,9 +8,9 @@
     android:paddingEnd="@dimen/dp_5"
     android:paddingBottom="@dimen/dp_5">
 
-    <boilerplate.widget.customtext.AppTextView
-        android:id="@+id/tv_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/error_empty" />
+    <androidx.core.widget.ContentLoadingProgressBar
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="@dimen/dp_35"
+        android:layout_height="@dimen/dp_35"
+        android:layout_gravity="center" />
 </LinearLayout>
