@@ -1,11 +1,11 @@
-package boilerplate.widget.glide
+package boilerplate.glide
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.Log
+import boilerplate.constant.Constants.ANIMATION_DELAY
 import boilerplate.utils.ImageUtil
-import boilerplate.utils.extension.ANIMATION_DELAY
 import com.bumptech.glide.Glide
 import com.bumptech.glide.GlideBuilder
 import com.bumptech.glide.Registry
@@ -77,7 +77,7 @@ class GlideAppModule : AppGlideModule() {
 			return OkHttpClient.Builder()
 				.apply {
 					sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as X509TrustManager)
-					hostnameVerifier { hostname, session -> true }
+					hostnameVerifier { _, _ -> true }
 				}.build()
 		} catch (e: Exception) {
 			throw RuntimeException(e)

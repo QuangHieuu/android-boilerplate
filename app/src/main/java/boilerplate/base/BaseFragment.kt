@@ -13,12 +13,15 @@ import androidx.core.view.contains
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import boilerplate.R
-import boilerplate.utils.extension.*
+import boilerplate.utils.extension.Permission
+import boilerplate.utils.extension.addTo
+import boilerplate.utils.extension.notNull
+import boilerplate.utils.extension.removeSelf
+import boilerplate.utils.extension.showFail
 import boilerplate.widget.loading.LoadingLayout
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import java.lang.reflect.ParameterizedType
-
 
 fun <T : BaseFragment<*, *>> T.putBundle(vararg pairs: Pair<String, Any?>): T {
 	arguments = bundleOf(*pairs)
@@ -92,8 +95,12 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
 				}
 			}
 			error.observe(viewLifecycleOwner) {
-				binding.root.showFail(it)
+				showFail(it)
 			}
+		}
+
+		if (isAddKeyBoardListener()) {
+			addKeyboardListener()
 		}
 
 		initialize()
@@ -111,6 +118,7 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
 			clear()
 			dispose()
 		}
+		removeKeyBoardListener()
 		super.onDestroyView()
 	}
 
@@ -125,6 +133,10 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
 	protected fun launchDisposable(vararg job: Disposable) {
 		_disposable.addAll(*job)
 	}
+
+	open fun isAddKeyBoardListener(): Boolean = false
+
+	open fun keyBoardListener(isShowKeyboard: Boolean) {}
 
 	fun permission(permissions: Array<String>, grand: () -> Unit) {
 		_blockGrand = grand
@@ -147,5 +159,19 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
 			requireActivity(),
 			permission
 		) == PackageManager.PERMISSION_GRANTED
+	}
+
+	private fun addKeyboardListener() {
+		if (activity is BaseActivity<*, *>) {
+			(activity as BaseActivity<*, *>).addKeyBoardListener(TAG) { isShowKeyboard ->
+				keyBoardListener(isShowKeyboard)
+			}
+		}
+	}
+
+	private fun removeKeyBoardListener() {
+		if (activity is BaseActivity<*, *>) {
+			(activity as BaseActivity<*, *>).removeKeyBoardListener(TAG)
+		}
 	}
 }

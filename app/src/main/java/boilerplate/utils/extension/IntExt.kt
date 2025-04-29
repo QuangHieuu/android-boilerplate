@@ -1,7 +1,7 @@
 package boilerplate.utils.extension
 
 /**
- * Returns the value of the Int plus the given [amount], but "loops" the value to keep it between
+ * Returns the values of the Int plus the given [amount], but "loops" the values to keep it between
  * the [count] and zero.
  */
 internal fun Int.loop(amount: Int, count: Int): Int {
@@ -13,14 +13,14 @@ internal fun Int.loop(amount: Int, count: Int): Int {
 }
 
 /**
- * Returns the value of the Int plus one, but "loops" the value to keep it between the [count] and zero.
+ * Returns the values of the Int plus one, but "loops" the values to keep it between the [count] and zero.
  */
 internal fun Int.loopedIncrement(count: Int): Int {
 	return this.loop(1, count)
 }
 
 /**
- * Returns the value of the Int minus one, but "loops" the value to keep it between the [count] and zero.
+ * Returns the values of the Int minus one, but "loops" the values to keep it between the [count] and zero.
  */
 internal fun Int.loopedDecrement(count: Int): Int {
 	return this.loop(-1, count)

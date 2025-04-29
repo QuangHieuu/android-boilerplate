@@ -20,19 +20,21 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.viewbinding.ViewBinding
 import boilerplate.R
-import boilerplate.constant.Constants.LAYOUT_INVALID
 import boilerplate.utils.extension.Permission
+import boilerplate.utils.extension.hideKeyboard
 import boilerplate.utils.extension.isTablet
 import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.showFail
+import boilerplate.utils.extension.validateRes
 import boilerplate.utils.keyboard.InsetsWithKeyboardCallback
-import boilerplate.utils.keyboard.hideKeyboard
 import boilerplate.widget.customtext.AppEditText
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
+import kotlinx.coroutines.launch
 import java.lang.reflect.ParameterizedType
 
 abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatActivity() {
@@ -43,6 +45,7 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 	private val _disposable = CompositeDisposable()
 	private var _blockGrand: (() -> Unit)? = null
 	private val _listRequest: ArrayList<Permission> = arrayListOf()
+	private val _hashMap: HashMap<String, (isShowKeyboard: Boolean) -> Unit> = HashMap()
 
 	private val _backPress by lazy {
 		object : OnBackPressedCallback(true) {
@@ -107,7 +110,7 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 		)
 
 		val insetsWithKeyboardCallback = InsetsWithKeyboardCallback(window) { show ->
-			onKeyboardCallBack(show)
+			keyboardCallBack(show)
 		}
 		ViewCompat.setOnApplyWindowInsetsListener(
 			getWindowInsets(),
@@ -118,13 +121,11 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 			insetsWithKeyboardCallback
 		)
 
-		with(getContainerId()) {
-			if (this != LAYOUT_INVALID) {
-				ViewCompat.setOnApplyWindowInsetsListener(findViewById(this)) { v, insets ->
-					val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-					v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-					insets
-				}
+		validateRes(getContainerId()) {
+			ViewCompat.setOnApplyWindowInsetsListener(findViewById(this)) { v, insets ->
+				val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+				v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+				insets
 			}
 		}
 
@@ -140,7 +141,7 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 		_blockGrand = null
 		_request.unregister()
 		_listRequest.clear()
-
+		_hashMap.clear()
 		_disposable.apply {
 			clear()
 			dispose()
@@ -197,9 +198,10 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 
 	protected open fun onLogout() {}
 
-	protected open fun onKeyboardCallBack(isKeyboardShow: Boolean) {}
+	protected open fun onKeyboardCallBack(isKeyboardShow: Boolean) {
+	}
 
-	open fun getContainerId(): Int = LAYOUT_INVALID
+	open fun getContainerId(): Int = android.R.id.content
 
 	open fun getWindowInsets(): View = binding.root
 
@@ -219,10 +221,18 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 		}
 	}
 
+	fun addKeyBoardListener(tag: String, block: (isShowKeyboard: Boolean) -> Unit) {
+		_hashMap[tag] = block
+	}
+
+	fun removeKeyBoardListener(tag: String) {
+		_hashMap.remove(tag)
+	}
+
 	private fun baseObserver() {
 		with(viewModel) {
 			error.observe(this@BaseActivity) {
-				binding.root.showFail(it)
+				showFail(it)
 			}
 		}
 	}
@@ -237,5 +247,14 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 
 	private fun isGranted(permission: String): Boolean {
 		return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+	}
+
+	private fun keyboardCallBack(isKeyboardShow: Boolean) {
+		onKeyboardCallBack(isKeyboardShow)
+		lifecycleScope.launch {
+			_hashMap.entries.forEach {
+				it.value(isKeyboardShow)
+			}
+		}
 	}
 }

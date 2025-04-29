@@ -13,12 +13,14 @@ import android.graphics.Canvas
 import android.os.Build
 import android.view.View
 import android.view.WindowInsets
+import androidx.annotation.IntegerRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
+import boilerplate.constant.Constants.INVALID_RESOURCE
 import com.google.gson.Gson
 import java.lang.ref.WeakReference
 
@@ -108,7 +110,7 @@ fun Activity.isTablet(): Boolean = resources.isTablet()
 fun RecyclerView.ViewHolder.isTablet(): Boolean = itemView.resources.isTablet()
 
 fun Resources.isTablet(): Boolean = Configuration.SCREENLAYOUT_SIZE_LARGE <=
-	(configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK)
+		(configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK)
 
 fun Float.toTextSize(): Float {
 	val displayMetrics = Resources.getSystem().displayMetrics
@@ -122,4 +124,10 @@ fun Context.getBitmapFromDrawable(drawableId: Int): Bitmap? {
 	drawable.setBounds(0, 0, canvas.width, canvas.height)
 	drawable.draw(canvas)
 	return bitmap
+}
+
+inline fun <R> validateRes(@IntegerRes receiver: Int, block: Int.() -> R) {
+	if (receiver != INVALID_RESOURCE) {
+		receiver.block()
+	}
 }

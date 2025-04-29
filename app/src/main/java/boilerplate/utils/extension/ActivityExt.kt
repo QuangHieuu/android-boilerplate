@@ -1,15 +1,26 @@
 package boilerplate.utils.extension
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.annotation.ColorRes
 import androidx.annotation.IdRes
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import boilerplate.R
 import boilerplate.constant.Constants.EXTRA_ARGS
+import boilerplate.databinding.ViewToastBinding
+import com.google.android.material.snackbar.BaseTransientBottomBar.ANIMATION_MODE_SLIDE
+import com.google.android.material.snackbar.Snackbar
 import kotlin.reflect.KClass
 
 /**
@@ -22,8 +33,6 @@ enum class AnimateType {
 	SLIDE_TO_LEFT,
 	STAY
 }
-
-const val ANIMATION_DELAY: Long = 200
 
 fun <T : Activity> AppCompatActivity.goTo(
 	cls: KClass<T>,
@@ -120,3 +129,82 @@ fun AppCompatActivity.popFragment() {
 fun AppCompatActivity.findFragmentByTag(tag: String): Fragment? {
 	return supportFragmentManager.findFragmentByTag(tag)
 }
+
+
+@SuppressLint("RestrictedApi")
+fun Activity.showSnackBar(
+	rootView: View = findViewById(android.R.id.content),
+	@StringRes message: Int = R.string.no_text,
+	@ColorRes color: Int = R.color.color_toast,
+) = Snackbar.make(rootView, message, Snackbar.LENGTH_SHORT).apply {
+	animationMode = ANIMATION_MODE_SLIDE
+	view.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent))
+	val binding =
+		ViewToastBinding.inflate(LayoutInflater.from(context), rootView as ViewGroup, false)
+	with(binding) {
+		lnToast.setBackgroundColor(ContextCompat.getColor(context, color))
+		tvToast.setText(message)
+	}
+	val layout = view as Snackbar.SnackbarLayout
+	layout.addView(binding.root)
+}.show()
+
+@SuppressLint("RestrictedApi")
+fun Activity.showSnackBar(
+	rootView: View = findViewById(android.R.id.content),
+	message: String? = getString(R.string.no_text),
+	@ColorRes color: Int = R.color.color_toast,
+) = Snackbar.make(rootView, message ?: "", Snackbar.LENGTH_SHORT).apply {
+	animationMode = ANIMATION_MODE_SLIDE
+	view.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent))
+	val binding =
+		ViewToastBinding.inflate(LayoutInflater.from(context), rootView as ViewGroup, false)
+	with(binding) {
+		lnToast.setBackgroundColor(ContextCompat.getColor(context, color))
+		tvToast.text = message
+	}
+	val layout = view as Snackbar.SnackbarLayout
+	layout.addView(binding.root)
+}.show()
+
+fun Activity.showSuccess(
+	message: String? = ""
+) = showSnackBar(
+	message = message,
+	color = R.color.color_toast_success
+)
+
+fun Activity.showSuccess(
+	@StringRes message: Int = R.string.no_text
+) = showSnackBar(
+	message = message,
+	color = R.color.color_toast_success
+)
+
+fun Activity.showFail(
+	message: String? = ""
+) = showSnackBar(
+	message = message,
+	color = R.color.color_toast_fail
+)
+
+fun Activity.showFail(
+	@StringRes message: Int = R.string.no_text
+) = showSnackBar(
+	message = message,
+	color = R.color.color_toast_fail
+)
+
+fun Activity.showWarning(
+	message: String? = ""
+) = showSnackBar(
+	message = message,
+	color = R.color.color_toast_warning
+)
+
+fun Activity.showWarning(
+	@StringRes message: Int = R.string.no_text
+) = showSnackBar(
+	message = message,
+	color = R.color.color_toast_warning
+)

@@ -17,31 +17,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
 import kotlin.math.max
 
-
-private fun RecyclerView.LayoutManager?.getOrientation(): Int {
-	return when (this) {
-		is LinearLayoutManager -> orientation
-		is LoopingLayoutManager -> orientation
-		else -> RecyclerView.VERTICAL
-	}
-}
-
-private fun RecyclerView.LayoutManager?.findFirstVisibleItemPosition(): Int {
-	return when (this) {
-		is LinearLayoutManager -> findFirstVisibleItemPosition()
-		is LoopingLayoutManager -> findFirstVisibleItemPosition()
-		else -> RecyclerView.NO_POSITION
-	}
-}
-
-private fun RecyclerView.LayoutManager?.findLastVisibleItemPosition(): Int {
-	return when (this) {
-		is LinearLayoutManager -> findLastVisibleItemPosition()
-		is LoopingLayoutManager -> findLastVisibleItemPosition()
-		else -> RecyclerView.NO_POSITION
-	}
-}
-
 class IndicatorBuilder<T : RecyclerView.Adapter<*>>(
 	private val _recyclerView: RecyclerView,
 	private val _adapter: T
@@ -559,5 +534,29 @@ private class IndicatorDecoration : RecyclerView.ItemDecoration() {
 		} else {
 			1
 		} * indicatorDistanceItem
+	}
+}
+
+private fun RecyclerView.LayoutManager?.getOrientation(): Int {
+	return when (this) {
+		is LinearLayoutManager -> orientation
+		is LoopingLayoutManager -> orientation
+		else -> RecyclerView.VERTICAL
+	}
+}
+
+private fun RecyclerView.LayoutManager?.findFirstVisibleItemPosition(): Int {
+	return when (this) {
+		is LinearLayoutManager -> findFirstVisibleItemPosition()
+		is LoopingLayoutManager -> findFirstVisibleItemPosition()
+		else -> RecyclerView.NO_POSITION
+	}
+}
+
+private fun RecyclerView.LayoutManager?.findLastVisibleItemPosition(): Int {
+	return when (this) {
+		is LinearLayoutManager -> findLastVisibleItemPosition()
+		is LoopingLayoutManager -> findLastVisibleItemPosition()
+		else -> RecyclerView.NO_POSITION
 	}
 }

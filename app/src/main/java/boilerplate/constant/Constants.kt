@@ -6,5 +6,8 @@ object Constants {
 
 	const val KEY_AUTH = "Authorization"
 
-	const val LAYOUT_INVALID = -1
+	const val INVALID_RESOURCE = -1
+
+	const val ANIMATION_DELAY: Long = 200
+
 }

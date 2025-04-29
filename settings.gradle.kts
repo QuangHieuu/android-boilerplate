@@ -25,5 +25,6 @@ rootProject.name = "Android_Boilerplate"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(
 	":app",
-	":RefreshRecyclerView"
+	":RefreshRecyclerView",
+	":RoundImageView"
 )

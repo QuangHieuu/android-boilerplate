@@ -44,13 +44,13 @@
         android:gravity="center"
         android:orientation="horizontal">
 
-        <boilerplate.widget.image.AppImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"
             android:padding="@dimen/dp_10"
             tools:src="@drawable/ic_arrow_previous_white" />
 
-        <boilerplate.widget.image.AppImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"
             android:padding="@dimen/dp_10"

@@ -1,11 +1,10 @@
 plugins {
 	id("com.android.library")
 	id("org.jetbrains.kotlin.android")
-	id("com.google.devtools.ksp")
 }
 
 android {
-	namespace = "android.empty.refreshrecyclerview"
+	namespace = "android.empty.roundimageview"
 
 	defaultConfig {
 		minSdk = 24
@@ -35,9 +34,5 @@ android {
 
 //noinspection GradleDependency UseTomlInstead
 dependencies {
-	implementation("androidx.core:core-ktx:1.13.1")
-
-	implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
-	implementation("androidx.recyclerview:recyclerview:1.4.0")
-	implementation("androidx.recyclerview:recyclerview-selection:1.1.0")
+	implementation("androidx.appcompat:appcompat:1.7.0")
 }

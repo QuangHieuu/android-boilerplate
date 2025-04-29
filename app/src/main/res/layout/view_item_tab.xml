@@ -8,7 +8,7 @@
     android:minWidth="50dp"
     tools:ignore="SpUsage,HardcodedText">
 
-    <boilerplate.widget.image.AppImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/img_icon"
         android:layout_width="@dimen/dp_32"
         android:layout_height="0dp"

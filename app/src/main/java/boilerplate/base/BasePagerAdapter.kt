@@ -119,7 +119,7 @@ class PagerAdapterBuilder(
 		return customTab(autoRefresh, smoothScroll, ViewItemTabBinding::inflate, ::defaultTab)
 	}
 
-	fun <VB : ViewBinding> customTab(
+	private fun <VB : ViewBinding> customTab(
 		autoRefresh: Boolean = true,
 		smoothScroll: Boolean = true,
 		factory: (LayoutInflater, ViewGroup, Boolean) -> VB,

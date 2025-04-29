@@ -50,6 +50,7 @@ android {
 
 dependencies {
 	implementation(projects.refreshRecyclerView)
+	implementation(projects.roundImageView)
 	implementation(platform(libs.kotlin.bom))
 
 	implementation(fileTree("dir" to "libs", "include" to listOf("*.jar", "*.aar")))

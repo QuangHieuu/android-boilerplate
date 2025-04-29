@@ -4,7 +4,11 @@ import android.os.Build
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
-import androidx.core.view.*
+import androidx.core.view.OnApplyWindowInsetsListener
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsAnimationCompat
+import androidx.core.view.WindowInsetsCompat
 
 class InsetsWithKeyboardCallback(
 	window: Window,
@@ -38,7 +42,7 @@ class InsetsWithKeyboardCallback(
 
 		val typeInsets = insets.getInsets(types)
 		v.setPadding(typeInsets.left, typeInsets.top, typeInsets.right, typeInsets.bottom)
-		block(!insets.isVisible(WindowInsetsCompat.Type.ime()))
+		block(insets.isVisible(WindowInsetsCompat.Type.ime()))
 		return WindowInsetsCompat.CONSUMED
 	}
 

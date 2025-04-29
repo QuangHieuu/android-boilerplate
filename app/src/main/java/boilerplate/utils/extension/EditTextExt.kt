@@ -1,32 +1,32 @@
-package boilerplate.utils.keyboard
+package boilerplate.utils.extension
 
 import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import boilerplate.utils.extension.ANIMATION_DELAY
+import androidx.core.view.postDelayed
+import boilerplate.constant.Constants.ANIMATION_DELAY
 
 fun EditText.hideKeyboard() {
 	with(this) {
-		clearFocus()
-		postDelayed({
-			val imm =
-				context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+		postDelayed(ANIMATION_DELAY) {
+			clearFocus()
+			val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 			imm.hideSoftInputFromWindow(windowToken, 0)
-		}, ANIMATION_DELAY)
+		}
 	}
 }
 
 fun EditText.showKeyboard() {
 	with(this) {
-		isFocusable = true
-		isFocusableInTouchMode = true
-		if (requestFocus()) {
-			postDelayed({
+		postDelayed(ANIMATION_DELAY) {
+			isFocusable = true
+			isFocusableInTouchMode = true
+			if (requestFocus()) {
 				val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 				imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
-			}, ANIMATION_DELAY)
+			}
 		}
 	}
 }
