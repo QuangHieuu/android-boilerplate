@@ -1,43 +1,28 @@
 package boilerplate.utils.extension
 
 import android.animation.ValueAnimator
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Rect
 import android.text.Layout
 import android.text.StaticLayout
-import android.view.*
+import android.view.Gravity
+import android.view.View
+import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
+import android.view.WindowManager
 import android.view.animation.LinearInterpolator
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.ImageView
 import android.widget.PopupWindow
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.annotation.ColorRes
-import androidx.annotation.StringRes
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnRepeat
 import androidx.core.animation.doOnResume
 import androidx.core.animation.doOnStart
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
-import androidx.viewbinding.ViewBinding
-import boilerplate.R
-import boilerplate.constant.Constants.KEY_AUTH
-import boilerplate.databinding.ViewToastBinding
-import boilerplate.model.file.ExtensionType
 import boilerplate.utils.ClickUtil
-import boilerplate.utils.ImageUtil
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.model.GlideUrl
-import com.bumptech.glide.load.model.Headers
-import com.bumptech.glide.load.model.LazyHeaders
-import com.bumptech.glide.request.RequestOptions
-import com.google.android.material.snackbar.BaseTransientBottomBar.ANIMATION_MODE_SLIDE
-import com.google.android.material.snackbar.Snackbar
 
 
 fun View.show(b: Boolean = true) {
@@ -56,82 +41,6 @@ fun View.isVisible(): Boolean {
 	return visibility == View.VISIBLE
 }
 
-@SuppressLint("RestrictedApi")
-fun View.showSnackBar(
-	@StringRes message: Int = R.string.no_text,
-	@ColorRes color: Int = R.color.color_toast
-) = Snackbar.make(rootView, message, Snackbar.LENGTH_SHORT).apply {
-	animationMode = ANIMATION_MODE_SLIDE
-	view.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent))
-	val binding =
-		ViewToastBinding.inflate(LayoutInflater.from(context), rootView as ViewGroup, false)
-	with(binding) {
-		lnToast.setBackgroundColor(ContextCompat.getColor(context, color))
-		tvToast.setText(message)
-	}
-	val layout = view as Snackbar.SnackbarLayout
-	layout.addView(binding.root)
-}.show()
-
-@SuppressLint("RestrictedApi")
-fun View.showSnackBar(
-	message: String? = context.getString(R.string.no_text),
-	@ColorRes color: Int = R.color.color_toast
-) = Snackbar.make(rootView, message ?: "", Snackbar.LENGTH_SHORT).apply {
-	animationMode = ANIMATION_MODE_SLIDE
-	view.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent))
-	val binding =
-		ViewToastBinding.inflate(LayoutInflater.from(context), rootView as ViewGroup, false)
-	with(binding) {
-		lnToast.setBackgroundColor(ContextCompat.getColor(context, color))
-		tvToast.text = message
-	}
-	val layout = view as Snackbar.SnackbarLayout
-	layout.addView(binding.root)
-}.show()
-
-fun View.showSuccess(
-	message: String? = ""
-) = showSnackBar(
-	message,
-	R.color.color_toast_success
-)
-
-fun View.showSuccess(
-	@StringRes message: Int = R.string.no_text
-) = showSnackBar(
-	message,
-	R.color.color_toast_success
-)
-
-fun View.showFail(
-	message: String? = ""
-) = showSnackBar(
-	message,
-	R.color.color_toast_fail
-)
-
-fun View.showFail(
-	@StringRes message: Int = R.string.no_text
-) = showSnackBar(
-	message,
-	R.color.color_toast_fail
-)
-
-fun View.showWarning(
-	message: String? = ""
-) = showSnackBar(
-	message,
-	R.color.color_toast_warning
-)
-
-fun View.showWarning(
-	@StringRes message: Int = R.string.no_text
-) = showSnackBar(
-	message,
-	R.color.color_toast_warning
-)
-
 fun WebView.loadWebViewUrl(url: String?, progressBar: ProgressBar?) {
 	if (url.isNullOrEmpty()) return
 	if (progressBar == null) {
@@ -148,51 +57,6 @@ fun WebView.loadWebViewUrl(url: String?, progressBar: ProgressBar?) {
 		scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY
 	}
 	loadUrl(url)
-}
-
-fun ImageView.loadAvatar(url: String? = "") {
-	loadImage(
-		url, requestOptions = RequestOptions()
-			.override(ImageUtil.AVATAR_MAX_SIZE)
-			.placeholder(R.drawable.ic_avatar)
-			.error(R.drawable.ic_avatar)
-			.circleCrop()
-	)
-}
-
-fun ImageView.loadImage(
-	url: String? = "",
-	accessToken: String? = "",
-	type: String? = "",
-	requestOptions: RequestOptions = RequestOptions().error(R.drawable.bg_error)
-) {
-	if (url.isNullOrEmpty()) {
-		return
-	}
-	val isGif = ExtensionType.isFileGIF(type)
-
-	val context = context
-	val glideUrl = GlideUrl(url, accessToken?.let {
-		LazyHeaders.Builder()
-			.addHeader(KEY_AUTH, it)
-			.build()
-	} ?: Headers.DEFAULT)
-
-	if (isGif) {
-		Glide
-			.with(context)
-			.asGif()
-			.load(glideUrl)
-			.apply(requestOptions)
-			.into(this)
-	} else {
-		Glide
-			.with(context)
-			.asDrawable()
-			.load(glideUrl)
-			.apply(requestOptions)
-			.into(this)
-	}
 }
 
 fun <T : View> T.click(function: ((v: View) -> Unit)?): T {
@@ -270,9 +134,6 @@ fun DialogFragment.setWidthPercent(widthPercent: Int = 60, heightPercent: Int = 
 	} catch (_: Exception) {
 	}
 }
-
-inline fun <T : ViewBinding> ViewGroup.viewBinding(factory: (LayoutInflater, ViewGroup, Boolean) -> T) =
-	factory(LayoutInflater.from(context), this, false)
 
 /**
  *

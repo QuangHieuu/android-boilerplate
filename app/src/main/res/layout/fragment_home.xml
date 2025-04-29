@@ -1,46 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <FrameLayout
-        android:id="@+id/frame1"
+    <boilerplate.widget.customtext.AppEditText
+        android:id="@+id/edtText"
+        android:focusable="false"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_150">
+        android:layout_height="wrap_content" />
 
-        <boilerplate.widget.customview.ArcProgressBar
-            android:id="@+id/arcProgressBar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/frame2"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_150">
-
-        <boilerplate.widget.customview.ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_30"
-            android:layout_gravity="center_vertical" />
-    </FrameLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rcv"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_150"
-        android:orientation="horizontal"
-        app:layoutManager="boilerplate.widget.recyclerview.layoutManager.LoopingLayoutManager"
-        tools:listitem="@layout/holder_home" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rcvLoading"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 </LinearLayout>

@@ -7,7 +7,7 @@
     android:background="@drawable/bg_corner_white"
     android:padding="@dimen/dp_8">
 
-    <boilerplate.widget.customText.AppTextView
+    <boilerplate.widget.customtext.AppTextView
         android:id="@+id/tv_toast"
         style="@style/StyleRegular"
         android:layout_width="wrap_content"

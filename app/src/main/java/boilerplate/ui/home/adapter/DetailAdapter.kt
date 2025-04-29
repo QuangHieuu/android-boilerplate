@@ -1,11 +1,15 @@
 package boilerplate.ui.home.adapter
 
+import android.empty.base.BaseRcvAdapter
+import android.empty.base.BaseVH
+import android.empty.base.EmptyVH
+import android.empty.base.HolderBuilder
+import android.empty.base.build
+import android.empty.base.viewBinding
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import boilerplate.base.*
 import boilerplate.databinding.HolderStringBinding
 import boilerplate.model.User
-import boilerplate.utils.extension.viewBinding
 
 object DetailViewType {
 	const val TYPE_STRING: Int = 0

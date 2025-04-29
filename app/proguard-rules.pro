@@ -23,3 +23,5 @@
 -keepclassmembers class * implements androidx.viewbinding.ViewBinding {
      public static ** inflate(...);
 }
+-keep class com.bumptech.** {*;}
+-keepclassmembers class com.bumptech.** {*;}

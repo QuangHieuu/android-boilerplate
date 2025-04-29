@@ -11,7 +11,6 @@ import androidx.viewpager2.widget.ViewPager2
 import boilerplate.databinding.ViewItemTabBinding
 import boilerplate.utils.extension.gone
 import boilerplate.utils.extension.show
-import boilerplate.utils.extension.viewBinding
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
@@ -120,7 +119,7 @@ class PagerAdapterBuilder(
 		return customTab(autoRefresh, smoothScroll, ViewItemTabBinding::inflate, ::defaultTab)
 	}
 
-	fun <VB : ViewBinding> customTab(
+	private fun <VB : ViewBinding> customTab(
 		autoRefresh: Boolean = true,
 		smoothScroll: Boolean = true,
 		factory: (LayoutInflater, ViewGroup, Boolean) -> VB,
@@ -133,7 +132,7 @@ class PagerAdapterBuilder(
 				autoRefresh,
 				smoothScroll,
 			) { tab, pos ->
-				val binding = tab.view.viewBinding(factory)
+				val binding = factory(LayoutInflater.from(tab.view.context), tab.view, false)
 				customView(pos, binding)
 				tab.setCustomView(binding.root)
 			}

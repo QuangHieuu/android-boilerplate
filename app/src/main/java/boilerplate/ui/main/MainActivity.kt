@@ -12,7 +12,11 @@ import android.view.View
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.withCreated
+import androidx.lifecycle.withStarted
 import androidx.window.layout.WindowInfoTracker
 import boilerplate.R
 import boilerplate.base.BaseActivity
@@ -23,7 +27,12 @@ import boilerplate.service.network.NetworkSchedulerService
 import boilerplate.ui.main.tab.HomeTabIndex
 import boilerplate.ui.splash.StartActivity
 import boilerplate.utils.InternetManager
-import boilerplate.utils.extension.*
+import boilerplate.utils.extension.PERMISSION_NOTIFY
+import boilerplate.utils.extension.isAppInBackground
+import boilerplate.utils.extension.isTablet
+import boilerplate.utils.extension.notNull
+import boilerplate.utils.extension.show
+import boilerplate.utils.extension.startActivityAtRoot
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -40,8 +49,6 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
 	private lateinit var _homeAdapter: PagerAdapterBuilder
 
 	private var _isBackFromBackground = false
-
-	override fun getContainerId(): Int = R.id.app_container
 
 	override fun getWindowInsets(): View = binding.frameTablet
 
@@ -130,7 +137,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
 	}
 
 	override fun onKeyboardCallBack(isKeyboardShow: Boolean) {
-		binding.tabLayoutHome.show(isKeyboardShow)
+		binding.tabLayoutHome.show(!isKeyboardShow)
 	}
 
 	private fun createPage() {

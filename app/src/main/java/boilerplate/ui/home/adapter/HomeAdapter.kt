@@ -1,14 +1,14 @@
 package boilerplate.ui.home.adapter
 
+import android.empty.base.BaseRcvAdapter
+import android.empty.base.BaseVH
+import android.empty.base.HolderBuilder
+import android.empty.base.build
+import android.empty.base.viewBinding
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import boilerplate.base.BaseRcvAdapter
-import boilerplate.base.BaseVH
-import boilerplate.base.HolderBuilder
-import boilerplate.base.build
 import boilerplate.databinding.HolderHomeBinding
 import boilerplate.model.User
-import boilerplate.utils.extension.viewBinding
 
 object HomeViewType {
 	const val TYPE_HOME = 0

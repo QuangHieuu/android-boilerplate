@@ -18,7 +18,7 @@ open class MultipleLiveEvent<T> : MutableLiveData<T>() {
 		super.observe(owner) { t: T ->
 			observer.onChanged(t)
 			if (_pending.compareAndSet(true, false)) {
-				//call next value processing if have such
+				//call next values processing if have such
 				if (_values.isNotEmpty()) {
 					pollValue()
 				}

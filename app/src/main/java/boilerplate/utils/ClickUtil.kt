@@ -3,7 +3,7 @@ package boilerplate.utils
 import android.os.Handler
 import android.os.Looper
 import android.view.View
-import boilerplate.utils.extension.ANIMATION_DELAY
+import boilerplate.constant.Constants.ANIMATION_DELAY
 
 open class ClickUtil(
 	private val longClick: Long,

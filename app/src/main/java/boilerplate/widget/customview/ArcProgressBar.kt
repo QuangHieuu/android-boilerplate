@@ -3,7 +3,14 @@ package boilerplate.widget.customview
 import android.animation.ValueAnimator
 import android.content.Context
 import android.content.res.Resources
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.CornerPathEffect
+import android.graphics.Paint
+import android.graphics.Path
+import android.graphics.PathMeasure
+import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.FrameLayout
@@ -66,7 +73,7 @@ class ArcProgressBar(
 		setWillNotDraw(false)
 		setPaint()
 		padding = dimensionPixel(15f)
-		bitmap = BitmapFactory.decodeResource(resources, R.drawable.ic_avatar)
+		bitmap = BitmapFactory.decodeResource(resources, R.drawable.ic_app_launcher_foreground)
 
 		bitmapSize = dimensionPixel(13f)
 		circleSize = dimensionPixel(10f)

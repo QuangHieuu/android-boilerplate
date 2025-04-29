@@ -6,7 +6,7 @@
     android:orientation="vertical"
     tools:ignore="SpUsage">
 
-    <boilerplate.widget.customText.AppTextView
+    <boilerplate.widget.customtext.AppTextView
         android:id="@+id/content"
         style="@style/StyleRegular"
         android:layout_width="wrap_content"
@@ -14,7 +14,7 @@
         android:textSize="@dimen/dp_14"
         tools:text="content" />
 
-    <boilerplate.widget.customText.AppTextView
+    <boilerplate.widget.customtext.AppTextView
         android:id="@+id/moreLess"
         style="@style/StyleRegular"
         android:layout_width="wrap_content"

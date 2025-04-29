@@ -7,8 +7,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.KeyEvent
-import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.ColorRes
+import androidx.annotation.StringRes
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
@@ -40,7 +41,6 @@ fun Fragment.open(
 	asDialog: Boolean = isTablet(),
 	split: Boolean = isTablet(),
 	animateType: AnimateType = AnimateType.SLIDE_TO_LEFT,
-	sharedElement: View
 ) {
 	val containerId = requireActivity().window.findViewById<ViewGroup>(android.R.id.content).id
 	val fm = requireActivity().supportFragmentManager
@@ -57,7 +57,6 @@ fun Fragment.open(
 		fragment.showsDialog = false
 	}
 	fm.transact({
-		addSharedElement(sharedElement, sharedElement.transitionName)
 		setReorderingAllowed(true)
 		addToBackStack(tag)
 		if (isTablet() && split) {
@@ -160,3 +159,55 @@ fun <VB : ViewBinding> Fragment.showDialog(
 	viewInit(binding, dialog)
 	dialog.show()
 }
+
+fun Fragment.showSnackBar(
+	@StringRes message: Int = R.string.no_text,
+	@ColorRes color: Int = R.color.color_toast,
+) = activity?.showSnackBar(message = message, color = color)
+
+fun Fragment.showSnackBar(
+	message: String? = getString(R.string.no_text),
+	@ColorRes color: Int = R.color.color_toast
+) = activity?.showSnackBar(message = message, color = color)
+
+fun Fragment.showSuccess(
+	message: String? = ""
+) = activity?.showSnackBar(
+	message = message,
+	color = R.color.color_toast_success
+)
+
+fun Fragment.showSuccess(
+	@StringRes message: Int = R.string.no_text
+) = activity?.showSnackBar(
+	message = message,
+	color = R.color.color_toast_success
+)
+
+fun Fragment.showFail(
+	message: String? = ""
+) = activity?.showSnackBar(
+	message = message,
+	color = R.color.color_toast_fail
+)
+
+fun Fragment.showFail(
+	@StringRes message: Int = R.string.no_text
+) = activity?.showSnackBar(
+	message = message,
+	color = R.color.color_toast_fail
+)
+
+fun Fragment.showWarning(
+	message: String? = ""
+) = activity?.showSnackBar(
+	message = message,
+	color = R.color.color_toast_warning
+)
+
+fun Fragment.showWarning(
+	@StringRes message: Int = R.string.no_text
+) = activity?.showSnackBar(
+	message = message,
+	color = R.color.color_toast_warning
+)
