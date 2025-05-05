@@ -1,6 +1,10 @@
 package boilerplate.utils.extension
 
-import android.Manifest.permission.*
+import android.Manifest.permission.POST_NOTIFICATIONS
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.Manifest.permission.READ_MEDIA_IMAGES
+import android.Manifest.permission.READ_MEDIA_VIDEO
+import android.Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
 import android.os.Build
 import androidx.annotation.RequiresApi
 

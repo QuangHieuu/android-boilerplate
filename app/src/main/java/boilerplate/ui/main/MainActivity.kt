@@ -5,7 +5,6 @@ import android.app.job.JobScheduler
 import android.content.ComponentName
 import android.content.Intent
 import android.content.res.Configuration
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -22,7 +21,6 @@ import boilerplate.R
 import boilerplate.base.BaseActivity
 import boilerplate.base.PagerAdapterBuilder
 import boilerplate.databinding.ActivityMainBinding
-import boilerplate.model.file.MimeType
 import boilerplate.service.network.NetworkSchedulerService
 import boilerplate.ui.main.tab.HomeTabIndex
 import boilerplate.ui.splash.StartActivity
@@ -30,7 +28,6 @@ import boilerplate.utils.InternetManager
 import boilerplate.utils.extension.PERMISSION_NOTIFY
 import boilerplate.utils.extension.isAppInBackground
 import boilerplate.utils.extension.isTablet
-import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.show
 import boilerplate.utils.extension.startActivityAtRoot
 import kotlinx.coroutines.Dispatchers
@@ -49,6 +46,8 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
 	private lateinit var _homeAdapter: PagerAdapterBuilder
 
 	private var _isBackFromBackground = false
+
+	override var splitContainerId: Int = R.id.frame_tablet
 
 	override fun getWindowInsets(): View = binding.frameTablet
 
@@ -97,15 +96,8 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
 		_isBackFromBackground = baseContext.isAppInBackground()
 	}
 
-	override fun onNewIntent(intent: Intent) {
-		super.onNewIntent(intent)
-		handleDataFromApp(intent)
-	}
-
 	override fun initialize() {
 		_splashScreen.setKeepOnScreenCondition { false }
-		handleDataFromApp(intent)
-
 		createPage()
 	}
 
@@ -138,6 +130,10 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
 
 	override fun onKeyboardCallBack(isKeyboardShow: Boolean) {
 		binding.tabLayoutHome.show(!isKeyboardShow)
+	}
+
+	override fun callbackWhenReceiverData(intent: Intent) {
+
 	}
 
 	private fun createPage() {
@@ -218,35 +214,5 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
 		}
 	}
 
-	private fun handleDataFromApp(intent: Intent) {
-		val action = intent.action
-		val bundle = intent.extras
-		if (action == null || action == Intent.ACTION_MAIN) {
-			return
-		}
-		when (action) {
-			Intent.ACTION_SEND -> {
-				intent.type.notNull { type ->
-					val sharedText = if (bundle != null) bundle.getString(Intent.EXTRA_TEXT, "") else ""
-					val imageUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-						intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
-					} else {
-						intent.getParcelableExtra(Intent.EXTRA_STREAM)
-					}
-					if (type.contains(MimeType.TEXT.type)) {
-						return
-					}
-					if (type.startsWith(MimeType.IMAGE.type) ||
-						type.startsWith(MimeType.VIDEO.type) ||
-						type.startsWith(MimeType.AUDIO.type) ||
-						type.startsWith(MimeType.APPLICATION.type)
-					) {
-						return
-					}
-				}
-			}
-		}
 
-		intent.setAction(Intent.ACTION_MAIN)
-	}
 }

@@ -1,13 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingHorizontal="@dimen/dp_16">
 
-    <boilerplate.widget.customtext.AppEditText
-        android:id="@+id/edtText"
-        android:focusable="false"
-        android:layout_width="match_parent"
+    <boilerplate.widget.customtext.AppTextView
+        android:id="@+id/tv_day"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    <calendar.widget.wheel.SimpleWheelDayPicker
+        android:id="@+id/picker_day"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_200"
+        app:wheel_show_current="true" />
+
+    <boilerplate.widget.customtext.AppTextView
+        android:id="@+id/tv_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <calendar.widget.wheel.SimpleWheelTimePicker
+        android:id="@+id/picker_time"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_200"
+        android:visibility="gone"
+        app:wheel_hour_12_format="true"
+        app:wheel_show_current="true" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn"
+        android:layout_width="@dimen/dp_150"
+        android:layout_height="@dimen/dp_50"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/bg_button" />
+
+    <calendar.widget.wheel.view.WheelPicker
+        android:id="@+id/picker"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_200"
+        app:wheel_day_of_week_from_sunday="true"
+        app:wheel_hour_12_format="true"
+        app:wheel_type="DAY_OF_WEEK" />
 </LinearLayout>

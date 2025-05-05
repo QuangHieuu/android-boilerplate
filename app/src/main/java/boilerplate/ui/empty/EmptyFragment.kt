@@ -8,6 +8,7 @@ import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class EmptyFragment : BaseFragment<FragmentEmptyBinding, MainVM>() {
 	companion object {
+
 		private const val KEY_STRING = "KEY_STRING"
 
 		fun newInstance(s: String = ""): EmptyFragment {
@@ -25,11 +26,9 @@ class EmptyFragment : BaseFragment<FragmentEmptyBinding, MainVM>() {
 	override fun onSubscribeObserver() {
 	}
 
-	override fun registerEvent() {
-		with(binding) {
-			val string = arguments?.getString(KEY_STRING, "asd")
-			tvEmpty.text = string
-		}
+	override fun FragmentEmptyBinding.registerEvent() {
+		val string = arguments?.getString(KEY_STRING, "asd")
+		tvEmpty.text = string
 	}
 
 	override fun callApi() {

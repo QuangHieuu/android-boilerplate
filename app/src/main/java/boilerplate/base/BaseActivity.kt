@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Rect
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -23,7 +24,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.viewbinding.ViewBinding
-import boilerplate.R
+import boilerplate.model.file.MimeType
 import boilerplate.utils.extension.Permission
 import boilerplate.utils.extension.hideKeyboard
 import boilerplate.utils.extension.isTablet
@@ -32,9 +33,11 @@ import boilerplate.utils.extension.showFail
 import boilerplate.utils.extension.validateRes
 import boilerplate.utils.keyboard.InsetsWithKeyboardCallback
 import boilerplate.widget.customtext.AppEditText
+import boilerplate.widget.customtext.InsetsLayout
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.coroutines.launch
+import java.lang.ref.WeakReference
 import java.lang.reflect.ParameterizedType
 
 abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatActivity() {
@@ -44,7 +47,7 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 
 	private val _disposable = CompositeDisposable()
 	private var _blockGrand: (() -> Unit)? = null
-	private val _listRequest: ArrayList<Permission> = arrayListOf()
+	private val _listRequest: WeakReference<ArrayList<Permission>> = WeakReference(arrayListOf())
 	private val _hashMap: HashMap<String, (isShowKeyboard: Boolean) -> Unit> = HashMap()
 
 	private val _backPress by lazy {
@@ -52,8 +55,8 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 			@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 			override fun handleOnBackPressed() {
 				val stack = supportFragmentManager.backStackEntryCount
-				val fullScreen: Fragment? = supportFragmentManager.findFragmentById(android.R.id.content)
-				val splitScreen = supportFragmentManager.findFragmentById(R.id.frame_tablet)
+				val fullScreen: Fragment? = supportFragmentManager.findFragmentById(containerId)
+				val splitScreen = supportFragmentManager.findFragmentById(splitContainerId)
 				if (isTablet()) {
 					if (splitScreen != null) {
 						if (stack > 1 || fullScreen != null) {
@@ -91,37 +94,33 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 		) { result ->
 			result.notNull {
 				for (entry in it.entries) {
-					_listRequest.removeIf { per -> per.name == entry.key && entry.value }
+					_listRequest.get()?.removeIf { per -> per.name == entry.key && entry.value }
 				}
-				if (_listRequest.isEmpty()) {
+				if (_listRequest.get().isNullOrEmpty()) {
 					_blockGrand.notNull { it() }
 					_blockGrand = null
 				}
 			}
 		}
 		super.onCreate(savedInstanceState)
-		setContentView(
-			@Suppress("UNCHECKED_CAST")
-			javaClass.genericSuperclass.let { it as ParameterizedType }.actualTypeArguments[0]
-				.let { it as Class<*> }.getMethod("inflate", LayoutInflater::class.java)
-				.invoke(null, layoutInflater)
-				.let { it as AC }
-				.apply { _binding = this }.root
-		)
+		setContentView(InsetsLayout(baseContext).also {
+			it.addView(
+				@Suppress("UNCHECKED_CAST")
+				javaClass.genericSuperclass.let { it as ParameterizedType }.actualTypeArguments[0]
+					.let { it as Class<*> }.getMethod("inflate", LayoutInflater::class.java)
+					.invoke(null, layoutInflater)
+					.let { it as AC }
+					.apply { _binding = this }.root
+			)
+		})
 
 		val insetsWithKeyboardCallback = InsetsWithKeyboardCallback(window) { show ->
 			keyboardCallBack(show)
 		}
-		ViewCompat.setOnApplyWindowInsetsListener(
-			getWindowInsets(),
-			insetsWithKeyboardCallback
-		)
-		ViewCompat.setWindowInsetsAnimationCallback(
-			getWindowInsets(),
-			insetsWithKeyboardCallback
-		)
+		ViewCompat.setOnApplyWindowInsetsListener(getWindowInsets(), insetsWithKeyboardCallback)
+		ViewCompat.setWindowInsetsAnimationCallback(getWindowInsets(), insetsWithKeyboardCallback)
 
-		validateRes(getContainerId()) {
+		validateRes(containerId) {
 			ViewCompat.setOnApplyWindowInsetsListener(findViewById(this)) { v, insets ->
 				val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
 				v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -132,6 +131,7 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 		onBackPressedDispatcher.addCallback(this@BaseActivity, _backPress)
 
 		initialize()
+		handleDataFromApp(intent)
 		baseObserver()
 		onSubscribeObserver()
 		registerOnClick()
@@ -184,6 +184,11 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 		return super.dispatchTouchEvent(ev)
 	}
 
+	override fun onNewIntent(intent: Intent) {
+		super.onNewIntent(intent)
+		handleDataFromApp(intent)
+	}
+
 	protected abstract fun initialize()
 
 	protected abstract fun onSubscribeObserver()
@@ -201,9 +206,13 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 	protected open fun onKeyboardCallBack(isKeyboardShow: Boolean) {
 	}
 
-	open fun getContainerId(): Int = android.R.id.content
+	open var containerId: Int = android.R.id.content
+
+	open var splitContainerId: Int = -1
 
 	open fun getWindowInsets(): View = binding.root
+
+	open fun callbackWhenReceiverData(intent: Intent) {}
 
 	fun permission(permissions: Array<String>, grand: () -> Unit) {
 		_blockGrand = grand
@@ -211,13 +220,13 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 			if (isGranted(permission)) {
 				continue
 			}
-			_listRequest.add(Permission(permission, false))
+			_listRequest.get()?.add(Permission(permission, false))
 		}
-		if (_listRequest.isEmpty()) {
+		if (_listRequest.get().isNullOrEmpty()) {
 			_blockGrand.notNull { it() }
 			_blockGrand = null
 		} else {
-			_request.launch(_listRequest.map { it.name }.toTypedArray())
+			_request.launch(_listRequest.get()!!.map { it.name }.toTypedArray())
 		}
 	}
 
@@ -256,5 +265,37 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 				it.value(isKeyboardShow)
 			}
 		}
+	}
+
+	private fun handleDataFromApp(intent: Intent) {
+		val action = intent.action
+		val bundle = intent.extras
+		if (action == null || action == Intent.ACTION_MAIN) {
+			return
+		}
+		when (action) {
+			Intent.ACTION_SEND -> {
+				intent.type.notNull { type ->
+					val sharedText = if (bundle != null) bundle.getString(Intent.EXTRA_TEXT, "") else ""
+					val imageUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+						intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
+					} else {
+						intent.getParcelableExtra(Intent.EXTRA_STREAM)
+					}
+					if (type.contains(MimeType.TEXT.type)) {
+						return
+					}
+					if (type.startsWith(MimeType.IMAGE.type) ||
+						type.startsWith(MimeType.VIDEO.type) ||
+						type.startsWith(MimeType.AUDIO.type) ||
+						type.startsWith(MimeType.APPLICATION.type)
+					) {
+						return
+					}
+				}
+			}
+		}
+		callbackWhenReceiverData(intent)
+		intent.setAction(Intent.ACTION_MAIN)
 	}
 }

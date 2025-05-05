@@ -28,11 +28,11 @@ fun <T : BaseFragment<*, *>> T.putBundle(vararg pairs: Pair<String, Any?>): T {
 	return this
 }
 
-abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
+abstract class BaseFragment<VB : ViewBinding, VM : BaseViewModel> : Fragment() {
 	open val TAG = this.javaClass.simpleName
 
-	private var _binding: AC? = null
-	protected val binding: AC
+	private var _binding: VB? = null
+	protected val binding: VB
 		get() = checkNotNull(_binding) { "View not create" }
 
 	private val _loadingLayout: LoadingLayout by lazy { LoadingLayout(requireActivity()) }
@@ -71,7 +71,7 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
 				Boolean::class.java
 			)
 			.invoke(null, layoutInflater, container, false)
-			.let { it as AC }
+			.let { it as VB }
 			.apply { _binding = this }.root.apply {
 				isClickable = true
 				isFocusable = true
@@ -105,7 +105,7 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
 
 		initialize()
 		onSubscribeObserver()
-		registerEvent()
+		binding.registerEvent()
 		callApi()
 	}
 
@@ -126,7 +126,7 @@ abstract class BaseFragment<AC : ViewBinding, VM : BaseViewModel> : Fragment() {
 
 	protected abstract fun onSubscribeObserver()
 
-	protected abstract fun registerEvent()
+	protected abstract fun VB.registerEvent()
 
 	protected abstract fun callApi()
 

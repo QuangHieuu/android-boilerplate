@@ -5,25 +5,25 @@ import android.empty.base.BaseVH
 import android.empty.base.HolderBuilder
 import android.empty.base.build
 import android.empty.base.viewBinding
+import shape.widget.chart.model.Entry
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import boilerplate.databinding.HolderHomeBinding
-import boilerplate.model.User
 
 object HomeViewType {
 	const val TYPE_HOME = 0
 }
 
-class HomeAdapter : BaseRcvAdapter<Any>() {
-	override fun onBuildHolder(): List<HolderBuilder<Any>> {
+class HomeAdapter : BaseRcvAdapter<Entry>() {
+	override fun onBuildHolder(): List<HolderBuilder<Entry>> {
 		return builder {
-			build(HomeViewType.TYPE_HOME, HomeVH::holder, { _, _ -> true })
+			build(HomeViewType.TYPE_HOME, HomeVH::holder) { _, _ -> true }
 		}
 	}
 
 	override fun onBindHolder(holder: RecyclerView.ViewHolder, position: Int) {
 		when (holder) {
-			is HomeVH -> holder.onBind(dataList[position] as User)
+			is HomeVH -> holder.onBind(dataList[position] as Entry)
 		}
 	}
 }
@@ -38,7 +38,7 @@ class HomeVH(
 		}
 	}
 
-	fun onBind(user: User) {
-		binding.tvTitle.text = user.name
+	fun onBind(user: Entry) {
+		binding.tvTitle.text = user.y.toString()
 	}
 }

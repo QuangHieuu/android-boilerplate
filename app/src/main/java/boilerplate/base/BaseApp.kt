@@ -1,7 +1,11 @@
 package boilerplate.base
 
 import android.app.Application
-import boilerplate.di.*
+import boilerplate.di.appModule
+import boilerplate.di.contextRequireModule
+import boilerplate.di.remoteModule
+import boilerplate.di.repositoryModule
+import boilerplate.di.viewModelModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidFileProperties
 import org.koin.android.ext.koin.androidLogger

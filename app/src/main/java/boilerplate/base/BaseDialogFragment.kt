@@ -20,12 +20,12 @@ import androidx.viewbinding.ViewBinding
 import boilerplate.R
 import boilerplate.utils.extension.Permission
 import boilerplate.utils.extension.addTo
+import boilerplate.utils.extension.hideKeyboard
 import boilerplate.utils.extension.isTablet
 import boilerplate.utils.extension.notNull
 import boilerplate.utils.extension.removeSelf
 import boilerplate.utils.extension.setWidthPercent
 import boilerplate.utils.extension.showFail
-import boilerplate.utils.extension.hideKeyboard
 import boilerplate.widget.customtext.AppEditText
 import boilerplate.widget.loading.LoadingLayout
 import io.reactivex.rxjava3.disposables.CompositeDisposable
