@@ -1,10 +1,9 @@
-package boilerplate.widget.customview
+package android.empty.customview
 
 import android.animation.ValueAnimator
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.CornerPathEffect
 import android.graphics.Paint
@@ -14,9 +13,7 @@ import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.FrameLayout
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
-import boilerplate.R
 import kotlin.math.atan2
 
 
@@ -56,11 +53,12 @@ class ArcProgressBar(
 	private var height: Int = 0
 	private val xyCoordinate = floatArrayOf(0f, 0f)
 	private val padding: Float
-	private val bitmap: Bitmap
 	private val bitmapSize: Float
 
 	private var startAngle = 0f
 	private var sweepAngle = 0f
+
+	private var bitmap: Bitmap? = null
 
 	private var animator: ValueAnimator = ValueAnimator.ofFloat(0f, 0f).apply {
 		addUpdateListener(this@ArcProgressBar)
@@ -73,7 +71,6 @@ class ArcProgressBar(
 		setWillNotDraw(false)
 		setPaint()
 		padding = dimensionPixel(15f)
-		bitmap = BitmapFactory.decodeResource(resources, R.drawable.ic_app_launcher_foreground)
 
 		bitmapSize = dimensionPixel(13f)
 		circleSize = dimensionPixel(10f)
@@ -194,15 +191,15 @@ class ArcProgressBar(
 			color = "#CE462E".toColorInt()
 		}
 		paintCircle.apply {
-			color = ContextCompat.getColor(context, R.color.colorPrimary)
+			color = "#03A959".toColorInt()
 		}
 		paintProgress.apply {
-			color = ContextCompat.getColor(context, R.color.colorPrimaryDark)
+			color = "#1A9F5F".toColorInt()
 			strokeWidth = dimensionPixel(14f)
 			style = Paint.Style.STROKE
 		}
 		paintHolder.apply {
-			color = ContextCompat.getColor(context, R.color.color_white)
+			color = "#FFFFFF".toColorInt()
 			strokeWidth = dimensionPixel(14f)
 			style = Paint.Style.STROKE
 		}
@@ -272,12 +269,7 @@ class ArcProgressBar(
 		)
 
 		canvas.drawPath(pathTriangle, paintTriangle)
-		canvas.drawBitmap(
-			bitmap,
-			null,
-			rectFTriangle,
-			paintTriangle
-		)
+		bitmap?.let { canvas.drawBitmap(it, null, rectFTriangle, paintTriangle) }
 	}
 
 	private fun runValue(percentStart: Float, percentEnd: Float = 1f): Float {

@@ -4,10 +4,20 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <boilerplate.widget.customtext.AppEditText
-        android:id="@+id/edtText"
-        android:focusable="false"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.empty.customview.ChartLine
+                android:id="@+id/chartLine"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_130" />
+        </LinearLayout>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </LinearLayout>

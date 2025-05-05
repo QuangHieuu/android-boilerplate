@@ -26,5 +26,6 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(
 	":app",
 	":RefreshRecyclerView",
-	":RoundImageView"
+	":RoundImageView",
+	":CustomView"
 )

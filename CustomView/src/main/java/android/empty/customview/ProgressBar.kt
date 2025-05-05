@@ -1,9 +1,18 @@
-package boilerplate.widget.customview
+package android.empty.customview
 
 import android.animation.ValueAnimator
 import android.content.Context
 import android.content.res.Resources
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.LinearGradient
+import android.graphics.Paint
+import android.graphics.Path
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
+import android.graphics.Rect
+import android.graphics.RectF
+import android.graphics.Shader
 import android.util.AttributeSet
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.FrameLayout

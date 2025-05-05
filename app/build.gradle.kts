@@ -51,6 +51,7 @@ android {
 dependencies {
 	implementation(projects.refreshRecyclerView)
 	implementation(projects.roundImageView)
+	implementation(projects.customView)
 	implementation(platform(libs.kotlin.bom))
 
 	implementation(fileTree("dir" to "libs", "include" to listOf("*.jar", "*.aar")))
@@ -85,6 +86,8 @@ dependencies {
 	implementation(libs.glide.integration)
 	ksp(libs.glide.compiler)
 
+
+	implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 //    implementation(platform(libs.firebase.bom))
 //    implementation(libs.firebase.crashlytics)
 //    implementation(libs.firebase.database)

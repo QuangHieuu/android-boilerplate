@@ -1,7 +1,11 @@
 package boilerplate.utils.extension
 
 import android.graphics.Color
-import android.text.*
+import android.text.Html
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.TextUtils
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
@@ -14,7 +18,9 @@ import androidx.core.content.ContextCompat
 import java.text.DecimalFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 import java.util.regex.Pattern
 
 fun String.toInt(): Int {
@@ -136,7 +142,7 @@ fun SpannableString.withClickableSpan(
 
 fun String.validateEmailOrPhoneNo(): Boolean {
 	return !(!Patterns.EMAIL_ADDRESS.matcher(this).matches()
-		&& !this.matches("[0-9]+".toRegex()))
+			&& !this.matches("[0-9]+".toRegex()))
 }
 
 fun String.validateEmail(): Boolean {
