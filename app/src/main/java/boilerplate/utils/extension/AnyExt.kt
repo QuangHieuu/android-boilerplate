@@ -24,8 +24,6 @@ import boilerplate.constant.Constants.INVALID_RESOURCE
 import com.google.gson.Gson
 import java.lang.ref.WeakReference
 
-fun <T> ArrayList<T>?.ifEmpty(): ArrayList<T> = this ?: arrayListOf()
-
 inline fun <T : Any> T?.notNull(f: (it: T) -> Unit) {
 	if (this != null) f(this)
 }

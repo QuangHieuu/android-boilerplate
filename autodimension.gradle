@@ -1,9 +1,4 @@
-class AutoFactory extends DefaultTask {
-	@TaskAction
-	def create() {}
-}
-
-class DimensionFactory extends DefaultTask {
+abstract class DimensionFactory extends DefaultTask {
 
 	@Input
 	int[] dimens = [0, 320, 360, 384, 390, 400, 411, 420, 433, 450, 480, 533, 540, 561, 600, 640, 673, 681, 720, 768, 800, 840, 886, 960, 1024, 1080, 1280, 1366, 1440, 1600, 1920, 2560, 3840]
@@ -81,7 +76,15 @@ class DimensionFactory extends DefaultTask {
 	}
 }
 
-task createDimension(type: DimensionFactory) {}
+tasks.register('createDimension', DimensionFactory) {
+	dimens = [0, 120, 160, 320, 480, 640, 720]
+	forTablet = 480
+	fromTablet = 640
+	fromDimension = 320
+	positiveMaxDP = 600
+	negativeMaxDP = 600
+	positiveMaxSP = 60
+}
 
 createDimension {
 	dimens = [0, 120, 160, 320, 480, 640, 720]

@@ -3,6 +3,7 @@ package boilerplate.data.remote.api.response
 import android.empty.base.BaseModel
 
 abstract class ResMessage {
+
 	var message: String = ""
 	var status: Int = 0
 }

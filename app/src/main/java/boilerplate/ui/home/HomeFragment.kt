@@ -1,19 +1,17 @@
 package boilerplate.ui.home
 
-import androidx.core.os.bundleOf
 import boilerplate.base.BaseFragment
 import boilerplate.databinding.FragmentHomeBinding
-import boilerplate.ui.empty.EmptyFragment
 import boilerplate.ui.main.MainVM
-import boilerplate.utils.extension.click
-import boilerplate.utils.extension.open
+import calendar.widget.wheel.SimpleWheelListener
+import calendar.widget.wheel.base.IWheelListener
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class HomeFragment : BaseFragment<FragmentHomeBinding, MainVM>() {
 
 	companion object {
+
 		fun newInstance(): HomeFragment {
-			bundleOf()
 			return HomeFragment()
 		}
 	}
@@ -21,12 +19,28 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, MainVM>() {
 	override val viewModel: MainVM by activityViewModel()
 
 	override fun initialize() {
+//		binding.pickerTime.setCurrent("16:00")
 	}
 
 	override fun onSubscribeObserver() {
 	}
 
-	override fun registerEvent() {
+	override fun FragmentHomeBinding.registerEvent() {
+		pickerDay.addListener(object : SimpleWheelListener {
+			override fun onPickDay(value: String) {
+				tvDay.text = value
+			}
+		})
+
+		pickerTime.addListener(object : SimpleWheelListener {
+			override fun onPickDay(value: String) {
+				tvTime.text = value
+			}
+		})
+		picker.addListener(object : IWheelListener {
+			override fun onScroll(value: Int, display: String) {
+			}
+		})
 	}
 
 	override fun callApi() {

@@ -49,11 +49,12 @@ android {
 }
 
 dependencies {
-	implementation(projects.refreshRecyclerView)
-	implementation(projects.roundImageView)
-	implementation(platform(libs.kotlin.bom))
+	implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar", "*.aar"))))
 
-	implementation(fileTree("dir" to "libs", "include" to listOf("*.jar", "*.aar")))
+	implementation(projects.compactShape)
+	implementation(projects.refreshRecyclerView)
+	implementation(projects.simpleRoundedImage)
+	implementation(projects.simpleCalendar)
 
 	implementation(libs.androidx.annotation)
 	implementation(libs.androidx.core.ktx)
@@ -65,6 +66,7 @@ dependencies {
 	implementation(libs.androidx.splash)
 	implementation(libs.androidx.constraintlayout)
 	implementation(libs.androidx.lifecycle)
+	implementation(libs.androidx.swiperefreshlayout)
 
 	implementation(libs.material)
 

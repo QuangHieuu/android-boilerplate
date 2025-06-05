@@ -5,7 +5,6 @@ plugins {
   alias(libs.plugins.android.ksp) apply false
 
   alias(libs.plugins.firebase) apply false
-  alias(libs.plugins.android.library) apply false
 }
 buildscript {
   extra.apply {
