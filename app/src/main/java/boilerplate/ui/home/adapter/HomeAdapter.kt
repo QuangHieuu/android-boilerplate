@@ -3,21 +3,23 @@ package boilerplate.ui.home.adapter
 import android.empty.base.BaseRcvAdapter
 import android.empty.base.BaseVH
 import android.empty.base.HolderBuilder
-import android.empty.base.build
-import android.empty.base.viewBinding
-import shape.widget.chart.model.Entry
+import android.empty.base.holder
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import boilerplate.databinding.HolderHomeBinding
+import boilerplate.ui.home.adapter.DetailViewType.TYPE_USER
+import shape.widget.chart.model.Entry
 
 object HomeViewType {
+
 	const val TYPE_HOME = 0
 }
 
 class HomeAdapter : BaseRcvAdapter<Entry>() {
-	override fun onBuildHolder(): List<HolderBuilder<Entry>> {
+
+	override fun onCreateViewHolder(): List<HolderBuilder> {
 		return builder {
-			build(HomeViewType.TYPE_HOME, HomeVH::holder) { _, _ -> true }
+			holder<HomeVH>(TYPE_USER) { _, _ -> true }
 		}
 	}
 
@@ -28,15 +30,7 @@ class HomeAdapter : BaseRcvAdapter<Entry>() {
 	}
 }
 
-class HomeVH(
-	parent: ViewGroup
-) : BaseVH<HolderHomeBinding>(parent.viewBinding(HolderHomeBinding::inflate)) {
-
-	companion object {
-		fun holder(parent: ViewGroup): HomeVH {
-			return HomeVH(parent)
-		}
-	}
+class HomeVH(parent: ViewGroup) : BaseVH<HolderHomeBinding>(parent, HolderHomeBinding::inflate) {
 
 	fun onBind(user: Entry) {
 		binding.tvTitle.text = user.y.toString()

@@ -20,7 +20,7 @@ class EmptyFragment : BaseFragment<FragmentEmptyBinding, MainVM>() {
 
 	override val viewModel: MainVM by activityViewModel()
 
-	override fun initialize() {
+	override fun FragmentEmptyBinding.initialize() {
 	}
 
 	override fun onSubscribeObserver() {
