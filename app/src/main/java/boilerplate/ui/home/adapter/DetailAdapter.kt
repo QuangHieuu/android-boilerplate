@@ -1,26 +1,23 @@
 package boilerplate.ui.home.adapter
 
-import android.empty.base.BaseRcvAdapter
-import android.empty.base.BaseVH
-import android.empty.base.EmptyVH
-import android.empty.base.HolderBuilder
-import android.empty.base.build
-import android.empty.base.viewBinding
+import android.empty.base.*
+import android.empty.refreshrecyclerview.databinding.HolderEmptyBinding
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import boilerplate.databinding.HolderStringBinding
 import boilerplate.model.User
 
 object DetailViewType {
+
 	const val TYPE_STRING: Int = 0
 	const val TYPE_USER: Int = 1
 }
 
 class DetailAdapter : BaseRcvAdapter<Any>() {
-	override fun onBuildHolder(): List<HolderBuilder<Any>> {
+
+	override fun onCreateViewHolder(): List<HolderBuilder> {
 		return builder {
-			build(DetailViewType.TYPE_STRING, EmptyVH::holder, ::conTypeString)
-			build(DetailViewType.TYPE_USER, UserVH::holder, ::conTypeUser)
+			holder<EmptyVH>(DetailViewType.TYPE_STRING, ::conTypeString)
+			holder<UserVH>(DetailViewType.TYPE_USER, ::conTypeUser)
 		}
 	}
 
@@ -42,13 +39,7 @@ class DetailAdapter : BaseRcvAdapter<Any>() {
 
 }
 
-class UserVH(parent: ViewGroup) :
-	BaseVH<HolderStringBinding>(parent.viewBinding(HolderStringBinding::inflate)) {
-	companion object {
-		fun holder(parent: ViewGroup): UserVH {
-			return UserVH(parent)
-		}
-	}
+class UserVH(parent: ViewGroup) : BaseVH<HolderEmptyBinding>(parent, HolderEmptyBinding::inflate) {
 
 	fun onBind(user: User) {
 		binding.tvTitle.text = user.name

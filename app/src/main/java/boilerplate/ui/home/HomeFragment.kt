@@ -2,10 +2,13 @@ package boilerplate.ui.home
 
 import boilerplate.base.BaseFragment
 import boilerplate.databinding.FragmentHomeBinding
+import boilerplate.model.User
+import boilerplate.ui.home.adapter.DetailAdapter
 import boilerplate.ui.main.MainVM
-import calendar.widget.wheel.SimpleWheelListener
-import calendar.widget.wheel.base.IWheelListener
+import boilerplate.utils.extension.click
+import calendar.widget.table.CalenderListener
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
+import java.util.Date
 
 class HomeFragment : BaseFragment<FragmentHomeBinding, MainVM>() {
 
@@ -16,31 +19,51 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, MainVM>() {
 		}
 	}
 
+	private val detailAdapter = DetailAdapter()
+
 	override val viewModel: MainVM by activityViewModel()
 
-	override fun initialize() {
-//		binding.pickerTime.setCurrent("16:00")
+	override fun FragmentHomeBinding.initialize() {
+
+		rcv.adapter = detailAdapter
+
 	}
 
 	override fun onSubscribeObserver() {
+		detailAdapter.submitData(
+			arrayListOf(
+				User(name = "1"),
+				User(name = "2"),
+				User(name = "3"),
+				User(name = "4"),
+				User(name = "5"),
+				User(name = "6"),
+				User(name = "7"),
+			)
+		)
 	}
 
 	override fun FragmentHomeBinding.registerEvent() {
-		pickerDay.addListener(object : SimpleWheelListener {
-			override fun onPickDay(value: String) {
-				tvDay.text = value
+		calendar.addListener(object : CalenderListener() {
+			override fun onChange(date: Date) {
+				text.text = date.toString()
 			}
-		})
 
-		pickerTime.addListener(object : SimpleWheelListener {
-			override fun onPickDay(value: String) {
-				tvTime.text = value
+			override fun onPick(date: Date) {
+			}
+
+			override fun onPickFromTo(from: Date?, to: Date?) {
 			}
 		})
-		picker.addListener(object : IWheelListener {
-			override fun onScroll(value: Int, display: String) {
-			}
-		})
+		btnNext.click {
+			calendar.nextMonth()
+		}
+		btnPrevious.click {
+			calendar.previousMonth()
+		}
+		btnReset.click {
+			calendar.moveToToday()
+		}
 	}
 
 	override fun callApi() {
