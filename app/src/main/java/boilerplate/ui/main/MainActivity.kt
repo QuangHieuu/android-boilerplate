@@ -6,16 +6,15 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
+import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import androidx.lifecycle.withCreated
-import androidx.lifecycle.withStarted
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.*
 import androidx.window.layout.WindowInfoTracker
 import boilerplate.R
 import boilerplate.base.BaseActivity
@@ -23,13 +22,8 @@ import boilerplate.base.PagerAdapterBuilder
 import boilerplate.databinding.ActivityMainBinding
 import boilerplate.service.network.NetworkSchedulerService
 import boilerplate.ui.main.tab.HomeTabIndex
-import boilerplate.ui.splash.StartActivity
 import boilerplate.utils.InternetManager
-import boilerplate.utils.extension.PERMISSION_NOTIFY
-import boilerplate.utils.extension.isAppInBackground
-import boilerplate.utils.extension.isTablet
-import boilerplate.utils.extension.show
-import boilerplate.utils.extension.startActivityAtRoot
+import boilerplate.utils.extension.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -37,6 +31,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
 	companion object {
+
 		const val JOB_SCHEDULER_ID: Int = 100
 	}
 
@@ -46,6 +41,14 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
 	private lateinit var _homeAdapter: PagerAdapterBuilder
 
 	private var _isBackFromBackground = false
+
+	private val _backDispatch by lazy {
+		object : OnBackPressedCallback(true) {
+			override fun handleOnBackPressed() {
+				backPressed()
+			}
+		}
+	}
 
 	override var splitContainerId: Int = R.id.frame_tablet
 
@@ -63,11 +66,15 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
 		}
 		super.onCreate(savedInstanceState)
 
+//		onBackPressedDispatcher.addCallback(this@MainActivity, _backDispatch)
+//		_backDispatch.isEnabled = false
+
 		_windowInfoTracker = WindowInfoTracker.getOrCreate(this@MainActivity)
 		_isBackFromBackground = false
 
+
 		lifecycleScope.launch {
-			lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+			repeatOnLifecycle(Lifecycle.State.STARTED) {
 				_windowInfoTracker.windowLayoutInfo(this@MainActivity).collect {
 					splitScreen()
 				}
@@ -75,17 +82,17 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
 		}
 
 		lifecycleScope.launch(Dispatchers.IO) {
-			lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+			withResumed {
 				if (_isBackFromBackground && InternetManager.isConnected()) {
 				}
 			}
 		}
 
 		lifecycleScope.launch {
-			lifecycle.withCreated {
+			withCreated {
 				scheduleJob()
 			}
-			lifecycle.withStarted {
+			withStarted {
 				requestPermissionNotify()
 			}
 		}
@@ -104,10 +111,6 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
 	override fun onSubscribeObserver() {
 		with(viewModel) {
 			logout.observe(this@MainActivity) {
-				if (it) {
-					startActivityAtRoot(StartActivity::class.java)
-					finish()
-				}
 			}
 			currentSelected.observe(this@MainActivity) {
 				binding.frameDashboard.show(it == HomeTabIndex.POSITION_HOME_DASHBOARD && isTablet())
@@ -180,6 +183,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
 
 	private suspend fun splitScreen() = coroutineScope {
 		binding.frameTablet.show(isTablet())
+		replaceFragmentInActivity(R.id.frame_tablet, SplitFragment.newInstance())
 		with(binding.appContainer) {
 			val set = ConstraintSet()
 			set.clone(this)
@@ -209,10 +213,26 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
 	}
 
 	private fun requestPermissionNotify() {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+		if (SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 			permission(PERMISSION_NOTIFY) {}
 		}
 	}
 
+	private fun backPressed() {
+		val stack = supportFragmentManager.backStackEntryCount
+		val fullScreen: Fragment? = supportFragmentManager.findFragmentById(containerId)
+		val splitScreen = supportFragmentManager.findFragmentById(splitContainerId)
+		if (isTablet()) {
+			finish()
+		} else {
 
+		}
+	}
+
+	private fun closeView(stack: Int) {
+		if (stack == 0) {
+//			finish()
+		} else {
+		}
+	}
 }

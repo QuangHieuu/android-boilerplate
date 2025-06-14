@@ -9,6 +9,7 @@ import boilerplate.data.local.sharedPrefs.SharedPrefsKey.DEVICE_ID
 import boilerplate.data.local.sharedPrefs.SharedPrefsKey.DEVICE_TOKEN
 
 interface TokenRepository {
+
 	fun saveToken(type: String, token: String)
 
 	fun getToken(): String

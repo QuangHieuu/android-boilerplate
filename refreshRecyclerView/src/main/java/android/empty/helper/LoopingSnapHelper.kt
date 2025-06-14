@@ -9,6 +9,6 @@ class LoopingSnapHelper : LinearSnapHelper() {
 		velocityX: Int,
 		velocityY: Int
 	): Int {
-		return RecyclerView.NO_POSITION;
+		return RecyclerView.NO_POSITION
 	}
 }

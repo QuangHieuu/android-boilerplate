@@ -26,6 +26,7 @@ import javax.net.ssl.X509TrustManager
 
 @GlideModule
 class GlideAppModule : AppGlideModule() {
+
 	override fun applyOptions(context: Context, builder: GlideBuilder) {
 		with(builder) {
 			setLogLevel(Log.ERROR)

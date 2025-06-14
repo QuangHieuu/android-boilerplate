@@ -3,7 +3,6 @@ package boilerplate.widget.pulse
 import android.content.Context
 import android.util.AttributeSet
 import android.view.Gravity
-import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
@@ -18,6 +17,7 @@ class PulseLayout @JvmOverloads constructor(
 	attrs: AttributeSet?,
 	defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
+
 	private var mTimer: Timer? = null
 
 	private var mPeriod = 800
@@ -67,7 +67,7 @@ class PulseLayout @JvmOverloads constructor(
 								fillAfter = true
 							}
 
-						val params: ViewGroup.LayoutParams =
+						val params: LayoutParams =
 							LayoutParams(mSize.toInt(), mSize.toInt(), Gravity.CENTER)
 
 						val pulseView = FrameLayout(context).apply {

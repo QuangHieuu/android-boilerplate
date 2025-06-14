@@ -7,17 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.Nullable
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.contains
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import boilerplate.R
-import boilerplate.utils.extension.Permission
-import boilerplate.utils.extension.addTo
-import boilerplate.utils.extension.notNull
-import boilerplate.utils.extension.removeSelf
-import boilerplate.utils.extension.showFail
+import boilerplate.utils.extension.*
 import boilerplate.widget.loading.LoadingLayout
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -29,6 +26,7 @@ fun <T : BaseFragment<*, *>> T.putBundle(vararg pairs: Pair<String, Any?>): T {
 }
 
 abstract class BaseFragment<VB : ViewBinding, VM : BaseViewModel> : Fragment() {
+
 	open val TAG = this.javaClass.simpleName
 
 	private var _binding: VB? = null
@@ -103,7 +101,7 @@ abstract class BaseFragment<VB : ViewBinding, VM : BaseViewModel> : Fragment() {
 			addKeyboardListener()
 		}
 
-		initialize()
+		binding.initialize()
 		onSubscribeObserver()
 		binding.registerEvent()
 		callApi()
@@ -122,7 +120,7 @@ abstract class BaseFragment<VB : ViewBinding, VM : BaseViewModel> : Fragment() {
 		super.onDestroyView()
 	}
 
-	protected abstract fun initialize()
+	protected abstract fun VB.initialize()
 
 	protected abstract fun onSubscribeObserver()
 

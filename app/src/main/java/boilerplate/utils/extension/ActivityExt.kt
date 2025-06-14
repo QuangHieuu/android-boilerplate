@@ -28,6 +28,7 @@ import kotlin.reflect.KClass
  */
 
 enum class AnimateType {
+
 	FADE,
 	SLIDE_TO_RIGHT,
 	SLIDE_TO_LEFT,
@@ -66,6 +67,7 @@ fun AppCompatActivity.replaceFragmentInActivity(
 			addToBackStack(tag)
 		}
 		replace(containerId, fragment, tag)
+		setPrimaryNavigationFragment(fragment)
 	}, animateType)
 }
 
@@ -129,7 +131,6 @@ fun AppCompatActivity.popFragment() {
 fun AppCompatActivity.findFragmentByTag(tag: String): Fragment? {
 	return supportFragmentManager.findFragmentByTag(tag)
 }
-
 
 @SuppressLint("RestrictedApi")
 fun Activity.showSnackBar(

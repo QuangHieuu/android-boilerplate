@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Widget.Toolbar" parent="@style/Widget.AppCompat.Toolbar">
+        <item name="contentInsetStart">0dp</item>
+        <item name="android:background">@color/colorPrimary</item>
+    </style>
+
+    <style name="AppToolbar" parent="Widget.Toolbar">
+        <item name="titleCentered">true</item>
+        <item name="titleTextStyle">@style/StyleMedium</item>
+        <item name="titleTextColor">@color/color_white</item>
+        <item name="subtitleCentered">true</item>
+        <item name="subtitleTextStyle">@style/StyleRegular</item>
+        <item name="subtitleTextColor">@color/color_A2FFFFFF</item>
+    </style>
+
+    <style name="AppToolbarButton">
+        <item name="android:layout_height">@dimen/dp_40</item>
+        <item name="android:layout_width">@dimen/dp_40</item>
+    </style>
+
+    <style name="AppToolbarButton.BackIcon" parent="AppToolbarButton">
+        <item name="android:layout_height">@dimen/dp_40</item>
+        <item name="android:layout_width">@dimen/dp_40</item>
+        <item name="android:paddingStart">@dimen/dp_12</item>
+        <item name="android:paddingTop">@dimen/dp_10</item>
+        <item name="android:paddingEnd">@dimen/dp_12</item>
+        <item name="android:paddingBottom">@dimen/dp_10</item>
+        <item name="android:src">@drawable/ic_arrow_previous_white</item>
+    </style>
+
+    <style name="AppToolbar.Title" parent="AppToolbar">
+        <item name="android:textSize">@dimen/dp_16</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:fontFamily">@font/roboto_bold</item>
+    </style>
+
+    <style name="AppTextViewDefault" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">@dimen/dp_13</item>
+        <item name="android:textColor">@color/color_black</item>
+        <item name="android:textColorHighlight">?android:textColorHighlight</item>
+        <item name="android:textColorLink">?android:textColorLink</item>
+        <item name="android:textColorHint">@color/colorHint</item>
+    </style>
+
+    <style name="StyleBold" parent="AppTextViewDefault">
+        <item name="customTypeface">@font/roboto_bold</item>
+    </style>
+
+    <style name="StyleRegular" parent="AppTextViewDefault">
+        <item name="customTypeface">@font/roboto_regular</item>
+    </style>
+
+    <style name="StyleItalic" parent="Theme.AppCompat">
+        <item name="customTypeface">@font/roboto_italic</item>
+    </style>
+
+    <style name="StyleMedium" parent="AppTextViewDefault">
+        <item name="customTypeface">@font/roboto_medium</item>
+    </style>
+
+    <style name="SnackBar" parent="Widget.MaterialComponents.Snackbar">
+        <item name="android:layout_margin">@null</item>
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:layout_marginLeft">0dp</item>
+        <item name="android:layout_marginRight">0dp</item>
+        <item name="android:layout_marginBottom">@dimen/dp_50</item>
+        //custom bottom margin
+    </style>
+
+    <style name="PopupWindowAnimation" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/fade_in</item>
+        <item name="android:windowExitAnimation">@anim/fade_out</item>
+    </style>
+
+
+    <style name="ButtonCancel" parent="StyleRegular">
+        <item name="android:background">@drawable/bg_button_cancel</item>
+        <item name="android:textSize">@dimen/dp_14</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/color_606060</item>
+    </style>
+</resources>

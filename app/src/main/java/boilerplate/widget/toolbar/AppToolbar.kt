@@ -18,6 +18,7 @@ class AppToolbar @JvmOverloads constructor(
 	private val defStyleAttr: Int = R.attr.AppToolbarStyle,
 	private val defStyle: Int = R.style.AppToolbar
 ) : LinearLayout(context, attrs, defStyleAttr, defStyle) {
+
 	private val binding = ViewAppToolbarBinding.inflate(LayoutInflater.from(context), this, true)
 
 	private val _listLeftButton = arrayListOf<AppToolbarButton>()

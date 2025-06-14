@@ -1,6 +1,7 @@
 package boilerplate.data.remote.api
 
 object ApiDomain {
+
 	var DEFAULT: String = ApiServer.LIVE.serverName
 
 	@JvmField

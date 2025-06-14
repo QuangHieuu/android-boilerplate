@@ -20,36 +20,38 @@ class AppEditText @JvmOverloads constructor(
 	context: Context,
 	attrs: AttributeSet? = null,
 	//if error Re-sync project to generating R.class
-	defStyle: Int = androidx.appcompat.R.attr.editTextStyle
+	defStyle: Int = android.R.attr.editTextStyle
 ) : AppCompatEditText(context, attrs, defStyle) {
+
 	abstract class SimpleEvent : KeyImeChange, TextMenuListener {
+
 		override fun onKeyIme(keyCode: Int, event: KeyEvent?) {}
 		override fun onPaste() {}
 	}
 
 	private interface KeyImeChange {
+
 		fun onKeyIme(keyCode: Int, event: KeyEvent?)
 	}
 
 	private interface TextMenuListener {
+
 		fun onPaste()
 	}
 
-	private var mListener: SimpleEvent? = null
+	private var _listener: SimpleEvent? = null
 
 	init {
 		init(context, attrs, defStyle)
 	}
 
 	override fun onKeyPreIme(keyCode: Int, event: KeyEvent): Boolean {
-		if (mListener != null) {
-			mListener!!.onKeyIme(keyCode, event)
-		}
+		_listener?.onKeyIme(keyCode, event)
 		return false
 	}
 
 	fun setListener(listener: SimpleEvent?) {
-		mListener = listener
+		_listener = listener
 	}
 
 	private fun init(context: Context, attrs: AttributeSet?, defStyle: Int) {
@@ -85,11 +87,11 @@ class AppEditText @JvmOverloads constructor(
 
 	override fun onTextContextMenuItem(id: Int): Boolean {
 		val consumed: Boolean = super.onTextContextMenuItem(id)
-		if (mListener == null) {
+		if (_listener == null) {
 			return consumed
 		}
 		when (id) {
-			android.R.id.paste -> mListener!!.onPaste()
+			android.R.id.paste -> _listener!!.onPaste()
 		}
 		return consumed
 	}

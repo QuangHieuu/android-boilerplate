@@ -2,7 +2,7 @@ package android.empty.base
 
 import androidx.recyclerview.widget.DiffUtil
 
-abstract class BaseModel {}
+abstract class BaseModel
 
 fun <T : Any?> T.isSameItem(newItems: T): Boolean {
 	return if (this == null) {

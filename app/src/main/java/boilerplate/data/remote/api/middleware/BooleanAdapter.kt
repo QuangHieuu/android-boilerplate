@@ -7,6 +7,7 @@ import com.google.gson.stream.JsonWriter
 import java.io.IOException
 
 class BooleanAdapter : TypeAdapter<Boolean>() {
+
 	@Throws(IOException::class)
 	override fun write(out: JsonWriter, value: Boolean?) {
 		if (value == null) {

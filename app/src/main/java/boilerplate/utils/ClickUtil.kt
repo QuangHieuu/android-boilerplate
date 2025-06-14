@@ -9,6 +9,7 @@ open class ClickUtil(
 	private val longClick: Long,
 	private val block: (v: View) -> Unit
 ) : View.OnClickListener {
+
 	private val _handler = Handler(Looper.getMainLooper())
 	private val _clickLockRunnable = Runnable { _isLocked = false }
 	private var _isLocked = false
@@ -28,6 +29,7 @@ open class ClickUtil(
 	}
 
 	companion object {
+
 		fun onClick(time: Long = ANIMATION_DELAY, block: (v: View) -> Unit): View.OnClickListener =
 			ClickUtil(time, block)
 	}

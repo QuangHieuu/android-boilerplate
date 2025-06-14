@@ -1,5 +1,6 @@
 package boilerplate.di
 
+import boilerplate.data.local.repository.app.AppRepositoryImpl
 import boilerplate.data.local.repository.server.ServerRepository
 import boilerplate.data.local.repository.server.ServerRepositoryImpl
 import boilerplate.data.local.repository.user.TokenRepository
@@ -10,6 +11,7 @@ import org.koin.dsl.module
 val repositoryModule = module {
 	single { provideTokenRepository(get()) }
 	single { provideServerRepository(get()) }
+	single { provideAppRepository(get()) }
 }
 
 fun provideTokenRepository(share: SharedPrefsApi): TokenRepository {
@@ -18,4 +20,8 @@ fun provideTokenRepository(share: SharedPrefsApi): TokenRepository {
 
 fun provideServerRepository(share: SharedPrefsApi): ServerRepository {
 	return ServerRepositoryImpl(share)
+}
+
+fun provideAppRepository(share: SharedPrefsApi): AppRepositoryImpl {
+	return AppRepositoryImpl(share)
 }

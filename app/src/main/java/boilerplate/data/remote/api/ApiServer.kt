@@ -4,6 +4,7 @@ enum class ApiServer(val serverName: String, val displayName: String) {
 	LIVE("LIVE", "LIVE");
 
 	companion object {
+
 		private val intToTypeMap: MutableMap<String, ApiServer> = HashMap()
 
 		init {

@@ -1,11 +1,7 @@
 package boilerplate.utils.extension
 
 import android.graphics.Color
-import android.text.Html
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.TextUtils
+import android.text.*
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
@@ -142,7 +138,7 @@ fun SpannableString.withClickableSpan(
 
 fun String.validateEmailOrPhoneNo(): Boolean {
 	return !(!Patterns.EMAIL_ADDRESS.matcher(this).matches()
-			&& !this.matches("[0-9]+".toRegex()))
+		&& !this.matches("[0-9]+".toRegex()))
 }
 
 fun String.validateEmail(): Boolean {

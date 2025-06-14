@@ -14,6 +14,7 @@ import boilerplate.utils.InternetManager
 abstract class NetWorkJobService : JobService(), ConnectivityReceiver.ConnectivityReceiverListener
 
 class NetworkSchedulerService : NetWorkJobService() {
+
 	private var _receiver: ConnectivityReceiver? = null
 	private var _isRegister = false
 	private var _lastConnected = true

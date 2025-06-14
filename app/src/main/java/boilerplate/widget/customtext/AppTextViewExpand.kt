@@ -29,7 +29,9 @@ open class AppTextViewExpand @JvmOverloads constructor(
 	attrs: AttributeSet? = null,
 	defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr, defStyleAttr) {
+
 	abstract class SimpleEvent : OnTextListener {
+
 		override fun onReadMore(isCollapse: Boolean) {}
 		override fun onMention(userId: String) {}
 		override fun onViewIsExpand(isExpand: Boolean) {}
@@ -37,6 +39,7 @@ open class AppTextViewExpand @JvmOverloads constructor(
 	}
 
 	interface OnTextListener {
+
 		fun onReadMore(isCollapse: Boolean)
 		fun onMention(userId: String)
 		fun onPhoneNumber(number: String)
@@ -130,21 +133,21 @@ open class AppTextViewExpand @JvmOverloads constructor(
 		isNeedReMeasure = false
 		if (Patterns.WEB_URL.matcher(tvContent.text.toString()).matches()) {
 			isNoClick = true
-			tvLabel.visibility = View.GONE
+			tvLabel.visibility = GONE
 			tvContent.maxLines = Int.MAX_VALUE
 			mListener?.onViewIsExpand(false)
 			return
 		}
 		if (tvContent.lineCount <= maxLines) {
 			isNoClick = true
-			tvLabel.visibility = View.GONE
+			tvLabel.visibility = GONE
 			tvContent.maxLines = maxLines
 			mListener?.onViewIsExpand(false)
 			super.onMeasure(widthMeasureSpec, heightMeasureSpec)
 		} else {
 			isNoClick = false
 			post { contentRealHeight = tvContent.measuredHeight }
-			tvLabel.visibility = if (isShowText) View.VISIBLE else View.GONE
+			tvLabel.visibility = if (isShowText) VISIBLE else GONE
 			if (isCollapse) {
 				tvContent.maxLines = maxLines
 			} else {
@@ -286,6 +289,7 @@ open class AppTextViewExpand @JvmOverloads constructor(
 		private val endValue: Int,
 		private val otherHeight: Int
 	) : Animation() {
+
 		init {
 			duration = 200
 			interpolator = AccelerateDecelerateInterpolator()
@@ -304,6 +308,7 @@ open class AppTextViewExpand @JvmOverloads constructor(
 	}
 
 	companion object {
+
 		private const val DEFAULT_ANIM_ALPHA_START = 1f
 		private const val MAX_LINES_ON_SHRINK = 6
 	}

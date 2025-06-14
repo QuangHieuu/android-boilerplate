@@ -35,7 +35,6 @@ inline fun <T : Any> T?.isNull(f: () -> Unit) {
 val <T> List<T>.lastIndex: Int
 	get() = size - 1
 
-
 fun MutableList<Any>.swap(index1: Int, index2: Int) {
 
 	val tmp: WeakReference<Any> = WeakReference(this[index1])
@@ -108,7 +107,7 @@ fun Activity.isTablet(): Boolean = resources.isTablet()
 fun RecyclerView.ViewHolder.isTablet(): Boolean = itemView.resources.isTablet()
 
 fun Resources.isTablet(): Boolean = Configuration.SCREENLAYOUT_SIZE_LARGE <=
-		(configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK)
+	(configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK)
 
 fun Float.toTextSize(): Float {
 	val displayMetrics = Resources.getSystem().displayMetrics

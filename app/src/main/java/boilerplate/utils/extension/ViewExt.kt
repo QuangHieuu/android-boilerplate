@@ -24,7 +24,6 @@ import androidx.core.animation.doOnStart
 import androidx.fragment.app.DialogFragment
 import boilerplate.utils.ClickUtil
 
-
 fun View.show(b: Boolean = true) {
 	visibility = if (b) View.VISIBLE else View.GONE
 }

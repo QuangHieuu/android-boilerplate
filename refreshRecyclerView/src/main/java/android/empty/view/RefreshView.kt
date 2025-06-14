@@ -3,6 +3,7 @@ package android.empty.view
 import android.animation.ValueAnimator
 import android.content.Context
 import android.content.res.Resources
+import android.empty.extension.gone
 import android.empty.listener.RefreshListener
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -20,6 +21,7 @@ class RefreshView @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr), RefreshListener {
 
 	companion object {
+
 		private const val MAX_ARC_DEGREE = 330f
 		private const val DEFAULT_START_DEGREES = 285f
 		private const val DEFAULT_STROKE_WIDTH = 2f
@@ -48,6 +50,7 @@ class RefreshView @JvmOverloads constructor(
 	}
 
 	init {
+		gone()
 		initPaint()
 	}
 

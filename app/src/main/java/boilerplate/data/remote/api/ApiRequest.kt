@@ -7,7 +7,9 @@ class ApiRequest(
 	private var builder: Retrofit.Builder,
 	private var okHttpClient: OkHttpClient
 ) {
+
 	companion object {
+
 		const val VERSION = "1.0"
 		const val VERSION_2 = "2.0"
 	}

@@ -21,6 +21,7 @@ import kotlinx.coroutines.Job
 import org.koin.java.KoinJavaComponent
 
 abstract class BaseViewModel : ViewModel() {
+
 	val gson: Gson by KoinJavaComponent.inject<Gson>(Gson::class.java).also {
 		setApiCallback(it.value)
 	}

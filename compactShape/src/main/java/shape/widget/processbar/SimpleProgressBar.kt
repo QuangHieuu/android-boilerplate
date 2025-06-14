@@ -248,7 +248,7 @@ class SimpleProgressBar(
 
 		canvas.drawRoundRect(RectF(frame), cornerRadius, cornerRadius, paint)
 
-		paint.setXfermode(PorterDuffXfermode(PorterDuff.Mode.SRC_IN))
+		paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
 		canvas.drawBitmap(bitmap, frame, frame, paint)
 
 		return roundedBitmap

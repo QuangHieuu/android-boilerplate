@@ -8,8 +8,8 @@ import org.json.JSONObject
 import retrofit2.Response
 import java.io.IOException
 
-
 open class RetrofitException : RuntimeException {
+
 	private val errorType: String
 	private var response: Response<*>? = null
 
@@ -48,6 +48,7 @@ open class RetrofitException : RuntimeException {
 	}
 
 	companion object {
+
 		private const val SERVER_ERROR = "Server not found"
 
 		fun networkError(throwable: IOException): RetrofitException {

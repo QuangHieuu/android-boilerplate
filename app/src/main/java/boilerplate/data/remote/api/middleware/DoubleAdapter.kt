@@ -27,6 +27,7 @@ class DoubleAdapter : TypeAdapter<Double>() {
 			}
 
 			JsonToken.NUMBER -> `in`.nextDouble()
+
 			JsonToken.STRING -> {
 				try {
 					java.lang.Double.valueOf(`in`.nextString())

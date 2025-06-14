@@ -6,6 +6,7 @@ import java.io.IOException
  * Error type
  */
 object Type {
+
 	/**
 	 * An [IOException] occurred while communicating to the server.
 	 */

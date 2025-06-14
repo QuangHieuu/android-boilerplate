@@ -9,10 +9,10 @@ import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
 
-
 class InterceptorImpl(private var token: TokenRepository) : Interceptor {
 
 	companion object {
+
 		const val CODE_REFRESH_TOKEN: Int = 401
 	}
 
@@ -24,7 +24,7 @@ class InterceptorImpl(private var token: TokenRepository) : Interceptor {
 
 		if (response.code == CODE_REFRESH_TOKEN) {
 			val resStr = response.body?.string().toString()
-			val json = JSONObject(resStr)
+			JSONObject(resStr)
 		}
 		return response
 	}

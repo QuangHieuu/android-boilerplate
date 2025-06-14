@@ -16,6 +16,7 @@ class AppTextView @JvmOverloads constructor(
 	attrs: AttributeSet? = null,
 	defStyleAttr: Int = 0
 ) : AppCompatTextView(context, attrs, defStyleAttr) {
+
 	init {
 		initView(attrs)
 	}

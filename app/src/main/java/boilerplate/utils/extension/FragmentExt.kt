@@ -63,7 +63,7 @@ fun Fragment.open(
 			if (fm.isExistFragment(fragment)) {
 				fm.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE)
 			}
-			add(R.id.frame_tablet, fragment, tag)
+			add(R.id.fragment_split, fragment, tag)
 		} else {
 			add(containerId, fragment, tag)
 		}

@@ -7,6 +7,7 @@ import com.google.gson.stream.JsonWriter
 import java.io.IOException
 
 class IntegerAdapter : TypeAdapter<Int>() {
+
 	@Throws(IOException::class)
 	override fun write(out: JsonWriter, value: Int?) {
 		if (value == null) {
@@ -27,6 +28,7 @@ class IntegerAdapter : TypeAdapter<Int>() {
 
 			JsonToken.NUMBER -> return `in`.nextInt()
 			JsonToken.BOOLEAN -> return if (`in`.nextBoolean()) 1 else 0
+
 			JsonToken.STRING -> {
 				return try {
 					Integer.valueOf(`in`.nextString())

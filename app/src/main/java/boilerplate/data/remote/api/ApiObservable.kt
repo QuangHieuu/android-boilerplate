@@ -104,6 +104,7 @@ abstract class ApiObservable<T : Any>(
 	}
 
 	companion object {
+
 		lateinit var sGson: Gson
 		lateinit var sListener: OnApiCallBack
 

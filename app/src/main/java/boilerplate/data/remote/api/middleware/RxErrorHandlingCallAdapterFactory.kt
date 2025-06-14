@@ -1,11 +1,7 @@
 package boilerplate.data.remote.api.middleware
 
 import boilerplate.data.remote.api.error.RetrofitException
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.core.Maybe
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.core.*
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.HttpException
@@ -16,6 +12,7 @@ import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
 class RxErrorHandlingCallAdapterFactory private constructor() : CallAdapter.Factory() {
+
 	private val original: RxJava3CallAdapterFactory = RxJava3CallAdapterFactory.create()
 
 	override fun get(
@@ -58,12 +55,12 @@ class RxErrorHandlingCallAdapterFactory private constructor() : CallAdapter.Fact
 				else if (isSingle) "Single" else if (isMaybe) "Maybe" else "Observable"
 				throw IllegalStateException(
 					name
-							+ " return type must be parameterized"
-							+ " as "
-							+ name
-							+ "<Foo> or "
-							+ name
-							+ "<? extends Foo>"
+						+ " return type must be parameterized"
+						+ " as "
+						+ name
+						+ "<Foo> or "
+						+ name
+						+ "<? extends Foo>"
 				)
 			}
 			if (isFlowable) {
@@ -112,6 +109,7 @@ class RxErrorHandlingCallAdapterFactory private constructor() : CallAdapter.Fact
 	}
 
 	companion object {
+
 		private val TAG = RxErrorHandlingCallAdapterFactory::class.java.name
 		fun create(): CallAdapter.Factory {
 			return RxErrorHandlingCallAdapterFactory()

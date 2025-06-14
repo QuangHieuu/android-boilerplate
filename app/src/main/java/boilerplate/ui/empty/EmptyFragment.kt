@@ -3,7 +3,10 @@ package boilerplate.ui.empty
 import boilerplate.base.BaseFragment
 import boilerplate.base.putBundle
 import boilerplate.databinding.FragmentEmptyBinding
+import boilerplate.ui.home.HomeFragment
 import boilerplate.ui.main.MainVM
+import boilerplate.utils.extension.click
+import boilerplate.utils.extension.open
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class EmptyFragment : BaseFragment<FragmentEmptyBinding, MainVM>() {
@@ -20,7 +23,7 @@ class EmptyFragment : BaseFragment<FragmentEmptyBinding, MainVM>() {
 
 	override val viewModel: MainVM by activityViewModel()
 
-	override fun initialize() {
+	override fun FragmentEmptyBinding.initialize() {
 	}
 
 	override fun onSubscribeObserver() {
@@ -29,6 +32,9 @@ class EmptyFragment : BaseFragment<FragmentEmptyBinding, MainVM>() {
 	override fun FragmentEmptyBinding.registerEvent() {
 		val string = arguments?.getString(KEY_STRING, "asd")
 		tvEmpty.text = string
+
+		tvEmpty.click { open(HomeFragment.newInstance()) }
+		tvMore.click { open(HomeFragment.newInstance(), split = false) }
 	}
 
 	override fun callApi() {

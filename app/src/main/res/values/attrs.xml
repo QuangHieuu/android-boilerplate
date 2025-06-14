@@ -48,4 +48,15 @@
         <attr name="android:layout_height" />
         <attr name="padding" format="dimension" />
     </declare-styleable>
+
+    <declare-styleable name="RoundedCornerView">
+        <attr name="android:background" />
+        <attr name="radius" format="dimension" />
+        <attr name="topLeftCornerRadius" format="dimension" />
+        <attr name="topRightCornerRadius" format="dimension" />
+        <attr name="bottomLeftCornerRadius" format="dimension" />
+        <attr name="bottomRightCornerRadius" format="dimension" />
+        <attr name="stroke_width" format="dimension" />
+        <attr name="stroke_color" format="color" />
+    </declare-styleable>
 </resources>

@@ -9,6 +9,7 @@ import java.util.Queue
 import java.util.concurrent.atomic.AtomicBoolean
 
 open class MultipleLiveEvent<T> : MutableLiveData<T>() {
+
 	private val _pending = AtomicBoolean(false)
 	private val _values: Queue<T> = LinkedList()
 

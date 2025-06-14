@@ -6,6 +6,7 @@ import android.widget.FrameLayout
 import boilerplate.databinding.ViewLoadingBinding
 
 class LoadingLayout(context: Context) : FrameLayout(context) {
+
 	private var _binding: ViewLoadingBinding? = null
 
 	init {

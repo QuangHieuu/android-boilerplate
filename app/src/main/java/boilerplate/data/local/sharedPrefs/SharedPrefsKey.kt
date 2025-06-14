@@ -1,6 +1,7 @@
 package boilerplate.data.local.sharedPrefs
 
 object SharedPrefsKey {
+
 	const val PREF_NAME = "AppName"
 
 	const val SERVER = "SERVER"
@@ -13,4 +14,6 @@ object SharedPrefsKey {
 
 	const val USER_NAME_LOGIN: String = "USER_NAME_LOGIN"
 	const val USER_PASSWORD_LOGIN: String = "USER_PASSWORD_LOGIN"
+
+	const val APP_FONT_SIZE = "APP_FONT_SIZE"
 }

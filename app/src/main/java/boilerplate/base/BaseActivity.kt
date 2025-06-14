@@ -1,5 +1,6 @@
 package boilerplate.base
 
+import android.app.Application
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -7,72 +8,47 @@ import android.content.pm.PackageManager
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Build
+import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.fragment.app.Fragment
+import androidx.core.view.animation.PathInterpolatorCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.viewbinding.ViewBinding
 import boilerplate.model.file.MimeType
-import boilerplate.utils.extension.Permission
-import boilerplate.utils.extension.hideKeyboard
-import boilerplate.utils.extension.isTablet
-import boilerplate.utils.extension.notNull
-import boilerplate.utils.extension.showFail
-import boilerplate.utils.extension.validateRes
+import boilerplate.utils.extension.*
 import boilerplate.utils.keyboard.InsetsWithKeyboardCallback
 import boilerplate.widget.customtext.AppEditText
 import boilerplate.widget.customtext.InsetsLayout
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.coroutines.launch
+import org.koin.java.KoinJavaComponent.inject
 import java.lang.ref.WeakReference
 import java.lang.reflect.ParameterizedType
 
 abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatActivity() {
+
 	protected abstract val viewModel: VM
 	private var _binding: AC? = null
 	protected val binding: AC get() = _binding!!
+
+	private val _application: Application by inject(Application::class.java)
 
 	private val _disposable = CompositeDisposable()
 	private var _blockGrand: (() -> Unit)? = null
 	private val _listRequest: WeakReference<ArrayList<Permission>> = WeakReference(arrayListOf())
 	private val _hashMap: HashMap<String, (isShowKeyboard: Boolean) -> Unit> = HashMap()
-
-	private val _backPress by lazy {
-		object : OnBackPressedCallback(true) {
-			@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
-			override fun handleOnBackPressed() {
-				val stack = supportFragmentManager.backStackEntryCount
-				val fullScreen: Fragment? = supportFragmentManager.findFragmentById(containerId)
-				val splitScreen = supportFragmentManager.findFragmentById(splitContainerId)
-				if (isTablet()) {
-					if (splitScreen != null) {
-						if (stack > 1 || fullScreen != null) {
-							supportFragmentManager.popBackStack()
-						} else {
-							finish()
-						}
-					} else {
-						closeView(stack)
-					}
-				} else {
-					closeView(stack)
-				}
-			}
-		}
-	}
+	private val _frameContainer: InsetsLayout = InsetsLayout(_application)
 
 	private val _invalidTokeReceiver = object : BroadcastReceiver() {
 		override fun onReceive(context: Context?, intent: Intent?) {
@@ -92,8 +68,8 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 		_request = registerForActivityResult(
 			ActivityResultContracts.RequestMultiplePermissions()
 		) { result ->
-			result.notNull {
-				for (entry in it.entries) {
+			result.notNull { map ->
+				for (entry in map.entries) {
 					_listRequest.get()?.removeIf { per -> per.name == entry.key && entry.value }
 				}
 				if (_listRequest.get().isNullOrEmpty()) {
@@ -103,16 +79,14 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 			}
 		}
 		super.onCreate(savedInstanceState)
-		setContentView(InsetsLayout(baseContext).also {
-			it.addView(
-				@Suppress("UNCHECKED_CAST")
-				javaClass.genericSuperclass.let { it as ParameterizedType }.actualTypeArguments[0]
-					.let { it as Class<*> }.getMethod("inflate", LayoutInflater::class.java)
-					.invoke(null, layoutInflater)
-					.let { it as AC }
-					.apply { _binding = this }.root
-			)
-		})
+		setContentView(
+			@Suppress("UNCHECKED_CAST")
+			javaClass.genericSuperclass.let { it as ParameterizedType }.actualTypeArguments[0]
+				.let { it as Class<*> }.getMethod("inflate", LayoutInflater::class.java)
+				.invoke(null, layoutInflater)
+				.let { it as AC }
+				.apply { _binding = this }.root
+		)
 
 		val insetsWithKeyboardCallback = InsetsWithKeyboardCallback(window) { show ->
 			keyboardCallBack(show)
@@ -128,10 +102,8 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 			}
 		}
 
-		onBackPressedDispatcher.addCallback(this@BaseActivity, _backPress)
-
 		initialize()
-		handleDataFromApp(intent)
+		receiveIntent(intent)
 		baseObserver()
 		onSubscribeObserver()
 		registerOnClick()
@@ -186,7 +158,7 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 
 	override fun onNewIntent(intent: Intent) {
 		super.onNewIntent(intent)
-		handleDataFromApp(intent)
+		receiveIntent(intent)
 	}
 
 	protected abstract fun initialize()
@@ -246,14 +218,6 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 		}
 	}
 
-	private fun closeView(stack: Int) {
-		if (stack == 0) {
-			finish()
-		} else {
-			supportFragmentManager.popBackStack()
-		}
-	}
-
 	private fun isGranted(permission: String): Boolean {
 		return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
 	}
@@ -267,7 +231,7 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 		}
 	}
 
-	private fun handleDataFromApp(intent: Intent) {
+	private fun receiveIntent(intent: Intent) {
 		val action = intent.action
 		val bundle = intent.extras
 		if (action == null || action == Intent.ACTION_MAIN) {
@@ -276,8 +240,8 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 		when (action) {
 			Intent.ACTION_SEND -> {
 				intent.type.notNull { type ->
-					val sharedText = if (bundle != null) bundle.getString(Intent.EXTRA_TEXT, "") else ""
-					val imageUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+					if (bundle != null) bundle.getString(Intent.EXTRA_TEXT, "") else ""
+					if (SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 						intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
 					} else {
 						intent.getParcelableExtra(Intent.EXTRA_STREAM)
@@ -296,6 +260,6 @@ abstract class BaseActivity<AC : ViewBinding, VM : BaseViewModel> : AppCompatAct
 			}
 		}
 		callbackWhenReceiverData(intent)
-		intent.setAction(Intent.ACTION_MAIN)
+		intent.action = Intent.ACTION_MAIN
 	}
 }

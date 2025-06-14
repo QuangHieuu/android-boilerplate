@@ -11,35 +11,29 @@ import android.os.Build
 import android.os.Environment
 import android.widget.Toast
 import boilerplate.R
+import boilerplate.constant.FontSize
+import boilerplate.data.local.repository.app.AppRepository
 import boilerplate.ui.main.MainActivity
 import boilerplate.utils.extension.toTextSize
-import java.io.BufferedInputStream
-import java.io.BufferedOutputStream
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.OutputStream
+import org.koin.java.KoinJavaComponent.inject
+import java.io.*
 import java.util.Objects
 
 object SystemUtil {
+
+	private val appShared: AppRepository by inject(AppRepository::class.java)
+
 	private const val CLIPBOARD_MESSAGE: String = "CLIPBOARD_MESSAGE"
 	private const val FOLDER_DIRECTION: String = "/folder"
 
 	private const val BUFFER_SIZE: Int = 1024 * 2
 
-	private const val SIZE_SMALL: Int = 0 // size = 14;
-	private const val SIZE_MEDIUM: Int = 1 // size = 17;
-	private const val SIZE_LARGE: Int = 2 // size = 21;
-
-	@JvmStatic
-	fun getFontSizeChat(context: Context): Float {
-		val mainSize: Float
-		val size: Int = 0
-		val resources = context.resources
-		mainSize = when (size) {
-			SIZE_SMALL -> resources.getDimension(R.dimen.dp_14)
-			SIZE_MEDIUM -> resources.getDimension(R.dimen.dp_17)
-			SIZE_LARGE -> resources.getDimension(R.dimen.dp_21)
+	fun Context.getFontSizeChat(): Float {
+		val fontSize = appShared.getAppFontSize()
+		val mainSize: Float = when (fontSize) {
+			FontSize.SIZE_SMALL -> resources.getDimension(R.dimen.dp_14)
+			FontSize.SIZE_MEDIUM -> resources.getDimension(R.dimen.dp_17)
+			FontSize.SIZE_LARGE -> resources.getDimension(R.dimen.dp_21)
 			else -> resources.getDimension(R.dimen.dp_14)
 		}
 		return mainSize.toTextSize()
@@ -72,7 +66,7 @@ object SystemUtil {
 			context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString() + FOLDER_DIRECTION
 		)
 		if (!file.exists()) {
-			val result = file.mkdirs()
+			file.mkdirs()
 		}
 		return file.absolutePath
 	}
@@ -82,7 +76,7 @@ object SystemUtil {
 			context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + FOLDER_DIRECTION
 		)
 		if (!file.exists()) {
-			val result = file.mkdirs()
+			file.mkdirs()
 		}
 		return file.absolutePath
 	}
@@ -93,7 +87,7 @@ object SystemUtil {
 				.toString() + FOLDER_DIRECTION
 		)
 		if (!file.exists()) {
-			val result = file.mkdirs()
+			file.mkdirs()
 		}
 		return file.absolutePath
 	}
@@ -104,7 +98,7 @@ object SystemUtil {
 				.toString() + FOLDER_DIRECTION
 		)
 		if (!file.exists()) {
-			val result = file.mkdirs()
+			file.mkdirs()
 		}
 		return file.absolutePath
 	}
@@ -116,7 +110,7 @@ object SystemUtil {
 				.toString() + FOLDER_DIRECTION
 		)
 		if (!file.exists()) {
-			val result = file.mkdirs()
+			file.mkdirs()
 		}
 		return file.absolutePath
 	}
@@ -125,7 +119,7 @@ object SystemUtil {
 		val file =
 			File(context.externalCacheDir.toString() + FOLDER_DIRECTION)
 		if (!file.exists()) {
-			val result = file.mkdirs()
+			file.mkdirs()
 		}
 		return file.absolutePath
 	}
@@ -146,7 +140,7 @@ object SystemUtil {
 					delete(c)
 				}
 			}
-			val result = f.delete()
+			f.delete()
 		}
 	}
 
@@ -154,7 +148,7 @@ object SystemUtil {
 		val parent = getInAppDocumentFolder(context)
 		val file = File("$parent/Conversation")
 		if (!file.exists()) {
-			val result = file.mkdirs()
+			file.mkdirs()
 		}
 		return file.absolutePath
 	}
@@ -163,7 +157,7 @@ object SystemUtil {
 		val parent = getInAppDocumentFolder(context)
 		val file = File("$parent/Message")
 		if (!file.exists()) {
-			val result = file.mkdirs()
+			file.mkdirs()
 		}
 		return file.absolutePath
 	}
@@ -172,7 +166,7 @@ object SystemUtil {
 		val parent = getInAppDocumentFolder(context)
 		val file = File("$parent/Pending")
 		if (!file.exists()) {
-			val result = file.mkdirs()
+			file.mkdirs()
 		}
 		return file.absolutePath
 	}
@@ -181,7 +175,7 @@ object SystemUtil {
 		val parent = getInAppDocumentFolder(context)
 		val file = File("$parent/MessageFile/$conversationId")
 		if (!file.exists()) {
-			val result = file.mkdirs()
+			file.mkdirs()
 		}
 		return file.absolutePath
 	}
@@ -190,7 +184,7 @@ object SystemUtil {
 		val parent = getInAppDocumentFolder(context)
 		val file = File("$parent/MessageFile/")
 		if (!file.exists()) {
-			val result = file.mkdirs()
+			file.mkdirs()
 		}
 		return file.absolutePath
 	}
@@ -199,7 +193,7 @@ object SystemUtil {
 		val parent = getInAppDocumentFolder(context)
 		val file = File("$parent/UserConversation/")
 		if (!file.exists()) {
-			val result = file.mkdirs()
+			file.mkdirs()
 		}
 		return file.absolutePath
 	}

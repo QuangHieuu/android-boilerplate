@@ -5,6 +5,7 @@ import boilerplate.data.local.sharedPrefs.SharedPrefsKey
 import boilerplate.data.remote.api.ApiDomain
 
 interface ServerRepository {
+
 	fun saveServer(server: String)
 
 	fun getServer(): String
@@ -13,6 +14,7 @@ interface ServerRepository {
 class ServerRepositoryImpl(
 	private val share: SharedPrefsApi,
 ) : ServerRepository {
+
 	override fun saveServer(server: String) {
 		ApiDomain.setHost(server)
 		share.put(SharedPrefsKey.SERVER, server)

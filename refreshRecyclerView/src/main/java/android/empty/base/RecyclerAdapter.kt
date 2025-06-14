@@ -4,41 +4,55 @@ import android.empty.base.ViewType.VIEW_EMPTY
 import android.empty.base.ViewType.VIEW_LOADING
 import android.empty.refreshrecyclerview.databinding.HolderEmptyBinding
 import android.empty.refreshrecyclerview.databinding.HolderLoadingBinding
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
+import kotlin.reflect.KClass
+import kotlin.reflect.full.primaryConstructor
 
 object ViewType {
+
 	const val VIEW_LOADING = -1
 	const val VIEW_EMPTY = -2
 }
 
-fun <T> BaseRcvAdapter<T>.build(
-	viewType: Int,
-	holder: (parent: ViewGroup) -> BaseVH<*>,
-	condition: (position: Int, any: Any?) -> Boolean
-): Any {
-	return builders.add(HolderBuilder(viewType, holder, condition))
+fun <VH : BaseVH<*>> create(clazz: KClass<VH>, parent: ViewGroup): BaseVH<*> {
+	return clazz.primaryConstructor!!.call(parent)
 }
 
-data class HolderBuilder<T>(
+inline fun <reified VH : BaseVH<*>> BaseRcvAdapter<*>.holder(
+	viewType: Int,
+	noinline condition: (position: Int, any: Any?) -> Boolean
+): Any {
+	return builders.add(
+		HolderBuilder(
+			viewType,
+			{ parent -> create<VH>(VH::class, parent) },
+			condition
+		)
+	)
+}
+
+data class HolderBuilder(
 	var viewType: Int,
 	var holder: (parent: ViewGroup) -> BaseVH<*>,
 	var condition: (position: Int, any: Any?) -> Boolean
 )
 
 abstract class BaseRcvAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-	val builders = arrayListOf<HolderBuilder<T>>()
+
+	val builders = arrayListOf<HolderBuilder>()
 
 	var dataList: MutableList<T?> = arrayListOf()
 		private set
 
 	init {
-		this.onBuildHolder()
+		this.onCreateViewHolder()
 	}
 
-	abstract fun onBuildHolder(): List<HolderBuilder<T>>
+	abstract fun onCreateViewHolder(): List<HolderBuilder>
 
 	abstract fun onBindHolder(holder: RecyclerView.ViewHolder, position: Int)
 
@@ -80,7 +94,7 @@ abstract class BaseRcvAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder>
 
 	protected open fun hasPageLoading(): Boolean = false
 
-	protected open fun builder(build: BaseRcvAdapter<T>.() -> Unit): List<HolderBuilder<T>> {
+	protected open fun builder(build: BaseRcvAdapter<T>.() -> Unit): List<HolderBuilder> {
 		build()
 		return builders
 	}
@@ -107,6 +121,7 @@ abstract class BaseRcvAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder>
 }
 
 class LoadingAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 		return LoadingVH(parent)
 	}
@@ -117,19 +132,13 @@ class LoadingAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 	override fun getItemCount(): Int = 1
 }
 
-abstract class BaseVH<VB : ViewBinding>(val binding: VB) : RecyclerView.ViewHolder(binding.root)
-
-class EmptyVH(
+abstract class BaseVH<VB : ViewBinding>(
 	parent: ViewGroup,
-) : BaseVH<HolderEmptyBinding>(parent.viewBinding(HolderEmptyBinding::inflate)) {
-	companion object {
-		fun holder(parent: ViewGroup): EmptyVH {
-			return EmptyVH(parent)
-		}
-	}
-}
+	factory: (LayoutInflater, ViewGroup, Boolean) -> VB,
+	protected val binding: VB = factory(LayoutInflater.from(parent.context), parent, false)
+) : RecyclerView.ViewHolder(binding.root)
 
-class LoadingVH(
-	parent: ViewGroup,
-) : BaseVH<HolderLoadingBinding>(parent.viewBinding(HolderLoadingBinding::inflate)) {
-}
+class EmptyVH(parent: ViewGroup) : BaseVH<HolderEmptyBinding>(parent, HolderEmptyBinding::inflate)
+
+class LoadingVH(parent: ViewGroup) :
+	BaseVH<HolderLoadingBinding>(parent, HolderLoadingBinding::inflate)

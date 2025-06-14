@@ -32,6 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_55"
             android:layout_gravity="bottom"
+            android:background="@color/color_white"
             android:elevation="@dimen/dp_10"
             app:tabGravity="fill"
             app:tabIndicatorColor="@android:color/transparent"
@@ -48,14 +49,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            app:srcCompat="@mipmap/ic_app_launcher" />
-    </FrameLayout>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout
         android:id="@+id/frame_dashboard"

@@ -11,6 +11,7 @@ import boilerplate.data.remote.api.error.Type
 class InternetManager {
 
 	companion object {
+
 		fun isConnected(): Boolean {
 			val connectivityManager =
 				sInstance.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

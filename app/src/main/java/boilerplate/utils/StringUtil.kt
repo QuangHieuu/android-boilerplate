@@ -1,5 +1,3 @@
 package boilerplate.utils
 
-object StringUtil {
-
-}
+object StringUtil

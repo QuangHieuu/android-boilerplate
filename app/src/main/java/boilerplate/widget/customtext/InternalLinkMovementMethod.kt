@@ -10,12 +10,14 @@ import android.view.MotionEvent
 import android.widget.TextView
 
 open class InternalLinkMovementMethod : LinkMovementMethod() {
+
 	private var clickableSpanUnderTouchOnActionDown: ClickableSpan? = null
 	private var activeTextViewHashcode = 0
 	private val mTouchedLineBounds = RectF()
 	private var mListener: OnLinkListener? = null
 
 	interface OnLinkListener {
+
 		fun onLinkClicked(textView: TextView, link: String): Boolean
 	}
 
@@ -102,6 +104,7 @@ open class InternalLinkMovementMethod : LinkMovementMethod() {
 		private val span: ClickableSpan?,
 		private val text: String
 	) {
+
 		fun span(): ClickableSpan? {
 			return span
 		}
@@ -111,6 +114,7 @@ open class InternalLinkMovementMethod : LinkMovementMethod() {
 		}
 
 		companion object {
+
 			fun ofSpan(textView: TextView, span: ClickableSpan?): ClickableSpanWithText {
 				val s = textView.text as Spanned
 				val text: String = if (span is URLSpan) {
@@ -131,6 +135,7 @@ open class InternalLinkMovementMethod : LinkMovementMethod() {
 	}
 
 	companion object {
+
 		fun newInstance(): InternalLinkMovementMethod {
 			return InternalLinkMovementMethod()
 		}

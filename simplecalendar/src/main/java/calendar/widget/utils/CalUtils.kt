@@ -1,10 +1,15 @@
 package calendar.widget.utils
 
 import android.text.TextUtils
-import android.util.Log
+import calendar.widget.utils.CalUtils.FORMAT_DAY
+import calendar.widget.utils.CalUtils.FORMAT_MONTH
+import calendar.widget.utils.CalUtils.FORMAT_NORMAL
+import calendar.widget.utils.CalUtils.FORMAT_YEAR
 import calendar.widget.utils.CalUtils.convertToString
 import calendar.widget.utils.CalUtils.getCalendar
 import calendar.widget.utils.CalUtils.getCalendarStringWith
+import calendar.widget.utils.CalUtils.getSplitDay
+import calendar.widget.utils.CalUtils.multiFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -80,12 +85,34 @@ internal object CalUtils {
 	 * @sample currentDay
 	 * @sample currentDayWith
 	 */
-	@JvmOverloads
-	fun getCalendar(year: Int? = null, month: Int? = null, day: Int? = null): Calendar {
+	fun getCalendar(
+		year: Int? = null,
+		month: Int? = null,
+		day: Int? = null,
+	): Calendar {
 		val c = Calendar.getInstance(Locale.getDefault())
 		year?.let { c.set(Calendar.YEAR, it) }
 		month?.let { c.set(Calendar.MONTH, it) }
 		day?.let { c.set(Calendar.DAY_OF_MONTH, it) }
+		c.set(Calendar.HOUR_OF_DAY, 0)
+		c.set(Calendar.MINUTE, 0)
+		c.set(Calendar.SECOND, 0)
+		c.set(Calendar.MILLISECOND, 0)
+		return c
+	}
+
+	fun getCalendar(date: Date? = null): Calendar {
+		val c = Calendar.getInstance(Locale.getDefault())
+		date?.let { c.time = it }
+		return c
+	}
+
+	fun getCalendarWith(
+		set: Int? = null,
+		value: Int? = null,
+	): Calendar {
+		val c = Calendar.getInstance(Locale.getDefault())
+		set?.let { c.add(set, value ?: c.get(it)) }
 		return c
 	}
 
@@ -98,13 +125,12 @@ internal object CalUtils {
 	 */
 	@JvmOverloads
 	fun getCalendarStringWith(
-		set: Int? = null, //  Calendar.DAY_OF_MONTH
+		set: Int? = null,
 		value: Int? = null,
 		inputFormat: String = "dd/MM/yyyy",
 	): String {
 		try {
-			val c = getCalendar()
-			set?.let { c.add(set, value ?: c.get(it)) }
+			val c = getCalendarWith(set, value)
 			val df = SimpleDateFormat(inputFormat, Locale.getDefault())
 			return df.format(c.time)
 		} catch (e: Exception) {
@@ -112,14 +138,17 @@ internal object CalUtils {
 		}
 	}
 
-	fun getCurrentHour(value: Int? = null): String {
-		val hour = getCalendarStringWith(Calendar.MINUTE, value, FORMAT_24_HOUR)
-		return hour
-	}
-
-	fun getSplitCurrentDay(outputFormat: String = FORMAT_NORMAL): Array<Int> {
+	/**
+	 * @param monthIndex trả lại giá trị [FORMAT_MONTH] là index
+	 *
+	 *@return current day split format [getSplitDay]
+	 */
+	fun getSplitCurrentDay(
+		outputFormat: String = FORMAT_NORMAL,
+		monthIndex: Boolean = false
+	): Array<Int> {
 		val c = Calendar.getInstance(Locale.getDefault())
-		return getSplitDay(c.time.toString(), outputFormat)
+		return getSplitDay(c.time.toString(), outputFormat, monthIndex)
 	}
 
 	fun compare2Time(
@@ -145,7 +174,16 @@ internal object CalUtils {
 		}
 	}
 
-	fun getSplitDay(input: String, outputFormat: String = FORMAT_NORMAL): Array<Int> {
+	/**
+	 * @param monthIndex trả lại giá trị [FORMAT_MONTH] là index
+	 *
+	 *@return Array([FORMAT_DAY], [FORMAT_MONTH], [FORMAT_YEAR])
+	 */
+	fun getSplitDay(
+		input: String,
+		outputFormat: String = FORMAT_NORMAL,
+		monthIndex: Boolean = false
+	): Array<Int> {
 		val array = arrayOf(0, 0, 0)
 		val date = convertToDate(input, outputFormat) ?: return array
 
@@ -158,7 +196,7 @@ internal object CalUtils {
 		}
 		SimpleDateFormat(FORMAT_MONTH, Locale.getDefault()).run {
 			try {
-				array[1] = format(date).toInt()
+				array[1] = format(date).toInt().let { if (monthIndex) it - 1 else it }
 			} catch (_: ParseException) {
 				return array
 			}
@@ -167,7 +205,6 @@ internal object CalUtils {
 			try {
 				array[2] = format(date).toInt()
 			} catch (e: ParseException) {
-				Log.d("SSS", "getSplitDay: " + e)
 				return array
 			}
 		}
@@ -342,7 +379,22 @@ internal object CalUtils {
 		}
 	}
 
+	fun getDayOfWeekName(isFromSunday: Boolean = false): List<String> {
+		val c = getCalendar()
+		return arrayListOf<String>().apply {
+			val start = Calendar.MONDAY.minus(if (isFromSunday) 1 else 0)
+			val end = start.plus(6)
+
+			(start..end).forEach { dayOfWeek ->
+				val isSunday = dayOfWeek == 8 && isFromSunday
+
+				c.set(Calendar.DAY_OF_WEEK, if (isSunday) Calendar.SUNDAY else dayOfWeek)
+				add(convertToString(c.time.toString(), FORMAT_DAY_OF_WEEK))
+			}
+		}
+	}
+
 	private fun String.checkFormatLocale(): Locale {
-		return if (this == FORMAT_CALENDAR) return Locale.US else Locale.getDefault()
+		return if (this == FORMAT_CALENDAR) Locale.US else Locale.getDefault()
 	}
 }

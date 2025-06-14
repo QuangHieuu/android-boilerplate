@@ -1,6 +1,7 @@
 package boilerplate.data.remote.api
 
 interface OnApiCallBack {
+
 	fun notInternet()
 
 	fun invalidLogin()

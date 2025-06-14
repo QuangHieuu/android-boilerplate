@@ -14,6 +14,7 @@ enum class MimeType(private val string: String) {
 		}
 
 	companion object {
+
 		private val intToTypeMap: MutableMap<String, MimeType> = HashMap()
 
 		init {

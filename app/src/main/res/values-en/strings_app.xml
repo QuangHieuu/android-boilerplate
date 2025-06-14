@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Android Boilerplate</string>
+    <string name="app_description">Android Boilerplate for demo</string>
+    <string name="copy_right">copy right</string>
+</resources>

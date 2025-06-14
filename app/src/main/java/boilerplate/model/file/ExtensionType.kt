@@ -9,6 +9,7 @@ enum class ExtensionType(
 	private val icon: Int,
 	private val extension: ArrayList<String>
 ) {
+
 	OTHER(0, R.drawable.ic_file_other, ArrayList()),
 	WORD(
 		1,
@@ -42,6 +43,7 @@ enum class ExtensionType(
 	TEXT(10, R.drawable.ic_file_other, ArrayList(mutableListOf("txt", "plain")));
 
 	companion object {
+
 		private fun getExtension(nameOrType: String?): String {
 			if (nameOrType == null) {
 				return ""

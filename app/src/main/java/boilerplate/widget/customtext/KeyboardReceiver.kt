@@ -11,6 +11,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import boilerplate.constant.Constants.FILE_PATH_SAMSUNG_CLIPBOARD
 
 class KeyboardReceiver : OnReceiveContentListener {
+
 	override fun onReceiveContent(view: View, payload: ContentInfoCompat): ContentInfoCompat {
 		val split: Pair<ContentInfoCompat, ContentInfoCompat> =
 			payload.partition { item: ClipData.Item -> item.uri != null }
@@ -30,6 +31,7 @@ class KeyboardReceiver : OnReceiveContentListener {
 	}
 
 	companion object {
+
 		private const val KEYBOARD_CONTENT = "KEYBOARD_CONTENT"
 		val MIME_TYPES = arrayOf("image/*", "video/*")
 	}

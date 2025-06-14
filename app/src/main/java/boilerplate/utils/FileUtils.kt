@@ -1,4 +1,3 @@
 package boilerplate.utils
 
-object FileUtils {
-}
+object FileUtils

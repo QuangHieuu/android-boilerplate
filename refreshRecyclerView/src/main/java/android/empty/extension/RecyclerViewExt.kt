@@ -40,8 +40,8 @@ internal fun convert(scrollDistance: Float, refreshDistance: Float): Float {
  * the [count] and zero.
  */
 internal fun Int.loop(amount: Int, count: Int): Int {
-	var newVal = this + amount;
-	newVal %= count;
+	var newVal = this + amount
+	newVal %= count
 	if (newVal < 0)
 		newVal += count
 	return newVal

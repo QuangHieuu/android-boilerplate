@@ -8,10 +8,9 @@ import com.google.gson.Gson
 @Suppress("UNCHECKED_CAST")
 class SharedPrefsImpl(context: Context, private val gson: Gson) : SharedPrefsApi {
 
-	private var sharedPreferences: SharedPreferences =
-		context.getSharedPreferences(
-			SharedPrefsKey.PREF_NAME, Context.MODE_PRIVATE
-		)
+	private var sharedPreferences: SharedPreferences = context.getSharedPreferences(
+		SharedPrefsKey.PREF_NAME, Context.MODE_PRIVATE
+	)
 
 	override fun <T> get(key: String, clazz: Class<T>): T {
 		return when (clazz) {
@@ -55,11 +54,11 @@ class SharedPrefsImpl(context: Context, private val gson: Gson) : SharedPrefsApi
 	}
 
 	override fun clear() {
-		sharedPreferences.edit()?.clear()?.apply()
+		sharedPreferences.edit { clear() }
 	}
 
 	override fun clearKey(key: String) {
-		sharedPreferences.edit()?.remove(key)?.apply()
+		sharedPreferences.edit { remove(key) }
 	}
 
 }

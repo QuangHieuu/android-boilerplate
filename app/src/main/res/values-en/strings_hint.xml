@@ -1,0 +1,4 @@
+<resources>
+    <string name="hint_accept_name">Nhập tên truy cập</string>
+    <string name="hint_password">Nhập mật khẩu</string>
+</resources>

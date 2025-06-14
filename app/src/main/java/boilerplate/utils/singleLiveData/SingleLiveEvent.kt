@@ -1,6 +1,5 @@
 package boilerplate.utils.singleLiveData
 
-
 import android.util.Log
 import androidx.annotation.MainThread
 import androidx.lifecycle.LifecycleOwner
@@ -55,6 +54,7 @@ class SingleLiveEvent<T> : MutableLiveData<T>() {
 	}
 
 	companion object {
+
 		private const val TAG = "SingleLiveEvent"
 	}
 }

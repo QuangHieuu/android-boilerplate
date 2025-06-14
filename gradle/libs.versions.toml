@@ -1,4 +1,5 @@
 [versions]
+activity = "1.10.1"
 agp = "8.4.2"
 annotation = "1.9.1"
 firebaseBom = "29.3.0"
@@ -6,7 +7,7 @@ ksp = "1.9.20-1.0.14"
 firebase = "4.4.2"
 kotlin = "1.9.0"
 coreKtx = "1.15.0"
-appcompat = "1.7.0"
+appcompat = "1.7.1"
 material = "1.12.0"
 retrofit = "2.11.0"
 gson = "2.11.0"
@@ -25,11 +26,7 @@ constraintlayout = "2.2.1"
 lifecycle = "2.9.0"
 
 [libraries]
-androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "annotation" }
-firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
-firebase-database = { module = "com.google.firebase:firebase-database" }
-firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
-
+androidx-activity = { module = "androidx.activity:activity", version.ref = "activity" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidex" }
@@ -60,6 +57,11 @@ rxjava-android = { group = "io.reactivex.rxjava3", name = "rxandroid", version.r
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 glide-integration = { group = "com.github.bumptech.glide", name = "okhttp3-integration", version.ref = "glide" }
 glide-compiler = { module = "com.github.bumptech.glide:ksp", version.ref = "glide" }
+
+androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "annotation" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-database = { module = "com.google.firebase:firebase-database" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

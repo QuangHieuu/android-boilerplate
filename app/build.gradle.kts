@@ -7,14 +7,14 @@ plugins {
 
 android {
 	namespace = "boilerplate"
-	compileSdk = 35
+	compileSdk = 36
 	applicationVariants.all {
 		resValue("string", "versionName", versionName)
 	}
 	defaultConfig {
 		applicationId = "android.boilerplate"
 		minSdk = 24
-		targetSdk = 35
+		targetSdk = 36
 		versionCode = 1
 		versionName = "1.0"
 		multiDexEnabled = true
@@ -36,11 +36,11 @@ android {
 		}
 	}
 	compileOptions {
-		sourceCompatibility = JavaVersion.VERSION_1_8
-		targetCompatibility = JavaVersion.VERSION_1_8
+		sourceCompatibility = JavaVersion.VERSION_11
+		targetCompatibility = JavaVersion.VERSION_11
 	}
 	kotlinOptions {
-		jvmTarget = "1.8"
+		jvmTarget = "11"
 	}
 	buildFeatures {
 		viewBinding = true
@@ -56,6 +56,7 @@ dependencies {
 	implementation(projects.simpleRoundedImage)
 	implementation(projects.simpleCalendar)
 
+	implementation(libs.androidx.activity)
 	implementation(libs.androidx.annotation)
 	implementation(libs.androidx.core.ktx)
 	implementation(libs.androidx.appcompat)

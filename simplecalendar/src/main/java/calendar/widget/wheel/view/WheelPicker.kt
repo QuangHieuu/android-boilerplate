@@ -11,7 +11,6 @@ import calendar.widget.wheel.type.WheelType
 import calendar.widget.wheel.type.WheelType.*
 import java.text.DecimalFormat
 import java.util.Calendar
-import kotlin.math.abs
 
 class WheelPicker : DefaultWheelView {
 

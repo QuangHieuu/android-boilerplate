@@ -1,0 +1,10 @@
+<resources>
+    <string name="error_no_connection">Không có kết nối</string>
+    <string name="error_general">Có lỗi xảy ra, vui lòng thử lại</string>
+    <string name="error_internet_connect">Mất kết nối internet, vui lòng thử lại</string>
+    <string name="error_auth_wrong">Tài khoản đăng nhập hoặc mật khẩu không đúng</string>
+
+    <string name="error_update">Cập nhật thất bại</string>
+
+    <string name="error_empty">Dữ liệu trống</string>
+</resources>

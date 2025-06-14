@@ -1,0 +1,5 @@
+<resources>
+    <string name="success_update">Cập nhật thành công</string>
+
+    <string name="success_copy_text">Đã sao chép</string>
+</resources>
