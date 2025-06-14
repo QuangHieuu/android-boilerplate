@@ -18,6 +18,7 @@ import android.widget.Scroller
 import androidx.core.animation.doOnEnd
 import androidx.core.content.withStyledAttributes
 import androidx.core.graphics.withClip
+import calendar.widget.utils.TextAlign
 import calendar.widget.wheel.model.WheelModel
 import calendar.widget.wheel.view.WheelPicker.Companion.KEY_DAY_OF_WEEK_FROM_SUNDAY
 import calendar.widget.wheel.view.WheelPicker.Companion.KEY_DAY_ONLY_NUMBER
@@ -39,9 +40,6 @@ abstract class DefaultWheelView : View {
 	companion object {
 
 		const val MAX_ANGLE: Int = 90
-		const val ALIGN_CENTER: Int = 0
-		const val ALIGN_LEFT: Int = 1
-		const val ALIGN_RIGHT: Int = 2
 	}
 
 	constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
@@ -135,7 +133,7 @@ abstract class DefaultWheelView : View {
 	private var _firstPointY = 0
 	private var _lastPointY = 0
 
-	private var _align: Int = ALIGN_CENTER
+	private var _align: TextAlign = TextAlign.CENTER
 
 	private var _iListener: IWheelListener? = null
 
@@ -286,8 +284,8 @@ abstract class DefaultWheelView : View {
 				)
 				computeYCoordinateAtAngle(degree).apply {
 					val transX = when (_align) {
-						ALIGN_LEFT -> _rectDraw.left.toFloat()
-						ALIGN_RIGHT -> _rectDraw.right.toFloat()
+						TextAlign.LEFT -> _rectDraw.left.toFloat()
+						TextAlign.RIGHT -> _rectDraw.right.toFloat()
 						else -> _wheelCenterX.toFloat()
 					}
 					val transY: Float = _wheelCenterY.minus(this)
@@ -597,16 +595,16 @@ abstract class DefaultWheelView : View {
 
 	private fun updateTextAlign() {
 		_paint.textAlign = when (_align) {
-			ALIGN_LEFT -> Paint.Align.LEFT
-			ALIGN_RIGHT -> Paint.Align.RIGHT
+			TextAlign.LEFT -> Paint.Align.LEFT
+			TextAlign.RIGHT -> Paint.Align.RIGHT
 			else -> Paint.Align.CENTER
 		}
 	}
 
 	private fun computeDrawnCenter() {
 		_drawCenterX = when (_align) {
-			ALIGN_LEFT -> _rectDraw.left
-			ALIGN_RIGHT -> _rectDraw.right
+			TextAlign.LEFT -> _rectDraw.left
+			TextAlign.RIGHT -> _rectDraw.right
 			else -> _wheelCenterX
 		}
 		_drawCenterY = _wheelCenterY.minus((_paint.ascent().plus(_paint.descent())).div(2)).toInt()

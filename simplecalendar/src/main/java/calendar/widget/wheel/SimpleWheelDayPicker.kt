@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.empty.calendar.R
 import android.util.AttributeSet
-import android.util.Log
 import android.widget.LinearLayout
 import calendar.widget.utils.CalUtils
 import calendar.widget.wheel.base.DefaultSimpleWheelView
@@ -105,9 +104,9 @@ class SimpleWheelDayPicker(
 	}
 
 	private fun split() {
-		CalUtils.getSplitDay(currentSelected).let {
+		CalUtils.getSplitDay(currentSelected, monthIndex = true).let {
 			currentSplit[0] = it[0]
-			currentSplit[1] = it[1].minus(1)
+			currentSplit[1] = it[1]
 			currentSplit[2] = it[2]
 		}
 		_pickerDay.setCurrentSelected(currentSplit[0])

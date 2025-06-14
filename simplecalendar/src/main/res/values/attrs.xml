@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <attr name="text_align" format="enum">
+        <enum name="CENTER" value="0" />
+        <enum name="LEFT" value="1" />
+        <enum name="RIGHT" value="2" />
+    </attr>
+
     // attribute default của picker
     <attr name="wheel_reverse_value" format="boolean" />
     <attr name="wheel_show_future" format="boolean" />
@@ -32,6 +39,7 @@
     </attr>
 
     <declare-styleable name="DefaultWheelView">
+        <attr name="text_align" />
         <attr name="wheel_type" />
         <attr name="wheel_cycle" />
         <attr name="wheel_over_scroll" />
@@ -47,6 +55,7 @@
     </declare-styleable>
 
     <declare-styleable name="DefaultSimpleWheelView">
+        <attr name="text_align" />
         <attr name="wheel_width_type" />
         <attr name="wheel_cycle" />
         <attr name="wheel_over_scroll" />
@@ -61,5 +70,31 @@
 
         <attr name="wheel_day_format_style" format="string" />
         <attr name="wheel_show_curtain" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="SimpleTableCalendar">
+        <attr name="calendar_orientation" format="enum">
+            <enum name="vertical" value="1" />
+            <enum name="horizontal" value="0" />
+        </attr>
+
+        <attr name="calendar_pick_from_to" format="boolean" />
+        <attr name="calendar_chose_only_future" format="boolean" />
+        <attr name="calendar_show_only_in_month" format="boolean" />
+
+        <attr name="calendar_radius" format="dimension" />
+        <attr name="calendar_show_stroke" format="boolean" />
+        <attr name="calendar_stroke_color" format="color" />
+        <attr name="calendar_background_color" format="color" />
+
+        <attr name="calendar_selected_range_color" format="color" />
+        <attr name="calendar_selected_color" format="color" />
+        <attr name="calendar_sticky_header_background_color" format="color" />
+        <attr name="calendar_sticky_header" format="boolean" />
+
+        <attr name="calendar_text_color" format="color" />
+        <attr name="calendar_text_today_color" format="color" />
+        <attr name="calendar_text_disable_color" format="color" />
+        <attr name="calendar_text_header_color" format="color" />
     </declare-styleable>
 </resources>
